@@ -16,9 +16,9 @@
 | 開発者の環境経験 | WSL2 / Docker は **未経験** | セットアップ手順書 [SETUP_WINDOWS.md](SETUP_WINDOWS.md) をフェーズ 0 の最初に実施。Docker Desktop(GUI あり)を採用し、コマンドは最小限にする |
 | 品質ターゲット | 映像向けだが、ハイポリは不要 | 1 モデル 2〜10 万三角形、2K テクスチャ、PBR。レンダラは Blender EEVEE 中心 |
 | 主役アセット | 人型の汎用人間 + さまざまな小物 | リグは **人型(Humanoid)専用**に絞って作り込む。小物はリグなし+アタッチ |
-| アプリ構成 | **1 アプリ内の 2 モード**(「作る」Forge / 「動かす」Studio) | 同一ライブラリ・同一ビューアを共有。URL は `/forge`, `/studio` |
+| アプリ構成 | **1 アプリ内の 3 モード**(「作る」Forge / 「動かす」Studio / 「解説する」Explain) | 同一ライブラリ・同一ビューア・同一 GPU ワーカーを共有。URL は `/forge`, `/studio`, `/explain`。Explain(専門解説の縦型ショート動画)の仕様は [EXPLAIN.md](EXPLAIN.md) |
 
-残っている確認事項は 11 章。
+残っている確認事項は 11 章(Explain モード固有の確認事項は [EXPLAIN.md](EXPLAIN.md) 15 章)。
 
 ---
 

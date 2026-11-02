@@ -1,11 +1,13 @@
 # 3D-MOVIE
 
 プロンプトから 3D モデルアセットを生成し(**Forge**)、それを動かして動画にする(**Studio**)個人用 Web アプリ。
+専門知識が要る仕組みを縦型ショートで正確に解説する動画を半自動で作る **Explain** モードも計画中。
 自分の Windows PC(RTX 3060 12GB)上で WSL2 + Docker で動かす。
 
 | ドキュメント | 内容 |
 |---|---|
 | [docs/SPEC.md](docs/SPEC.md) | 仕様書 v1.0(要件・構成・12GB 運用方針・ロードマップ) |
+| [docs/EXPLAIN.md](docs/EXPLAIN.md) | Explain モード仕様書 v0.1(専門解説の縦型ショート動画を AI で正確に作る) |
 | [docs/SETUP_WINDOWS.md](docs/SETUP_WINDOWS.md) | Windows + WSL2 + Docker Desktop + GPU のセットアップ手順(未経験者向け) |
 | [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) | 開発ガイド(構成、動かし方、ジョブの流れ、プロバイダの追加) |
 | [scripts/phase0/README.md](scripts/phase0/README.md) | フェーズ 0 技術検証の手順 |
