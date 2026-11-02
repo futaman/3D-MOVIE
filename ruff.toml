@@ -1,0 +1,10 @@
+line-length = 120
+target-version = "py311"
+extend-exclude = ["services/worker/movie_worker/blender", "scripts/phase0/import_mixamo.py"]  # bpy 依存スクリプト
+
+[lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = ["E501", "B008", "UP042"]  # B008: FastAPI の Depends 慣用句 / UP042: pydantic 互換のため str+Enum を維持
+
+[lint.isort]
+known-first-party = ["movie_schema", "movie_api", "movie_worker"]

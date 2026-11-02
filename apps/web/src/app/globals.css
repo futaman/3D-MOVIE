@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #0f1014;
+  --panel: #171920;
+  --border: #272a35;
+  --text: #e6e7eb;
+  --muted: #8b90a0;
+  --accent: #7c9cff;
+}
+
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--text); font-family: ui-sans-serif, system-ui, "Noto Sans JP", sans-serif; }
+.panel { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; }
+.muted { color: var(--muted); }
+.btn { @apply px-3 py-1.5 rounded-md text-sm font-medium; background: var(--accent); color: #0b0c10; }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.input { @apply w-full px-2 py-1.5 rounded-md text-sm; background: #0b0c10; border: 1px solid var(--border); color: var(--text); }

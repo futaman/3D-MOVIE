@@ -1,0 +1,209 @@
+{
+  "$defs": {
+    "JobFailureKind": {
+      "enum": [
+        "oom",
+        "model_error",
+        "timeout",
+        "invalid_input",
+        "unknown"
+      ],
+      "title": "JobFailureKind",
+      "type": "string"
+    },
+    "JobKind": {
+      "enum": [
+        "generate_concept_image",
+        "generate_shape",
+        "generate_texture",
+        "postprocess",
+        "rig",
+        "generate_motion",
+        "render_video",
+        "import_motion"
+      ],
+      "title": "JobKind",
+      "type": "string"
+    },
+    "JobProgress": {
+      "additionalProperties": false,
+      "properties": {
+        "stage": {
+          "default": "",
+          "title": "Stage",
+          "type": "string"
+        },
+        "percent": {
+          "default": 0.0,
+          "maximum": 100,
+          "minimum": 0,
+          "title": "Percent",
+          "type": "number"
+        },
+        "eta_seconds": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Eta Seconds"
+        },
+        "vram_used_mb": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Vram Used Mb"
+        },
+        "message": {
+          "default": "",
+          "title": "Message",
+          "type": "string"
+        }
+      },
+      "title": "JobProgress",
+      "type": "object",
+      "required": [
+        "stage",
+        "percent",
+        "eta_seconds",
+        "vram_used_mb",
+        "message"
+      ]
+    },
+    "JobStatus": {
+      "enum": [
+        "queued",
+        "running",
+        "succeeded",
+        "failed",
+        "canceled"
+      ],
+      "title": "JobStatus",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "pattern": "^job_[0-9a-z]{26}$",
+      "title": "Id",
+      "type": "string"
+    },
+    "kind": {
+      "$ref": "#/$defs/JobKind"
+    },
+    "status": {
+      "$ref": "#/$defs/JobStatus",
+      "default": "queued"
+    },
+    "params": {
+      "additionalProperties": true,
+      "title": "Params",
+      "type": "object"
+    },
+    "result": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Result"
+    },
+    "progress": {
+      "$ref": "#/$defs/JobProgress"
+    },
+    "failure_kind": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/JobFailureKind"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "error": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Error"
+    },
+    "attempt": {
+      "default": 1,
+      "minimum": 1,
+      "title": "Attempt",
+      "type": "integer"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "started_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Started At"
+    },
+    "finished_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Finished At"
+    }
+  },
+  "required": [
+    "id",
+    "kind",
+    "status",
+    "params",
+    "result",
+    "progress",
+    "failure_kind",
+    "error",
+    "attempt",
+    "created_at",
+    "started_at",
+    "finished_at"
+  ],
+  "title": "Job",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://3d-movie.local/schema/job.schema.json"
+}

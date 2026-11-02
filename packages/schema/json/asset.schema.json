@@ -1,0 +1,512 @@
+{
+  "$defs": {
+    "AssetFiles": {
+      "additionalProperties": false,
+      "properties": {
+        "glb": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "正となる GLB のパス(DATA_DIR からの相対)",
+          "title": "Glb"
+        },
+        "textures": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "albedo / normal / orm など",
+          "title": "Textures",
+          "type": "object"
+        },
+        "thumbnail": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Thumbnail"
+        },
+        "turntable": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Turntable"
+        },
+        "source_images": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Source Images",
+          "type": "array"
+        }
+      },
+      "title": "AssetFiles",
+      "type": "object",
+      "required": [
+        "glb",
+        "textures",
+        "thumbnail",
+        "turntable",
+        "source_images"
+      ]
+    },
+    "AssetKind": {
+      "enum": [
+        "humanoid",
+        "prop",
+        "motion",
+        "environment",
+        "audio"
+      ],
+      "title": "AssetKind",
+      "type": "string"
+    },
+    "AssetStats": {
+      "additionalProperties": false,
+      "properties": {
+        "triangles": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Triangles"
+        },
+        "materials": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Materials"
+        },
+        "texture_size": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Texture Size"
+        },
+        "height_m": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "人型の身長(1.7m 基準に正規化)",
+          "title": "Height M"
+        },
+        "bounds": {
+          "anyOf": [
+            {
+              "description": "[x, y, z]",
+              "items": {
+                "type": "number"
+              },
+              "maxItems": 3,
+              "minItems": 3,
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "バウンディングボックスのサイズ",
+          "title": "Bounds"
+        }
+      },
+      "title": "AssetStats",
+      "type": "object",
+      "required": [
+        "triangles",
+        "materials",
+        "texture_size",
+        "height_m",
+        "bounds"
+      ]
+    },
+    "AttachPoint": {
+      "additionalProperties": false,
+      "description": "小物を人型のボーンに持たせるための基準点(小物側のローカル座標)。",
+      "properties": {
+        "name": {
+          "examples": [
+            "grip",
+            "top",
+            "bottom"
+          ],
+          "title": "Name",
+          "type": "string"
+        },
+        "bone_hint": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "推奨ボーン(hand_r など)",
+          "title": "Bone Hint"
+        },
+        "offset": {
+          "description": "[x, y, z]",
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 3,
+          "minItems": 3,
+          "title": "Offset",
+          "type": "array"
+        },
+        "rotation": {
+          "description": "[x, y, z, w]",
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 4,
+          "minItems": 4,
+          "title": "Rotation",
+          "type": "array"
+        }
+      },
+      "required": [
+        "name",
+        "bone_hint",
+        "offset",
+        "rotation"
+      ],
+      "title": "AttachPoint",
+      "type": "object"
+    },
+    "PipelineInfo": {
+      "additionalProperties": false,
+      "description": "どのモデル / バージョンで作られたか。再現性と比較ベンチのため記録する。",
+      "properties": {
+        "concept_image": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Concept Image"
+        },
+        "shape": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Shape"
+        },
+        "texture": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Texture"
+        },
+        "rig": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Rig"
+        }
+      },
+      "title": "PipelineInfo",
+      "type": "object",
+      "required": [
+        "concept_image",
+        "shape",
+        "texture",
+        "rig"
+      ]
+    },
+    "PromptSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "text": {
+          "maxLength": 2000,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        },
+        "negative": {
+          "default": "",
+          "title": "Negative",
+          "type": "string"
+        },
+        "style": {
+          "$ref": "#/$defs/Style",
+          "default": "semireal"
+        },
+        "seed": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Seed"
+        },
+        "ref_images": {
+          "description": "参照画像のストレージパス",
+          "items": {
+            "type": "string"
+          },
+          "title": "Ref Images",
+          "type": "array"
+        },
+        "normalized_text": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "LLM が整形した実際に投入したプロンプト",
+          "title": "Normalized Text"
+        }
+      },
+      "required": [
+        "text",
+        "negative",
+        "style",
+        "seed",
+        "ref_images",
+        "normalized_text"
+      ],
+      "title": "PromptSpec",
+      "type": "object"
+    },
+    "RigInfo": {
+      "additionalProperties": false,
+      "properties": {
+        "skeleton": {
+          "const": "std-humanoid-v1",
+          "default": "std-humanoid-v1",
+          "title": "Skeleton",
+          "type": "string"
+        },
+        "bone_count": {
+          "default": 65,
+          "title": "Bone Count",
+          "type": "integer"
+        },
+        "blendshapes": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Blendshapes",
+          "type": "array"
+        },
+        "validated": {
+          "default": false,
+          "description": "テストポーズで破綻がないことを確認済みか",
+          "title": "Validated",
+          "type": "boolean"
+        }
+      },
+      "title": "RigInfo",
+      "type": "object",
+      "required": [
+        "skeleton",
+        "bone_count",
+        "blendshapes",
+        "validated"
+      ]
+    },
+    "Style": {
+      "enum": [
+        "realistic",
+        "semireal",
+        "anime",
+        "stylized"
+      ],
+      "title": "Style",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "description": "ULID ベース",
+      "pattern": "^ast_[0-9a-z]{26}$",
+      "title": "Id",
+      "type": "string"
+    },
+    "kind": {
+      "$ref": "#/$defs/AssetKind"
+    },
+    "name": {
+      "maxLength": 200,
+      "minLength": 1,
+      "title": "Name",
+      "type": "string"
+    },
+    "version": {
+      "default": 1,
+      "minimum": 1,
+      "title": "Version",
+      "type": "integer"
+    },
+    "parent_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "派生元アセット",
+      "title": "Parent Id"
+    },
+    "prompt": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/PromptSpec"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "pipeline": {
+      "$ref": "#/$defs/PipelineInfo"
+    },
+    "files": {
+      "$ref": "#/$defs/AssetFiles"
+    },
+    "stats": {
+      "$ref": "#/$defs/AssetStats"
+    },
+    "rig": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/RigInfo"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "humanoid のみ"
+    },
+    "attach_points": {
+      "description": "prop のみ",
+      "items": {
+        "$ref": "#/$defs/AttachPoint"
+      },
+      "title": "Attach Points",
+      "type": "array"
+    },
+    "tags": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Tags",
+      "type": "array"
+    },
+    "owner_id": {
+      "default": "local",
+      "description": "将来のマルチユーザー化用。UI には出さない",
+      "title": "Owner Id",
+      "type": "string"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "updated_at": {
+      "format": "date-time",
+      "title": "Updated At",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "kind",
+    "name",
+    "version",
+    "parent_id",
+    "prompt",
+    "pipeline",
+    "files",
+    "stats",
+    "rig",
+    "attach_points",
+    "tags",
+    "owner_id",
+    "created_at",
+    "updated_at"
+  ],
+  "title": "Asset",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://3d-movie.local/schema/asset.schema.json"
+}

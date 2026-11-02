@@ -1,0 +1,606 @@
+{
+  "$defs": {
+    "Attachment": {
+      "additionalProperties": false,
+      "description": "小物を人型のボーンへ取り付ける。time で開始、until で外れる(None なら最後まで)。",
+      "properties": {
+        "prop_node_id": {
+          "title": "Prop Node Id",
+          "type": "string"
+        },
+        "target_node_id": {
+          "title": "Target Node Id",
+          "type": "string"
+        },
+        "bone": {
+          "examples": [
+            "hand_r"
+          ],
+          "title": "Bone",
+          "type": "string"
+        },
+        "attach_point": {
+          "default": "grip",
+          "title": "Attach Point",
+          "type": "string"
+        },
+        "time": {
+          "default": 0.0,
+          "minimum": 0,
+          "title": "Time",
+          "type": "number"
+        },
+        "until": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Until"
+        }
+      },
+      "required": [
+        "prop_node_id",
+        "target_node_id",
+        "bone",
+        "attach_point",
+        "time",
+        "until"
+      ],
+      "title": "Attachment",
+      "type": "object"
+    },
+    "Background": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "default": "color",
+          "enum": [
+            "color",
+            "hdri",
+            "floor",
+            "environment_asset"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "color": {
+          "default": "#1e1e24",
+          "pattern": "^#[0-9a-fA-F]{6}$",
+          "title": "Color",
+          "type": "string"
+        },
+        "environment_asset_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Environment Asset Id"
+        }
+      },
+      "title": "Background",
+      "type": "object",
+      "required": [
+        "kind",
+        "color",
+        "environment_asset_id"
+      ]
+    },
+    "Camera": {
+      "additionalProperties": false,
+      "properties": {
+        "preset": {
+          "$ref": "#/$defs/CameraPresetName",
+          "default": "static"
+        },
+        "target_node_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "注視・追従対象",
+          "title": "Target Node Id"
+        },
+        "fov_deg": {
+          "default": 40.0,
+          "exclusiveMaximum": 170,
+          "exclusiveMinimum": 1,
+          "title": "Fov Deg",
+          "type": "number"
+        },
+        "keyframes": {
+          "description": "手動キーフレーム。あればプリセットより優先",
+          "items": {
+            "$ref": "#/$defs/TransformKeyframe"
+          },
+          "title": "Keyframes",
+          "type": "array"
+        },
+        "depth_of_field": {
+          "default": false,
+          "title": "Depth Of Field",
+          "type": "boolean"
+        },
+        "focus_distance_m": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Focus Distance M"
+        }
+      },
+      "title": "Camera",
+      "type": "object",
+      "required": [
+        "preset",
+        "target_node_id",
+        "fov_deg",
+        "keyframes",
+        "depth_of_field",
+        "focus_distance_m"
+      ]
+    },
+    "CameraPresetName": {
+      "enum": [
+        "static",
+        "push_in",
+        "pull_out",
+        "orbit",
+        "low_angle",
+        "follow"
+      ],
+      "title": "CameraPresetName",
+      "type": "string"
+    },
+    "LightPresetName": {
+      "enum": [
+        "studio",
+        "outdoor_day",
+        "sunset",
+        "night_street",
+        "neon"
+      ],
+      "title": "LightPresetName",
+      "type": "string"
+    },
+    "Lighting": {
+      "additionalProperties": false,
+      "properties": {
+        "preset": {
+          "$ref": "#/$defs/LightPresetName",
+          "default": "studio"
+        },
+        "hdri": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "data/hdri 配下のファイル名",
+          "title": "Hdri"
+        },
+        "intensity": {
+          "default": 1.0,
+          "minimum": 0,
+          "title": "Intensity",
+          "type": "number"
+        }
+      },
+      "title": "Lighting",
+      "type": "object",
+      "required": [
+        "preset",
+        "hdri",
+        "intensity"
+      ]
+    },
+    "MotionClipRef": {
+      "additionalProperties": false,
+      "properties": {
+        "motion_asset_id": {
+          "title": "Motion Asset Id",
+          "type": "string"
+        },
+        "start": {
+          "default": 0.0,
+          "description": "タイムライン上の開始秒",
+          "minimum": 0,
+          "title": "Start",
+          "type": "number"
+        },
+        "duration": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "None ならクリップの長さ",
+          "title": "Duration"
+        },
+        "speed": {
+          "default": 1.0,
+          "exclusiveMinimum": 0,
+          "title": "Speed",
+          "type": "number"
+        },
+        "loop": {
+          "default": false,
+          "title": "Loop",
+          "type": "boolean"
+        },
+        "blend_in": {
+          "default": 0.2,
+          "minimum": 0,
+          "title": "Blend In",
+          "type": "number"
+        },
+        "blend_out": {
+          "default": 0.2,
+          "minimum": 0,
+          "title": "Blend Out",
+          "type": "number"
+        },
+        "trim_start": {
+          "default": 0.0,
+          "minimum": 0,
+          "title": "Trim Start",
+          "type": "number"
+        }
+      },
+      "required": [
+        "motion_asset_id",
+        "start",
+        "duration",
+        "speed",
+        "loop",
+        "blend_in",
+        "blend_out",
+        "trim_start"
+      ],
+      "title": "MotionClipRef",
+      "type": "object"
+    },
+    "RenderSettings": {
+      "additionalProperties": false,
+      "properties": {
+        "width": {
+          "default": 1920,
+          "maximum": 3840,
+          "minimum": 256,
+          "title": "Width",
+          "type": "integer"
+        },
+        "height": {
+          "default": 1080,
+          "maximum": 2160,
+          "minimum": 256,
+          "title": "Height",
+          "type": "integer"
+        },
+        "fps": {
+          "default": 24,
+          "enum": [
+            24,
+            30,
+            60
+          ],
+          "title": "Fps",
+          "type": "integer"
+        },
+        "format": {
+          "default": "mp4",
+          "enum": [
+            "mp4",
+            "webm",
+            "png_sequence",
+            "webm_alpha"
+          ],
+          "title": "Format",
+          "type": "string"
+        },
+        "engine": {
+          "default": "eevee",
+          "enum": [
+            "eevee",
+            "cycles",
+            "viewport"
+          ],
+          "title": "Engine",
+          "type": "string"
+        },
+        "motion_blur": {
+          "default": false,
+          "title": "Motion Blur",
+          "type": "boolean"
+        },
+        "bloom": {
+          "default": false,
+          "title": "Bloom",
+          "type": "boolean"
+        },
+        "samples": {
+          "default": 64,
+          "maximum": 4096,
+          "minimum": 1,
+          "title": "Samples",
+          "type": "integer"
+        }
+      },
+      "title": "RenderSettings",
+      "type": "object",
+      "required": [
+        "width",
+        "height",
+        "fps",
+        "format",
+        "engine",
+        "motion_blur",
+        "bloom",
+        "samples"
+      ]
+    },
+    "SceneNode": {
+      "additionalProperties": false,
+      "description": "シーンに配置された 1 オブジェクト。",
+      "properties": {
+        "id": {
+          "pattern": "^node_[0-9a-z]{8,}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "asset_id": {
+          "title": "Asset Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "transform": {
+          "$ref": "#/$defs/Transform"
+        },
+        "visible": {
+          "default": true,
+          "title": "Visible",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "asset_id",
+        "name",
+        "transform",
+        "visible"
+      ],
+      "title": "SceneNode",
+      "type": "object"
+    },
+    "Track": {
+      "additionalProperties": false,
+      "description": "ノード 1 つ分のアニメーショントラック。",
+      "properties": {
+        "node_id": {
+          "title": "Node Id",
+          "type": "string"
+        },
+        "clips": {
+          "description": "humanoid のみ",
+          "items": {
+            "$ref": "#/$defs/MotionClipRef"
+          },
+          "title": "Clips",
+          "type": "array"
+        },
+        "keyframes": {
+          "description": "ルートのトランスフォーム",
+          "items": {
+            "$ref": "#/$defs/TransformKeyframe"
+          },
+          "title": "Keyframes",
+          "type": "array"
+        }
+      },
+      "required": [
+        "node_id",
+        "clips",
+        "keyframes"
+      ],
+      "title": "Track",
+      "type": "object"
+    },
+    "Transform": {
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "description": "[x, y, z]",
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 3,
+          "minItems": 3,
+          "title": "Position",
+          "type": "array"
+        },
+        "rotation": {
+          "description": "[x, y, z, w]",
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 4,
+          "minItems": 4,
+          "title": "Rotation",
+          "type": "array"
+        },
+        "scale": {
+          "description": "[x, y, z]",
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 3,
+          "minItems": 3,
+          "title": "Scale",
+          "type": "array"
+        }
+      },
+      "title": "Transform",
+      "type": "object",
+      "required": [
+        "position",
+        "rotation",
+        "scale"
+      ]
+    },
+    "TransformKeyframe": {
+      "additionalProperties": false,
+      "properties": {
+        "time": {
+          "minimum": 0,
+          "title": "Time",
+          "type": "number"
+        },
+        "transform": {
+          "$ref": "#/$defs/Transform"
+        },
+        "easing": {
+          "default": "ease_in_out",
+          "enum": [
+            "linear",
+            "ease_in",
+            "ease_out",
+            "ease_in_out"
+          ],
+          "title": "Easing",
+          "type": "string"
+        }
+      },
+      "required": [
+        "time",
+        "transform",
+        "easing"
+      ],
+      "title": "TransformKeyframe",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Studio のシーン定義。ブラウザ(Three.js)と Blender の両インポータがこれを解釈する。",
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0",
+      "default": "1.0.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "id": {
+      "pattern": "^scn_[0-9a-z]{26}$",
+      "title": "Id",
+      "type": "string"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "duration": {
+      "default": 10.0,
+      "exclusiveMinimum": 0,
+      "maximum": 600,
+      "title": "Duration",
+      "type": "number"
+    },
+    "nodes": {
+      "items": {
+        "$ref": "#/$defs/SceneNode"
+      },
+      "title": "Nodes",
+      "type": "array"
+    },
+    "tracks": {
+      "items": {
+        "$ref": "#/$defs/Track"
+      },
+      "title": "Tracks",
+      "type": "array"
+    },
+    "attachments": {
+      "items": {
+        "$ref": "#/$defs/Attachment"
+      },
+      "title": "Attachments",
+      "type": "array"
+    },
+    "camera": {
+      "$ref": "#/$defs/Camera"
+    },
+    "lighting": {
+      "$ref": "#/$defs/Lighting"
+    },
+    "background": {
+      "$ref": "#/$defs/Background"
+    },
+    "render": {
+      "$ref": "#/$defs/RenderSettings"
+    },
+    "gravity_floor_y": {
+      "default": 0.0,
+      "description": "接地判定に使う床の高さ",
+      "title": "Gravity Floor Y",
+      "type": "number"
+    },
+    "up": {
+      "description": "[x, y, z]",
+      "items": {
+        "type": "number"
+      },
+      "maxItems": 3,
+      "minItems": 3,
+      "title": "Up",
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "id",
+    "name",
+    "duration",
+    "nodes",
+    "tracks",
+    "attachments",
+    "camera",
+    "lighting",
+    "background",
+    "render",
+    "gravity_floor_y",
+    "up"
+  ],
+  "title": "Scene",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://3d-movie.local/schema/scene.schema.json"
+}

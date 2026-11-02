@@ -1,0 +1,7 @@
+# フェーズ 0 で確定後に固定する実モデル依存(例)。worker.Dockerfile の該当行を有効化して使う。
+# hy3dgen @ git+https://github.com/Tencent/Hunyuan3D-2.git
+# diffusers>=0.30
+# transformers>=4.44
+# accelerate>=0.33
+# bitsandbytes>=0.43        # INT8(RTX 3060 は FP8 非対応)
+# xformers                  # CUDA 12.4 対応版

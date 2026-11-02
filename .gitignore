@@ -1,0 +1,27 @@
+# deps / build
+node_modules/
+.next/
+out/
+dist/
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# env
+.env
+.env.local
+
+# data (モデル重み・アセット・HDRI・モーション。gitignore)
+data/*
+!data/README.md
+!data/.gitkeep
+
+# misc
+*.log
+.DS_Store
+Thumbs.db
+*.sqlite3
+tsconfig.tsbuildinfo

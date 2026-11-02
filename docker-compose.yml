@@ -1,0 +1,68 @@
+# 3D-MOVIE: Windows + WSL2 + Docker Desktop(GPU)で `docker compose up` 一発で全部起動する構成。
+# ポートはすべて 127.0.0.1 にのみバインド(本人のみ・同一 PC 前提)。
+name: 3d-movie
+
+x-env: &env
+  env_file: .env
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    <<: *env
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 10
+
+  api:
+    build: { context: ., dockerfile: docker/api.Dockerfile }
+    <<: *env
+    environment:
+      QUEUE_BACKEND: rq
+    volumes:
+      - ./data:/data
+      - ./services/api:/app/services/api          # 開発中はホットリロード
+      - ./packages/schema:/app/packages/schema
+    ports: ["127.0.0.1:8000:8000"]
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    command: uvicorn movie_api.main:app --host 0.0.0.0 --port 8000 --reload --reload-dir /app/services/api
+
+  worker:
+    build: { context: ., dockerfile: docker/worker.Dockerfile }
+    <<: *env
+    volumes:
+      - ./data:/data
+      - ./services:/app/services
+      - ./packages/schema:/app/packages/schema
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    shm_size: "8gb"
+    command: python -m movie_worker.main
+
+  web:
+    build: { context: ., dockerfile: docker/web.Dockerfile }
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+    ports: ["127.0.0.1:3000:3000"]
+    depends_on: [api]
+
+volumes:
+  pgdata:

@@ -409,6 +409,6 @@ Windows PC 上の WSL2(Ubuntu)で Docker Desktop(Compose)を動かす。ブラ�
 ## 12. 次のステップ
 
 1. [SETUP_WINDOWS.md](SETUP_WINDOWS.md) に沿って環境を作る(フェーズ 0 の最初)。
-2. リポジトリの骨組み(モノレポ構成、Docker Compose、アセット/シーン JSON スキーマ)を作る。
-3. フェーズ 0 の検証スクリプト(モデル比較ベンチ、Mixamo 取り込み、EEVEE 最小レンダリング)を作って実測する。
-4. 実測値で 8.3 と 9 章を更新し、MVP の実装に入る。
+2. ~~リポジトリの骨組みを作る~~ → **完了**([DEVELOPMENT.md](DEVELOPMENT.md))。dummy プロバイダで生成 → リグ → シーン → レンダリングが一気通貫で動く。
+3. フェーズ 0 の検証([scripts/phase0/README.md](../scripts/phase0/README.md)): Hunyuan3D 2 プロバイダの実装とベンチ、Mixamo 取り込み、EEVEE 実測。
+4. 実測値で 8.3 と 9 章を更新し、MVP の実装(4 候補生成 UI、タイムライン、モーション適用、LLM プロンプト操作)に入る。
