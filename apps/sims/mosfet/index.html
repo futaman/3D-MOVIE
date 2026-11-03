@@ -135,7 +135,7 @@ input[type="range"]:focus-visible, button:focus-visible { outline: 2px solid var
 .note { font-size: 11.5px; color: var(--muted); margin: 0; }
 
 [hidden] { display: none !important; }
-.app[data-ch-active="5"] .task, .app[data-ch-active="5"] .ruler { display: none; }
+.app[data-ch-active="6"] .task, .app[data-ch-active="6"] .ruler { display: none; }
 
 @media (max-width: 860px) {
   body { overflow: auto; }
@@ -152,7 +152,7 @@ input[type="range"]:focus-visible, button:focus-visible { outline: 2px solid var
   .meter { flex: 1 1 120px; }
   .graph canvas { width: 100%; height: 180px; }
   .quiz { position: static; padding-block: 8px 32px; }
-  .app[data-ch-active="5"] .viewport { height: 28svh; min-height: 180px; }
+  .app[data-ch-active="6"] .viewport { height: 28svh; min-height: 180px; }
 }
 @media (prefers-reduced-motion: reduce) { .fade { transition: none; } }
 </style>
@@ -181,7 +181,7 @@ input[type="range"]:focus-visible, button:focus-visible { outline: 2px solid var
 
   <div class="ruler" aria-hidden="true"><svg id="ruler" viewBox="0 0 64 300"></svg></div>
 
-  <section class="quiz" data-ch="5" aria-label="確認問題">
+  <section class="quiz" data-ch="6" aria-label="確認問題">
     <div class="quiz-inner" id="quiz"></div>
   </section>
 
@@ -218,21 +218,35 @@ input[type="range"]:focus-visible, button:focus-visible { outline: 2px solid var
         <div class="ctrl"><label for="vds4"><span>ドレイン電圧 V<sub>DS</sub></span><output id="vds4o">0.0 V</output></label>
           <input type="range" id="vds4" min="0" max="5" step="0.05" value="0"></div>
       </div>
-      <p class="note" data-ch="3 4">模式図です。実物の部品(パワー MOSFET)は縦型の構造で、この形のセルが大量に並んでいます。数値は簡易モデル(二乗則、V<sub>th</sub> = 2.0 V)によるものです。</p>
+      <div data-ch="5">
+        <p class="prompt">V<sub>GS</sub> はそのままで、V<sub>SB</sub> だけを上げてチャネルを消してみよう。</p>
+        <p class="explain" id="ex5"></p>
+        <div class="ctrl"><label for="vgs5"><span>ゲート電圧 V<sub>GS</sub></span><output id="vgs5o">2.30 V</output></label>
+          <input type="range" id="vgs5" min="0" max="5" step="0.05" value="2.3"></div>
+        <div class="ctrl"><label for="vsb5"><span>ソースから見た基板の低さ V<sub>SB</sub></span><output id="vsb5o">0.00 V</output></label>
+          <input type="range" id="vsb5" min="0" max="3" step="0.05" value="0"></div>
+      </div>
+      <p class="note" data-ch="5">V<sub>th</sub> = V<sub>th0</sub> + γ(√(2φ<sub>F</sub> + V<sub>SB</sub>) − √(2φ<sub>F</sub>))。この模型では V<sub>th0</sub> = 2.0 V、γ = 0.5 V<sup>½</sup>、2φ<sub>F</sub> = 0.7 V。ソースが GND にない回路(トランジスタを縦に積んだ回路やソースフォロワ)で効いてきます。</p>
+      <p class="note" data-ch="3 4">模式図です。実物の部品(パワー MOSFET)は縦型の構造で、この形のセルが大量に並んでいます。数値は簡易モデル(二乗則、V<sub>th</sub> = 2.0 V)によるものです。この章では基板 B をソース S とつないでいます(V<sub>SB</sub> = 0)。</p>
     </div>
 
     <div class="meters" id="meters">
-      <div class="meter card" data-ch="1 3 4"><span class="k">V<sub>GS</sub></span><span class="v" id="mVgs">0.00<small>V</small></span><span class="c">しきい値 2.0 V</span></div>
+      <div class="meter card" data-ch="1 3 4 5"><span class="k">V<sub>GS</sub></span><span class="v" id="mVgs">0.00<small>V</small></span><span class="c" id="mVgsc">しきい値 2.0 V</span></div>
       <div class="meter card" data-ch="1"><span class="k">I<sub>D</sub> · LED</span><span class="v" id="mId1">0.0<small>mA</small></span><span class="c" id="mLed">消灯</span></div>
       <div class="meter card" data-ch="1 3 4"><span class="k">I<sub>G</sub> ゲート電流</span><span class="v">0<small>A</small></span><span class="c">酸化膜で絶縁</span></div>
       <div class="meter card" data-ch="2"><span class="k">見えている幅</span><span class="v" id="mWidth">33<small>mm</small></span><span class="c" id="mMag">TO-220 パッケージ</span></div>
-      <div class="meter card" data-ch="3"><span class="k">チャネル</span><span class="v" id="mCh"><span class="pill" style="color:var(--muted)">なし</span></span><span class="c" id="mChc">表面の電子 0%</span></div>
+      <div class="meter card" data-ch="5"><span class="k">V<sub>th</sub> しきい値</span><span class="v" id="mVth">2.00<small>V</small></span><span class="c" id="mVthc">V<sub>SB</sub> = 0 のときと同じ</span></div>
+      <div class="meter card" data-ch="3 5"><span class="k">チャネル</span><span class="v" id="mCh"><span class="pill" style="color:var(--muted)">なし</span></span><span class="c" id="mChc">表面の電子 0%</span></div>
       <div class="meter card" data-ch="4"><span class="k">I<sub>D</sub> ドレイン電流</span><span class="v" id="mId4">0<small>mA</small></span><span class="c" id="mReg"><span class="pill" style="color:var(--muted)">線形</span></span></div>
       <div class="graph card" data-ch="4">
         <span class="k" style="font-family:var(--font-data);font-size:10px;letter-spacing:.14em;color:var(--muted)">I<sub>D</sub>–V<sub>DS</sub> 特性</span>
         <canvas id="iv" width="520" height="340" aria-label="ドレイン電流とドレイン電圧のグラフ"></canvas>
       </div>
-      <div class="meter card legend-card" data-ch="3 4" style="min-width:0">
+      <div class="graph card" data-ch="5">
+        <span class="k" style="font-family:var(--font-data);font-size:10px;letter-spacing:.14em;color:var(--muted)">V<sub>th</sub>–V<sub>SB</sub>(基板バイアス効果)</span>
+        <canvas id="vt" width="520" height="340" aria-label="しきい値電圧と基板バイアスのグラフ"></canvas>
+      </div>
+      <div class="meter card legend-card" data-ch="3 4 5" style="min-width:0">
         <div class="legend">
           <span><i style="background:var(--electron)"></i>電子</span>
           <span><i style="background:var(--hole)"></i>正孔</span>
@@ -251,6 +265,9 @@ input[type="range"]:focus-visible, button:focus-visible { outline: 2px solid var
 /* ---------- 物理モデル(二乗則、教育用の簡易値) ---------- */
 const VTH = 2.0;      // しきい値電圧 [V]
 const K = 0.10;       // μnCox·W/L [A/V²]
+// 基板バイアス効果: V_th = V_th0 + γ(√(2φF + V_SB) − √(2φF))
+const GAMMA = 0.5, PHI2 = 0.7;
+function vthOf(vsb) { return VTH + GAMMA * (Math.sqrt(PHI2 + vsb) - Math.sqrt(PHI2)); }
 function idMos(vgs, vds) {
   const vov = vgs - VTH;
   if (vov <= 0 || vds <= 0) return 0;
@@ -275,8 +292,8 @@ function circuit(vgs) {
   return { vds, id: Math.max(0, (VDD - VF - vds) / RL) };
 }
 // チャネル内の電位分布(グラデュアル・チャネル近似): 位置 xf(0=ソース,1=ドレイン)での反転電荷 ∝ q
-function channelQ(vgs, vds, xf) {
-  const vov = vgs - VTH;
+function channelQ(vgs, vds, xf, vth = VTH) {
+  const vov = vgs - vth;
   if (vov <= 0) return 0;
   const ve = Math.min(vds, vov);
   const C = vov * ve - ve * ve / 2;
@@ -289,9 +306,10 @@ const CH = [
   { n: "II",  title: "中をのぞく",       scale: "",                        mag: 6 },
   { n: "III", title: "通り道をつくる",   scale: "約 ×10⁵ · セル 1 個の断面", mag: 1e5 },
   { n: "IV",  title: "流れと頭打ち",     scale: "約 ×10⁵ · セル 1 個の断面", mag: 1e5 },
-  { n: "V",   title: "確かめよう",       scale: "確認問題",                 mag: null },
+  { n: "V",   title: "基板の電圧",       scale: "約 ×10⁵ · セル 1 個の断面", mag: 1e5 },
+  { n: "VI",  title: "確かめよう",       scale: "確認問題",                 mag: null },
 ];
-const st = { ch: 1, vgs1: 0, zoom: 0, vgs3: 0, vgs4: 3.5, vds4: 0, done: [false, false, false, false, false] };
+const st = { ch: 1, vgs1: 0, zoom: 0, vgs3: 0, vgs4: 3.5, vds4: 0, vgs5: 2.3, vsb5: 0, done: [false, false, false, false, false, false] };
 const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const $ = (id) => document.getElementById(id);
 const css = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
@@ -404,6 +422,7 @@ const oxide = new THREE.Mesh(new THREE.BoxGeometry(6.4, .22, 4), glass("#e9f1f3"
 const gateMat = mat("#d8a548", { metalness: .7, roughness: .35, emissive: C("#d8a548"), emissiveIntensity: 0 });
 const gateM = box(6, .7, 4, gateMat, 0, .57, 0); g3.add(gateM);
 [-4.5, 4.5].forEach((x) => g3.add(box(.7, 1.2, 1.2, mat("#aeb8bc", { metalness: .8, roughness: .3 }), x, .6, 0)));
+g3.add(box(12, .14, 4, mat("#8f999d", { metalness: .8, roughness: .35 }), 0, -4.07, 0));
 g3.add(box(.7, .7, 1.2, mat("#aeb8bc", { metalness: .8, roughness: .3 }), 0, 1.27, 0));
 
 const rnd = (() => { let s = 7; return () => (s = (s * 16807) % 2147483647) / 2147483647; })();
@@ -418,7 +437,7 @@ const holeMesh = new THREE.InstancedMesh(new THREE.SphereGeometry(.075, 10, 8), 
 g3.add(holeMesh);
 // 固定された負イオン(アクセプタ)
 const ions = [];
-for (let x = -2.75; x <= 2.76; x += .5) for (let y = -.15; y >= -1.6; y -= .29) for (let z = -1.6; z <= 1.61; z += .8) ions.push({ x, y, z, s: 0 });
+for (let x = -2.75; x <= 2.76; x += .5) for (let y = -.15; y >= -2.75; y -= .29) for (let z = -1.6; z <= 1.61; z += .8) ions.push({ x, y, z, s: 0 });
 const ionMesh = new THREE.InstancedMesh(new THREE.BoxGeometry(.17, .035, .035), new THREE.MeshBasicMaterial({ color: C("#a99bff") }), ions.length);
 g3.add(ionMesh);
 // n⁺ 領域の電子
@@ -454,12 +473,14 @@ addLabel([2], "シリコンのチップ", V(-2.6, 2.3, -.5), "strong");
 addLabel([2], "金のワイヤー", V(-3.3, -3.0, .6), "g");
 addLabel([2], "G", V(-2.54, -18.2, -.6)); addLabel([2], "D", V(0, -18.2, -.6)); addLabel([2], "S", V(2.54, -18.2, -.6));
 addLabel([2], "タブ = ドレイン", V(3.9, 9.3, -1.6));
-addLabel([3, 4], "ゲート G", V(0, 1.75, 0), "g");
-addLabel([3, 4], "ソース S", V(-4.5, 1.6, 0), "strong");
-addLabel([3, 4], "ドレイン D", V(4.5, 1.6, 0), "strong");
-addLabel([3, 4], "酸化膜(絶縁体)", V(-3.9, .2, 2.4));
-addLabel([3, 4], "n⁺", V(-4.5, -.6, 2.15), "e"); addLabel([3, 4], "n⁺", V(4.5, -.6, 2.15), "e");
-addLabel([3, 4], "p 型シリコン", V(0, -3.5, 2.15), "h");
+addLabel([3, 4, 5], "ゲート G", V(0, 1.75, 0), "g");
+addLabel([3, 4, 5], "ソース S", V(-4.5, 1.6, 0), "strong");
+addLabel([3, 4, 5], "ドレイン D", V(4.5, 1.6, 0), "strong");
+addLabel([3, 4, 5], "酸化膜(絶縁体)", V(-3.9, .2, 2.4));
+addLabel([3, 4, 5], "n⁺", V(-4.5, -.6, 2.15), "e"); addLabel([3, 4, 5], "n⁺", V(4.5, -.6, 2.15), "e");
+addLabel([3, 4, 5], "p 型シリコン", V(0, -3.5, 2.15), "h");
+addLabel([3, 4], "基板 B(S とつないである)", V(0, -4.45, 2.15));
+addLabel([5], "基板 B", V(0, -4.45, 2.15), "strong"); const bodyLbl = labels[labels.length - 1];
 const flowLbl = { ch: [4], el: null, pos: V(0, -2.95, 2.1) };
 addLabel([4], "電子の流れ →  ·  電流 I<sub>D</sub> ←", flowLbl.pos, "e"); flowLbl.el = labels[labels.length - 1].el;
 
@@ -468,6 +489,7 @@ const views = {
   1: { pos: V(0, 7.2, 10.5), look: V(0, .4, -.2) },
   3: { pos: V(0, 1.6, 14.5), look: V(0, -2.0, 0) },
   4: { pos: V(0, 1.6, 14.5), look: V(0, -2.0, 0) },
+  5: { pos: V(0, 1.6, 14.5), look: V(0, -2.0, 0) },
 };
 const drag = { yaw: 0, pitch: 0, ty: 0, tp: 0, down: false, x: 0, y: 0 };
 canvas.addEventListener("pointerdown", (e) => { drag.down = true; drag.x = e.clientX; drag.y = e.clientY; canvas.setPointerCapture(e.pointerId); });
@@ -522,7 +544,7 @@ addEventListener("keydown", (e) => {
   if (e.key === "ArrowLeft") go(st.ch - 1);
 });
 
-const subs = (t) => t.replace(/V_(GS|DS|th)/g, "V<sub>$1</sub>");
+const subs = (t) => t.replace(/V_(GS|DS|SB|th)/g, "V<sub>$1</sub>");
 const pill = (t, color) => `<span class="pill" style="color:${color}">${t}</span>`;
 const fmtA = (a) => a >= 0.1 ? `${(a * 1000).toFixed(0)}` : a >= 0.001 ? `${(a * 1000).toFixed(1)}` : `${(a * 1000).toFixed(2)}`;
 
@@ -535,6 +557,7 @@ function update() {
     b.classList.toggle("done", st.done[i]);
   });
   let mag = c.mag, met = false, goalText = "";
+  if (st.ch !== 5) $("mVgsc").textContent = "しきい値 2.0 V";
 
   if (st.ch === 1) {
     const r = circuit(st.vgs1), mA = r.id * 1000;
@@ -589,10 +612,30 @@ function update() {
     met = reg === "sat" && st.vds4 > .05; goalText = "飽和させる";
     drawIV();
   }
-  if (st.ch === 5) goalText = "";
+  if (st.ch === 5) {
+    const vth = vthOf(st.vsb5), vov = st.vgs5 - vth, frac = vov > 0 ? Math.min(1, vov / 3) : 0;
+    $("mVgs").innerHTML = `${st.vgs5.toFixed(2)}<small>V</small>`;
+    $("mVgsc").textContent = `しきい値 ${vth.toFixed(2)} V`;
+    $("mVth").innerHTML = `${vth.toFixed(2)}<small>V</small>`;
+    $("mVthc").innerHTML = st.vsb5 < .025 ? "V<sub>SB</sub> = 0 のときと同じ" : `V<sub>SB</sub> = 0 より +${(vth - VTH).toFixed(2)} V`;
+    $("mCh").innerHTML = vov > 0 ? pill("できた", css("--electron")) : pill("なし", css("--muted"));
+    $("mChc").textContent = `表面の電子 ${Math.round(frac * 100)}%`;
+    bodyLbl.el.textContent = st.vsb5 < .025 ? "基板 B(S と同じ電圧)" : `基板 B(S より ${st.vsb5.toFixed(2)} V 低い)`;
+    $("ex5").innerHTML = subs(st.vsb5 < .025
+      ? (vov > 0 ? "いまは基板 B とソース S が同じ電圧で、これまでの章と同じ状態。チャネルができています。V_SB を上げて、基板をソースより低い電圧にしてみよう。"
+                 : "いまは基板 B とソース S が同じ電圧。まず V_GS をしきい値(2.0 V)より上げて、チャネルをつくっておこう。")
+      : vov > 0
+        ? "基板を下げると空乏層が深くなり、動けない負のイオンが増えます。その負の電荷がゲートの＋を打ち消すので、しきい値 V_th が上がり、同じ V_GS でも集まる電子が減ります。これが基板バイアス効果です。"
+        : st.vgs5 > VTH
+          ? "V_GS は同じなのに、しきい値が V_GS を超えてチャネルが消えました。基板の電圧だけで、トランジスタのオン・オフの境目が動いたことになります。"
+          : "V_GS がしきい値より低く、チャネルはありません。V_GS を少し上げてから V_SB を動かしてみよう。");
+    met = st.vgs5 > VTH && vov <= 0; goalText = "V_SB だけでチャネルを消す";
+    drawVT();
+  }
+  if (st.ch === 6) goalText = "";
   if (met && !st.done[st.ch - 1]) { st.done[st.ch - 1] = true; [...rail.children][st.ch - 1].classList.add("done"); }
   const g = $("goal");
-  g.textContent = st.done[st.ch - 1] ? `✓ ${goalText}` : `目標: ${goalText}`;
+  g.innerHTML = subs(st.done[st.ch - 1] ? `✓ ${goalText}` : `目標: ${goalText}`);
   g.classList.toggle("met", st.done[st.ch - 1]);
   $("scaleChip").textContent = st.ch === 2 ? `約 ×${Math.round(mag)} · パッケージの中` : c.scale;
   drawRuler(mag);
@@ -647,6 +690,30 @@ function drawIV() {
   ctx.strokeStyle = css("--fg"); ctx.lineWidth = 1.5; ctx.stroke();
 }
 
+function drawVT() {
+  const cv = $("vt"), ctx = cv.getContext("2d");
+  const r = cv.getBoundingClientRect(); const dpr = Math.min(devicePixelRatio, 2);
+  if (r.width && (cv.width !== Math.round(r.width * dpr) || cv.height !== Math.round(r.height * dpr))) { cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr); }
+  const W = cv.width / dpr, H = cv.height / dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
+  const L = 40, R = 10, T = 8, B = 26, pw = W - L - R, ph = H - T - B, YMIN = 1.8, YMAX = 3.0;
+  const X = (v) => L + v / 3 * pw, Y = (u) => T + ph - (u - YMIN) / (YMAX - YMIN) * ph;
+  const muted = css("--muted"), line = css("--line"), acc = css("--electron"), gate = css("--gate");
+  ctx.font = "10px 'IBM Plex Mono', monospace"; ctx.lineWidth = 1;
+  for (let v = 0; v <= 3; v++) { ctx.strokeStyle = line; ctx.beginPath(); ctx.moveTo(X(v), T); ctx.lineTo(X(v), T + ph); ctx.stroke(); ctx.fillStyle = muted; ctx.textAlign = "center"; ctx.fillText(v, X(v), H - 12); }
+  for (let u = 2.0; u <= 2.801; u += .2) { ctx.strokeStyle = line; ctx.beginPath(); ctx.moveTo(L, Y(u)); ctx.lineTo(L + pw, Y(u)); ctx.stroke(); ctx.fillStyle = muted; ctx.textAlign = "right"; ctx.fillText(u.toFixed(1), L - 5, Y(u) + 3); }
+  ctx.textAlign = "right"; ctx.fillText("V_SB [V]", L + pw, H - 1); ctx.textAlign = "left"; ctx.fillText("V_th", 2, T + 8);
+  // いまの V_GS(これより V_th が上ならチャネルなし)
+  if (st.vgs5 >= YMIN && st.vgs5 <= YMAX) {
+    ctx.setLineDash([4, 3]); ctx.strokeStyle = gate; ctx.beginPath(); ctx.moveTo(L, Y(st.vgs5)); ctx.lineTo(L + pw, Y(st.vgs5)); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = gate; ctx.textAlign = "left"; ctx.fillText(`V_GS ${st.vgs5.toFixed(2)} V`, L + 4, Y(st.vgs5) - 4);
+  }
+  ctx.strokeStyle = acc; ctx.lineWidth = 2; ctx.beginPath();
+  for (let v = 0; v <= 3.001; v += .05) { const u = vthOf(v); v === 0 ? ctx.moveTo(X(v), Y(u)) : ctx.lineTo(X(v), Y(u)); }
+  ctx.stroke();
+  ctx.fillStyle = acc; ctx.beginPath(); ctx.arc(X(st.vsb5), Y(vthOf(st.vsb5)), 4.5, 0, 6.29); ctx.fill();
+  ctx.strokeStyle = css("--fg"); ctx.lineWidth = 1.5; ctx.stroke();
+}
+
 /* ---------- 確認問題 ---------- */
 const QUIZ = [
   { q: "ゲートにほとんど電流が流れないのはなぜ？", a: ["ゲートの下が薄い酸化膜(絶縁体)で仕切られているから", "ゲートの金属がとても細いから", "電子はゲートに近づけないから"], ok: 0,
@@ -657,21 +724,23 @@ const QUIZ = [
     why: "しきい値に届くまでは、正孔が押しのけられた空乏層ができるだけで、電子の通り道はまだありません。" },
   { q: "V_DS を上げ続けても電流がほぼ一定になる(飽和)のはなぜ？", a: ["電源の電池が弱るから", "ドレイン側でチャネルが閉じ(ピンチオフ)、増えた電圧はその先の短い区間にかかるだけだから", "酸化膜が壊れるから"], ok: 1,
     why: "チャネルの電子の量は V_GS − V_th で決まります。ピンチオフ後は、それ以上 V_DS を上げても通り道側の条件がほぼ変わりません。" },
+  { q: "n チャネル MOSFET で、基板 B をソース S より低い電圧にする(V_SB > 0)と、しきい値 V_th はどうなる？", a: ["上がる", "下がる", "変わらない"], ok: 0,
+    why: "空乏層が深くなって負の固定電荷が増え、その分ゲートの＋が打ち消されます。チャネルをつくるのに、より高い V_GS が必要になります(基板バイアス効果)。" },
 ];
 const quizEl = $("quiz"), answered = {};
 quizEl.innerHTML = `<p class="score" id="score"></p>` + QUIZ.map((x, i) => `
-  <div class="q card"><h3>Q${i + 1}. ${x.q}</h3><div class="opts">${x.a.map((t, j) => `<button data-q="${i}" data-a="${j}">${t}</button>`).join("")}</div><p class="fb" id="fb${i}"></p></div>`).join("")
+  <div class="q card"><h3>Q${i + 1}. ${subs(x.q)}</h3><div class="opts">${x.a.map((t, j) => `<button data-q="${i}" data-a="${j}">${t}</button>`).join("")}</div><p class="fb" id="fb${i}"></p></div>`).join("")
   + `<p class="note">二乗則の簡易モデルです。実物にはチャネル長変調や温度の影響などがあり、飽和領域でも電流はわずかに増えます。</p>`;
 quizEl.addEventListener("click", (e) => {
   const b = e.target.closest("button[data-q]"); if (!b) return;
   const i = +b.dataset.q, j = +b.dataset.a, x = QUIZ[i];
   b.parentElement.querySelectorAll("button").forEach((o) => o.classList.remove("right", "wrong"));
   b.classList.add(j === x.ok ? "right" : "wrong");
-  $("fb" + i).textContent = (j === x.ok ? "正解。" : "もう一度。") + (j === x.ok ? x.why : "");
+  $("fb" + i).innerHTML = subs((j === x.ok ? "正解。" : "もう一度。") + (j === x.ok ? x.why : ""));
   answered[i] = j === x.ok;
   const n = Object.values(answered).filter(Boolean).length;
   $("score").textContent = `${n} / ${QUIZ.length} 問正解`;
-  if (n === QUIZ.length) { st.done[4] = true; update(); }
+  if (n === QUIZ.length) { st.done[5] = true; update(); }
 });
 $("score").textContent = `0 / ${QUIZ.length} 問正解`;
 
@@ -687,8 +756,8 @@ let t = 0, lastLabelCh = 0;
 const tmp = new THREE.Vector3();
 function frame() {
   const dt = Math.min(clock.getDelta(), .05); t += reduced ? 0 : dt;
-  const ch = st.ch === 5 ? 3 : st.ch;
-  groups[1].visible = ch === 1; groups[2].visible = ch === 2; groups[3].visible = ch === 3 || ch === 4;
+  const ch = st.ch === 6 ? 3 : st.ch;
+  groups[1].visible = ch === 1; groups[2].visible = ch === 2; groups[3].visible = ch >= 3;
   drag.yaw += (drag.ty - drag.yaw) * .12; drag.pitch += (drag.tp - drag.pitch) * .12;
   const sway = reduced || drag.down ? 0 : Math.sin(t * .25) * .05;
 
@@ -720,9 +789,12 @@ function frame() {
     dots.material.opacity = 1;
   }
 
-  if (ch === 3 || ch === 4) {
-    const vgs = st.ch === 4 ? st.vgs4 : st.vgs3, vds = st.ch === 4 ? st.vds4 : 0;
-    const dep = 1.3 * Math.sqrt(Math.max(0, Math.min(1, vgs / VTH)));
+  if (ch >= 3) {
+    const vgs = st.ch === 4 ? st.vgs4 : st.ch === 5 ? st.vgs5 : st.vgs3, vds = st.ch === 4 ? st.vds4 : 0;
+    const vsb = st.ch === 5 ? st.vsb5 : 0, vth = vthOf(vsb);
+    // 空乏層の深さ ∝ √(表面電位 + V_SB)。表面電位はしきい値で 2φF に達して止まる
+    const psi = PHI2 * Math.max(0, Math.min(1, vgs / vth));
+    const dep = 1.1 * Math.sqrt((psi + vsb) / PHI2);
     gateMat.emissiveIntensity = Math.min(1, vgs / 5) * .35;
     const mask = (x) => { const a = Math.abs(x); return a < 2.6 ? 1 : a > 3.4 ? 0 : 1 - (a - 2.6) / .8; };
     for (let i = 0; i < N_H; i++) {
@@ -744,12 +816,12 @@ function frame() {
       dummy.position.set(e.x + Math.sin(t * 2.6 + e.p) * j, e.y + Math.cos(t * 2.2 + e.p) * j, e.z); dummy.scale.setScalar(1); dummy.updateMatrix(); nMesh.setMatrixAt(i, dummy.matrix);
     }
     nMesh.instanceMatrix.needsUpdate = true;
-    const vov = vgs - VTH, frac = vov > 0 ? Math.min(1, vov / 3) : 0, id = idMos(vgs, vds);
+    const vov = vgs - vth, frac = vov > 0 ? Math.min(1, vov / 3) : 0, id = st.ch === 5 ? 0 : idMos(vgs, vds);
     const q0 = Math.max(vov, .01), cflow = id > 0 ? (.12 + .9 * id / .45) * q0 : 0;
     for (let i = 0; i < N_CE; i++) {
       const e = chE[i];
       if (i >= N_CE * frac) { dummy.scale.setScalar(.001); dummy.position.set(0, -.05, 0); dummy.updateMatrix(); chMesh.setMatrixAt(i, dummy.matrix); continue; }
-      const q = channelQ(vgs, vds, e.u);
+      const q = channelQ(vgs, vds, e.u, vth);
       if (cflow > 0 && !reduced) { e.u += Math.min(2.5, cflow / Math.max(q, .06)) * dt * .25; if (e.u > 1) { e.u -= 1; e.r = rnd(); } }
       const th = .05 + .13 * q;
       dummy.position.set(-3 + 6 * e.u, -.03 - e.r * th, e.z); dummy.scale.setScalar(1); dummy.updateMatrix(); chMesh.setMatrixAt(i, dummy.matrix);
@@ -779,6 +851,8 @@ bind("zoom2", "zoom", (v) => `${Math.round(v * 100)}%`);
 bind("vgs3", "vgs3", (v) => `${v.toFixed(2)} V`);
 bind("vgs4", "vgs4", (v) => `${v.toFixed(2)} V`);
 bind("vds4", "vds4", (v) => `${v.toFixed(2)} V`);
+bind("vgs5", "vgs5", (v) => `${v.toFixed(2)} V`);
+bind("vsb5", "vsb5", (v) => `${v.toFixed(2)} V`);
 let saved = 1; try { saved = parseInt(localStorage.getItem("mosfet-ch") || "1", 10) || 1; } catch (e) {}
 resize(); setCh(Math.min(Math.max(saved, 1), CH.length));
 requestAnimationFrame(frame);
