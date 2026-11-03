@@ -1,0 +1,23 @@
+{
+  "id": "exp_proto_01",
+  "title": "空乏層の正体",
+  "format": { "width": 1080, "height": 1920, "fps": 30 },
+  "source": { "sim": "futaman/MOSFET_SIM", "chapter": "pn" },
+  "claims": [
+    { "id": "clm_01", "text": "p 型と n 型は、くっつける前はどちらも電気的に中性", "basis": "ドナー・アクセプタのイオンと同数のキャリア(シミュレーターの物理モデル、仕様書 4 章)" },
+    { "id": "clm_02", "text": "くっつけると電子と正孔が拡散して出会い、境目に動けないイオンだけが残る", "basis": "PN 接合の形成(標準的な半導体工学の教科書、例: Sze『Physics of Semiconductor Devices』2 章)" },
+    { "id": "clm_03", "text": "残ったイオンの電荷が、n 側から p 側へ向かう電場をつくる", "basis": "ガウスの法則、階段接合・空乏近似(同上)" },
+    { "id": "clm_04", "text": "空乏層の中に置いた電子は、その電場で n 側へ運ばれる", "basis": "電子は電場と逆向きの力を受ける(ドリフト)" },
+    { "id": "clm_05", "text": "10¹⁶ cm⁻³ どうしの接合で、境目の電場は約 3 V/µm", "basis": "core/physics.js の pn() と単体テスト(最大電場 3.3×10⁴ V/cm)" }
+  ],
+  "shots": [
+    { "id": "sh_01", "event": "start", "kind": "hook", "text": "空乏層って\n「何もない層」だと思ってない？", "claims": [] },
+    { "id": "sh_02", "event": "start+2.5", "kind": "fact", "text": "左が p 型、右が n 型。\nどちらも＋と−が同じ数で中性", "claims": ["clm_01"] },
+    { "id": "sh_03", "event": "join", "kind": "fact", "text": "くっつけると、電子と正孔が\n混ざり合って消えていく", "claims": ["clm_02"] },
+    { "id": "sh_04", "event": "join+50%", "kind": "fact", "text": "境目に残るのは\n動けないイオンだけ", "claims": ["clm_02"] },
+    { "id": "sh_05", "event": "equilibrium", "kind": "fact", "text": "そのイオンの電荷が\n電場(白い矢印)をつくる", "claims": ["clm_03", "clm_05"] },
+    { "id": "sh_06", "event": "probe", "kind": "fact", "text": "外に置いた電子は動かない。\n空乏層の中の電子だけが\nn 側へ運ばれる", "claims": ["clm_04"] },
+    { "id": "sh_07", "event": "probe+3", "kind": "hook", "text": "空乏層の正体は\n「電場がある層」", "claims": [] }
+  ],
+  "approval": { "content": null, "visual": null }
+}
