@@ -6,16 +6,16 @@
 <style>
 /* Layout: 3D の実験台を全面に置き、左上に章、左下に「やってみよう」、右下に計器、右端に倍率の目盛り。スマホでは縦に積む。 */
 :root {
-  --bg: #0a1116;          /* 暗い実験室 */
+  --bg: #0a1116;
   --bg-2: #101b22;
-  --panel: rgba(14, 23, 30, 0.82);
+  --panel: rgba(14, 23, 30, 0.84);
   --line: #24343e;
   --fg: #e4ecee;
   --muted: #8ea3ab;
-  --electron: #5fe1f5;    /* 電子 */
-  --hole: #ff8a75;        /* 正孔 */
-  --gate: #d8a548;        /* ゲート(金属) */
-  --ion: #a99bff;         /* 固定イオン */
+  --electron: #5fe1f5;
+  --hole: #ff8a75;
+  --gate: #d8a548;
+  --ion: #a99bff;
   --ok: #8fe3a1;
   --font-display: "Shippori Mincho B1", "Hiragino Mincho ProN", "Yu Mincho", serif;
   --font-body: "IBM Plex Sans JP", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif;
@@ -23,11 +23,8 @@
   color-scheme: dark;
 }
 html, body { height: 100%; }
-body {
-  background: var(--bg); color: var(--fg);
-  font-family: var(--font-body); font-size: 14px; line-height: 1.6;
-  overflow: hidden;
-}
+body { background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 14px; line-height: 1.6; overflow: hidden; }
+[hidden] { display: none !important; }
 .app { position: relative; height: 100%; }
 .viewport { position: absolute; inset: 0; background: radial-gradient(120% 90% at 60% 40%, var(--bg-2), var(--bg)); }
 .viewport canvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; }
@@ -35,129 +32,112 @@ body {
 .fade { position: absolute; inset: 0; background: var(--bg); opacity: 0; pointer-events: none; transition: opacity .28s ease; }
 .fade.on { opacity: 1; }
 .labels { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
-.lbl {
-  position: absolute; transform: translate(-50%, -50%); white-space: nowrap;
-  font-family: var(--font-data); font-size: 11px; letter-spacing: .04em; color: var(--muted);
-  padding: 1px 6px; border-radius: 3px; background: rgba(10, 17, 22, .6);
-}
+.lbl { position: absolute; transform: translate(-50%, -50%); white-space: nowrap; font-family: var(--font-data); font-size: 11px; letter-spacing: .04em; color: var(--muted); padding: 1px 6px; border-radius: 3px; background: rgba(10, 17, 22, .62); }
 .lbl.strong { color: var(--fg); font-weight: 500; }
-.lbl.e { color: var(--electron); }
-.lbl.h { color: var(--hole); }
-.lbl.g { color: var(--gate); }
+.lbl.e { color: var(--electron); } .lbl.h { color: var(--hole); } .lbl.g { color: var(--gate); } .lbl.i { color: var(--ion); }
+.lbl.big { font-size: 15px; font-weight: 500; color: var(--fg); }
 
-/* 章の見出し */
-.head {
-  position: absolute; top: 16px; left: max(16px, env(safe-area-inset-left, 0px));
-  display: grid; gap: 4px; max-width: min(440px, calc(100% - 32px));
-}
+.head { position: absolute; top: 16px; left: max(16px, env(safe-area-inset-left, 0px)); display: grid; gap: 4px; max-width: min(460px, calc(100% - 32px)); }
 .eyebrow { font-family: var(--font-data); font-size: 10.5px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); }
 .title-row { display: flex; align-items: center; gap: 10px; }
-.numeral {
-  font-family: var(--font-data); font-size: 11px; color: var(--fg);
-  border: 1px solid var(--line); border-radius: 999px; padding: 1px 8px;
-}
+.numeral { font-family: var(--font-data); font-size: 11px; color: var(--fg); border: 1px solid var(--line); border-radius: 999px; padding: 1px 8px; }
 h1 { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: 26px; line-height: 1.2; text-wrap: balance; }
 .nav { display: flex; gap: 4px; margin-left: 4px; }
-.nav button {
-  width: 28px; height: 28px; border-radius: 999px; border: 1px solid var(--line);
-  background: transparent; color: var(--fg); font-size: 14px; cursor: pointer;
-}
+.nav button { width: 28px; height: 28px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--fg); font-size: 14px; cursor: pointer; }
 .nav button:disabled { opacity: .3; cursor: default; }
 .scale-chip { font-family: var(--font-data); font-size: 11px; color: var(--electron); }
 
-/* 章のレール(縦の点) */
-.rail { position: absolute; left: max(22px, env(safe-area-inset-left, 0px)); top: 132px; display: grid; gap: 14px; }
-.rail button {
-  display: flex; align-items: center; gap: 10px; background: none; border: 0; padding: 0; cursor: pointer;
-  color: var(--muted); font-family: var(--font-body); font-size: 12px; text-align: left;
-}
+.rail { position: absolute; left: max(22px, env(safe-area-inset-left, 0px)); top: 122px; display: grid; gap: 9px; }
+.rail .part { font-family: var(--font-data); font-size: 9.5px; letter-spacing: .16em; color: var(--muted); opacity: .7; margin-top: 4px; margin-left: -2px; }
+.rail button { display: flex; align-items: center; gap: 10px; background: none; border: 0; padding: 0; cursor: pointer; color: var(--muted); font-family: var(--font-body); font-size: 12px; text-align: left; }
 .rail .dot { width: 9px; height: 9px; border-radius: 50%; border: 1px solid var(--muted); flex: none; }
 .rail button[aria-current="step"] { color: var(--fg); }
 .rail button[aria-current="step"] .dot { background: var(--electron); border-color: var(--electron); box-shadow: 0 0 10px var(--electron); }
 .rail button.done .dot { border-color: var(--ok); }
-.rail button.done .dot::after { content: ""; }
 .rail .name { opacity: 0; transition: opacity .2s; }
 .rail:hover .name, .rail button[aria-current="step"] .name { opacity: 1; }
 
-/* 右端の倍率目盛り */
-.ruler { position: absolute; right: max(18px, env(safe-area-inset-right, 0px)); top: 50%; transform: translateY(-50%); width: 64px; height: 300px; }
+.ruler { position: absolute; right: max(12px, env(safe-area-inset-right, 0px)); top: 50%; transform: translateY(-58%); width: 80px; height: 400px; }
 .ruler svg { width: 100%; height: 100%; overflow: visible; }
 
-/* 下の操作パネル */
-.dock {
-  position: absolute; left: max(16px, env(safe-area-inset-left, 0px)); right: max(16px, env(safe-area-inset-right, 0px));
-  bottom: max(16px, env(safe-area-inset-bottom, 0px));
-  display: flex; gap: 12px; align-items: flex-end; justify-content: space-between; pointer-events: none;
-}
+.dock { position: absolute; left: max(16px, env(safe-area-inset-left, 0px)); right: max(16px, env(safe-area-inset-right, 0px)); bottom: max(16px, env(safe-area-inset-bottom, 0px)); display: flex; gap: 12px; align-items: flex-end; justify-content: space-between; pointer-events: none; }
 .dock > * { pointer-events: auto; }
 .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
-.task { width: min(400px, 100%); padding: 14px 16px; display: grid; gap: 10px; min-width: 0; }
+.task { width: min(410px, 100%); padding: 14px 16px; display: grid; gap: 10px; min-width: 0; max-height: calc(100vh - 150px); overflow: auto; }
+.task-body { display: grid; gap: 10px; }
 .task-top { display: flex; align-items: center; gap: 8px; }
 .your-turn { font-family: var(--font-data); font-size: 10.5px; letter-spacing: .18em; color: var(--muted); }
 .your-turn::before { content: ""; display: inline-block; width: 36px; border-top: 1px dashed var(--electron); vertical-align: middle; margin-right: 8px; }
-.goal { margin-left: auto; font-size: 11.5px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 1px 9px; }
+.goal { margin-left: auto; font-size: 11.5px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 1px 9px; text-align: right; }
 .goal.met { color: var(--ok); border-color: var(--ok); }
 .prompt { margin: 0; font-weight: 500; }
 .explain { margin: 0; color: var(--muted); font-size: 13px; min-height: 3.2em; }
-.ctrl { display: grid; gap: 2px; }
-.ctrl label { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }
+.ctrl { display: grid; gap: 4px; }
+.ctrl label, .ctrl-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }
 .ctrl output { font-family: var(--font-data); color: var(--fg); font-variant-numeric: tabular-nums; }
-input[type="range"] { width: 100%; accent-color: var(--electron); height: 28px; }
+input[type="range"] { width: 100%; accent-color: var(--electron); height: 26px; margin: 0; }
+.seg { display: flex; flex-wrap: wrap; gap: 4px; }
+.seg button, .btn { font: inherit; font-size: 12.5px; color: var(--fg); background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; cursor: pointer; }
+.seg button[aria-pressed="true"] { border-color: var(--electron); color: var(--electron); background: rgba(95, 225, 245, .08); }
+.btn:hover, .seg button:hover { border-color: var(--muted); }
+.btns { display: flex; flex-wrap: wrap; gap: 6px; }
 input[type="range"]:focus-visible, button:focus-visible { outline: 2px solid var(--electron); outline-offset: 2px; }
 
-.meters { display: flex; gap: 8px; align-items: flex-end; flex-wrap: wrap; justify-content: flex-end; min-width: 0; }
+.meters { display: flex; gap: 8px; align-items: flex-end; flex-wrap: wrap; justify-content: flex-end; min-width: 0; max-width: 62%; }
 .meter { padding: 8px 12px; min-width: 112px; display: grid; gap: 0; }
-.meter .k { font-family: var(--font-data); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.meter .k, .gk { font-family: var(--font-data); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.meter .k sub, .gk sub { text-transform: none; }
 .meter .v { font-family: var(--font-data); font-size: 22px; font-variant-numeric: tabular-nums; line-height: 1.3; }
 .meter .v small { font-size: 12px; color: var(--muted); margin-left: 3px; }
 .meter .c { font-size: 11px; color: var(--muted); }
 .pill { display: inline-block; font-size: 12px; padding: 1px 10px; border-radius: 999px; border: 1px solid currentColor; }
 .graph { padding: 10px 12px 8px; display: grid; gap: 4px; }
 .graph canvas { width: 260px; height: 170px; display: block; }
+.graph.tall canvas { width: 290px; height: 250px; }
 .legend { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 11.5px; color: var(--muted); }
 .legend i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 5px; vertical-align: -1px; }
+.legend i.ring { background: none; border: 2px solid; width: 7px; height: 7px; }
+.legend b { font-family: var(--font-data); margin-right: 4px; }
 
-/* 確認問題 */
 .quiz { position: absolute; inset: 0; display: grid; place-items: center; padding-block: 96px 24px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); overflow: auto; }
-.quiz-inner { width: min(620px, 100%); display: grid; gap: 12px; }
+.quiz:empty { display: none; }
+.quiz-inner { width: min(640px, 100%); display: grid; gap: 12px; }
 .q { padding: 14px 16px; display: grid; gap: 8px; }
 .q h3 { margin: 0; font-size: 15px; font-weight: 700; }
 .q .opts { display: grid; gap: 6px; }
-.q button {
-  text-align: left; font: inherit; color: var(--fg); background: transparent; border: 1px solid var(--line);
-  border-radius: 8px; padding: 8px 12px; cursor: pointer;
-}
+.q button { text-align: left; font: inherit; color: var(--fg); background: transparent; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; cursor: pointer; }
 .q button:hover { border-color: var(--muted); }
 .q button.right { border-color: var(--ok); color: var(--ok); }
 .q button.wrong { border-color: var(--hole); color: var(--hole); }
 .q .fb { margin: 0; font-size: 13px; color: var(--muted); }
-.score { font-family: var(--font-data); color: var(--muted); }
+.q .part-tag { font-family: var(--font-data); font-size: 10px; letter-spacing: .14em; color: var(--muted); }
+.score { font-family: var(--font-data); color: var(--muted); margin: 0; }
 .note { font-size: 11.5px; color: var(--muted); margin: 0; }
-
-[hidden] { display: none !important; }
-.app[data-ch-active="6"] .task, .app[data-ch-active="6"] .ruler { display: none; }
+.app.overlay .task, .app.overlay .ruler, .app.overlay .meters { display: none; }
 
 @media (max-width: 860px) {
   body { overflow: auto; }
   .app { height: auto; min-height: 100%; display: flex; flex-direction: column; }
   .head { order: -2; position: static; padding: 14px max(16px, env(safe-area-inset-right, 0px)) 8px max(16px, env(safe-area-inset-left, 0px)); max-width: none; }
   h1 { font-size: 22px; }
-  .rail { order: -1; position: static; display: flex; gap: 14px; padding: 0 max(16px, env(safe-area-inset-left, 0px)) 8px; }
+  .rail { order: -1; position: static; display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 0 max(16px, env(safe-area-inset-left, 0px)) 8px; }
   .rail .name { display: none; }
-  .viewport { position: relative; inset: auto; height: 52svh; min-height: 300px; flex: none; }
+  .rail .part { margin: 0 0 0 4px; font-size: 9px; }
+  .viewport { position: relative; inset: auto; height: 50svh; min-height: 300px; flex: none; }
   .ruler { display: none; }
   .dock { position: static; flex-direction: column; align-items: stretch; padding: 12px max(16px, env(safe-area-inset-right, 0px)) 24px max(16px, env(safe-area-inset-left, 0px)); }
-  .task { width: auto; }
-  .meters { justify-content: flex-start; }
+  .task { width: auto; max-height: none; }
+  .meters { justify-content: flex-start; max-width: none; }
   .meter { flex: 1 1 120px; }
-  .graph canvas { width: 100%; height: 180px; }
+  .graph { flex: 1 1 100%; }
+  .graph canvas, .graph.tall canvas { width: 100%; }
   .quiz { position: static; padding-block: 8px 32px; }
-  .app[data-ch-active="6"] .viewport { height: 28svh; min-height: 180px; }
+  .app.overlay .viewport { height: 26svh; min-height: 170px; }
 }
 @media (prefers-reduced-motion: reduce) { .fade { transition: none; } }
 </style>
 
-<div class="app" id="app" data-ch-active="1">
+<div class="app" id="app">
   <div class="viewport" id="viewport">
     <canvas id="gl" aria-label="MOSFET の 3D 模型。ドラッグで向きを変えられます"></canvas>
     <div class="labels" id="labels"></div>
@@ -179,682 +159,25 @@ input[type="range"]:focus-visible, button:focus-visible { outline: 2px solid var
 
   <nav class="rail" id="rail" aria-label="章"></nav>
 
-  <div class="ruler" aria-hidden="true"><svg id="ruler" viewBox="0 0 64 300"></svg></div>
+  <div class="ruler" aria-hidden="true"><svg id="ruler" viewBox="0 0 80 400"></svg></div>
 
-  <section class="quiz" data-ch="6" aria-label="確認問題">
-    <div class="quiz-inner" id="quiz"></div>
-  </section>
+  <section class="quiz" id="quiz" aria-label="確認問題"></section>
 
   <div class="dock">
     <div class="task card">
-      <div class="task-top"><span class="your-turn">やってみよう</span><span class="goal" id="goal">未達成</span></div>
-
-      <div data-ch="1">
-        <p class="prompt">ゲート電圧を上げて、LED を点けてみよう。</p>
-        <p class="explain" id="ex1"></p>
-        <div class="ctrl"><label for="vgs1"><span>ゲート電圧 V<sub>GS</sub></span><output id="vgs1o">0.0 V</output></label>
-          <input type="range" id="vgs1" min="0" max="5" step="0.05" value="0"></div>
-      </div>
-
-      <div data-ch="2">
-        <p class="prompt">スライダーで拡大して、チップの表面まで近づこう。</p>
-        <p class="explain" id="ex2"></p>
-        <div class="ctrl"><label for="zoom2"><span>拡大</span><output id="zoom2o">0%</output></label>
-          <input type="range" id="zoom2" min="0" max="1" step="0.005" value="0"></div>
-      </div>
-
-      <div data-ch="3">
-        <p class="prompt">V<sub>GS</sub> を少しずつ上げて、電子の通り道(チャネル)をつくろう。</p>
-        <p class="explain" id="ex3"></p>
-        <div class="ctrl"><label for="vgs3"><span>ゲート電圧 V<sub>GS</sub></span><output id="vgs3o">0.0 V</output></label>
-          <input type="range" id="vgs3" min="0" max="5" step="0.05" value="0"></div>
-      </div>
-
-      <div data-ch="4">
-        <p class="prompt">V<sub>DS</sub> を上げて、電流が頭打ちになる(飽和)ところを探そう。</p>
-        <p class="explain" id="ex4"></p>
-        <div class="ctrl"><label for="vgs4"><span>ゲート電圧 V<sub>GS</sub></span><output id="vgs4o">3.5 V</output></label>
-          <input type="range" id="vgs4" min="0" max="5" step="0.05" value="3.5"></div>
-        <div class="ctrl"><label for="vds4"><span>ドレイン電圧 V<sub>DS</sub></span><output id="vds4o">0.0 V</output></label>
-          <input type="range" id="vds4" min="0" max="5" step="0.05" value="0"></div>
-      </div>
-      <div data-ch="5">
-        <p class="prompt">V<sub>GS</sub> はそのままで、V<sub>SB</sub> だけを上げてチャネルを消してみよう。</p>
-        <p class="explain" id="ex5"></p>
-        <div class="ctrl"><label for="vgs5"><span>ゲート電圧 V<sub>GS</sub></span><output id="vgs5o">2.30 V</output></label>
-          <input type="range" id="vgs5" min="0" max="5" step="0.05" value="2.3"></div>
-        <div class="ctrl"><label for="vsb5"><span>ソースから見た基板の低さ V<sub>SB</sub></span><output id="vsb5o">0.00 V</output></label>
-          <input type="range" id="vsb5" min="0" max="3" step="0.05" value="0"></div>
-      </div>
-      <p class="note" data-ch="5">V<sub>th</sub> = V<sub>th0</sub> + γ(√(2φ<sub>F</sub> + V<sub>SB</sub>) − √(2φ<sub>F</sub>))。この模型では V<sub>th0</sub> = 2.0 V、γ = 0.5 V<sup>½</sup>、2φ<sub>F</sub> = 0.7 V。ソースが GND にない回路(トランジスタを縦に積んだ回路やソースフォロワ)で効いてきます。</p>
-      <p class="note" data-ch="3 4">模式図です。実物の部品(パワー MOSFET)は縦型の構造で、この形のセルが大量に並んでいます。数値は簡易モデル(二乗則、V<sub>th</sub> = 2.0 V)によるものです。この章では基板 B をソース S とつないでいます(V<sub>SB</sub> = 0)。</p>
+      <div class="task-top"><span class="your-turn">やってみよう</span><span class="goal" id="goal"></span></div>
+      <div class="task-body" id="taskBody"></div>
     </div>
-
-    <div class="meters" id="meters">
-      <div class="meter card" data-ch="1 3 4 5"><span class="k">V<sub>GS</sub></span><span class="v" id="mVgs">0.00<small>V</small></span><span class="c" id="mVgsc">しきい値 2.0 V</span></div>
-      <div class="meter card" data-ch="1"><span class="k">I<sub>D</sub> · LED</span><span class="v" id="mId1">0.0<small>mA</small></span><span class="c" id="mLed">消灯</span></div>
-      <div class="meter card" data-ch="1 3 4"><span class="k">I<sub>G</sub> ゲート電流</span><span class="v">0<small>A</small></span><span class="c">酸化膜で絶縁</span></div>
-      <div class="meter card" data-ch="2"><span class="k">見えている幅</span><span class="v" id="mWidth">33<small>mm</small></span><span class="c" id="mMag">TO-220 パッケージ</span></div>
-      <div class="meter card" data-ch="5"><span class="k">V<sub>th</sub> しきい値</span><span class="v" id="mVth">2.00<small>V</small></span><span class="c" id="mVthc">V<sub>SB</sub> = 0 のときと同じ</span></div>
-      <div class="meter card" data-ch="3 5"><span class="k">チャネル</span><span class="v" id="mCh"><span class="pill" style="color:var(--muted)">なし</span></span><span class="c" id="mChc">表面の電子 0%</span></div>
-      <div class="meter card" data-ch="4"><span class="k">I<sub>D</sub> ドレイン電流</span><span class="v" id="mId4">0<small>mA</small></span><span class="c" id="mReg"><span class="pill" style="color:var(--muted)">線形</span></span></div>
-      <div class="graph card" data-ch="4">
-        <span class="k" style="font-family:var(--font-data);font-size:10px;letter-spacing:.14em;color:var(--muted)">I<sub>D</sub>–V<sub>DS</sub> 特性</span>
-        <canvas id="iv" width="520" height="340" aria-label="ドレイン電流とドレイン電圧のグラフ"></canvas>
-      </div>
-      <div class="graph card" data-ch="5">
-        <span class="k" style="font-family:var(--font-data);font-size:10px;letter-spacing:.14em;color:var(--muted)">V<sub>th</sub>–V<sub>SB</sub>(基板バイアス効果)</span>
-        <canvas id="vt" width="520" height="340" aria-label="しきい値電圧と基板バイアスのグラフ"></canvas>
-      </div>
-      <div class="meter card legend-card" data-ch="3 4 5" style="min-width:0">
-        <div class="legend">
-          <span><i style="background:var(--electron)"></i>電子</span>
-          <span><i style="background:var(--hole)"></i>正孔</span>
-          <span><i style="background:var(--ion);border-radius:1px;height:3px"></i>固定イオン</span>
-        </div>
-      </div>
-    </div>
+    <div class="meters" id="meters"></div>
   </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script>
-(() => {
-"use strict";
-
-/* ---------- 物理モデル(二乗則、教育用の簡易値) ---------- */
-const VTH = 2.0;      // しきい値電圧 [V]
-const K = 0.10;       // μnCox·W/L [A/V²]
-// 基板バイアス効果: V_th = V_th0 + γ(√(2φF + V_SB) − √(2φF))
-const GAMMA = 0.5, PHI2 = 0.7;
-function vthOf(vsb) { return VTH + GAMMA * (Math.sqrt(PHI2 + vsb) - Math.sqrt(PHI2)); }
-function idMos(vgs, vds) {
-  const vov = vgs - VTH;
-  if (vov <= 0 || vds <= 0) return 0;
-  if (vds < vov) return K * (vov * vds - vds * vds / 2);
-  return K / 2 * vov * vov;
-}
-function region(vgs, vds) {
-  const vov = vgs - VTH;
-  if (vov <= 0) return "cut";
-  return vds < vov ? "lin" : "sat";
-}
-// LED 回路: 5 V 電源 → 150 Ω → 赤色 LED(V_F 2.0 V)→ MOSFET(D→S)→ GND
-const VDD = 5, VF = 2.0, RL = 150;
-function circuit(vgs) {
-  let lo = 0, hi = VDD - VF;
-  for (let i = 0; i < 50; i++) {
-    const m = (lo + hi) / 2;
-    const f = idMos(vgs, m) - (VDD - VF - m) / RL;
-    if (f > 0) hi = m; else lo = m;
-  }
-  const vds = (lo + hi) / 2;
-  return { vds, id: Math.max(0, (VDD - VF - vds) / RL) };
-}
-// チャネル内の電位分布(グラデュアル・チャネル近似): 位置 xf(0=ソース,1=ドレイン)での反転電荷 ∝ q
-function channelQ(vgs, vds, xf, vth = VTH) {
-  const vov = vgs - vth;
-  if (vov <= 0) return 0;
-  const ve = Math.min(vds, vov);
-  const C = vov * ve - ve * ve / 2;
-  return Math.sqrt(Math.max(0, vov * vov - 2 * xf * C));
-}
-
-/* ---------- 状態 ---------- */
-const CH = [
-  { n: "I",   title: "ただのスイッチ",   scale: "×1 · 机の上",            mag: 1 },
-  { n: "II",  title: "中をのぞく",       scale: "",                        mag: 6 },
-  { n: "III", title: "通り道をつくる",   scale: "約 ×10⁵ · セル 1 個の断面", mag: 1e5 },
-  { n: "IV",  title: "流れと頭打ち",     scale: "約 ×10⁵ · セル 1 個の断面", mag: 1e5 },
-  { n: "V",   title: "基板の電圧",       scale: "約 ×10⁵ · セル 1 個の断面", mag: 1e5 },
-  { n: "VI",  title: "確かめよう",       scale: "確認問題",                 mag: null },
-];
-const st = { ch: 1, vgs1: 0, zoom: 0, vgs3: 0, vgs4: 3.5, vds4: 0, vgs5: 2.3, vsb5: 0, done: [false, false, false, false, false, false] };
-const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-const $ = (id) => document.getElementById(id);
-const css = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
-
-/* ---------- Three.js ---------- */
-const canvas = $("gl"), viewport = $("viewport");
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-renderer.outputEncoding = THREE.sRGBEncoding;
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(40, 1, 0.01, 500);
-scene.add(new THREE.HemisphereLight(0xcfe6ff, 0x1a1410, 0.75));
-const key = new THREE.DirectionalLight(0xffffff, 0.85); key.position.set(4, 9, 6); scene.add(key);
-const rim = new THREE.DirectionalLight(0x6fd6ff, 0.35); rim.position.set(-6, 3, -5); scene.add(rim);
-
-const C = (h) => new THREE.Color(h);
-const mat = (color, o = {}) => new THREE.MeshStandardMaterial(Object.assign({ color: C(color), roughness: .6, metalness: .1 }, o));
-const glass = (color, opacity) => new THREE.MeshStandardMaterial({ color: C(color), transparent: true, opacity, depthWrite: false, roughness: .2, metalness: 0 });
-function box(w, h, d, m, x = 0, y = 0, z = 0) { const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); b.position.set(x, y, z); return b; }
-function edges(mesh, color, opacity = .5) {
-  const l = new THREE.LineSegments(new THREE.EdgesGeometry(mesh.geometry), new THREE.LineBasicMaterial({ color: C(color), transparent: true, opacity }));
-  l.position.copy(mesh.position); return l;
-}
-function polyline(points) {
-  const path = new THREE.CurvePath();
-  for (let i = 0; i < points.length - 1; i++) path.add(new THREE.LineCurve3(points[i], points[i + 1]));
-  return path;
-}
-const V = (x, y, z) => new THREE.Vector3(x, y, z);
-const dummy = new THREE.Object3D();
-
-const groups = { 1: new THREE.Group(), 2: new THREE.Group(), 3: new THREE.Group() };
-Object.values(groups).forEach((g) => scene.add(g));
-
-/* ===== 第 I 章: 机の上の回路 ===== */
-const g1 = groups[1];
-g1.add(box(13, .1, 7.6, mat("#152229", { roughness: .9 }), 0, -.05, -.3));                       // 作業マット
-const supply = box(1.6, 1.2, 2.2, mat("#2b3a43"), -4.4, .6, 0); g1.add(supply, edges(supply, "#4b6370"));
-g1.add(box(.3, .12, .3, mat("#c0503f"), -4.4, 1.26, -.7), box(.3, .12, .3, mat("#20282c"), -4.4, 1.26, .7));
-const wireMat = mat("#b8c4c8", { metalness: .6, roughness: .35 });
-const loop = [V(-4.4, .15, .7), V(-4.4, .15, 1.9), V(4.25, .15, 1.9), V(4.25, .15, .3), V(4.25, .95, .3), V(4.0, .95, .3), V(4.0, .15, .3),
-  V(4.0, .15, -2.5), V(1.4, .15, -2.5), V(-1.6, .15, -2.5), V(-4.4, .15, -2.5), V(-4.4, .15, -.7)];
-const loopClosed = loop.concat([loop[0]]);
-[[0, 3], [6, 8], [8, 10], [10, 11]].forEach(([a, b]) => {
-  g1.add(new THREE.Mesh(new THREE.TubeGeometry(polyline(loop.slice(a, b + 1)), 64, .045, 8, false), wireMat));
-});
-// 抵抗
-const res = new THREE.Mesh(new THREE.CylinderGeometry(.17, .17, 1, 20), mat("#c9b48a")); res.rotation.z = Math.PI / 2; res.position.set(-1.6, .3, -2.5); g1.add(res);
-["#7a4a2a", "#2a8a3a", "#7a4a2a", "#d4a64a"].forEach((c, i) => {
-  const b = new THREE.Mesh(new THREE.CylinderGeometry(.175, .175, .07, 20), mat(c)); b.rotation.z = Math.PI / 2; b.position.set(-1.9 + i * .18, .3, -2.5); g1.add(b);
-});
-// LED
-const ledMat = new THREE.MeshStandardMaterial({ color: C("#7a1d18"), emissive: C("#ff3b2a"), emissiveIntensity: 0, transparent: true, opacity: .92, roughness: .25 });
-const ledBody = new THREE.Mesh(new THREE.CylinderGeometry(.22, .24, .42, 24), ledMat); ledBody.position.set(1.4, .42, -2.5);
-const ledDome = new THREE.Mesh(new THREE.SphereGeometry(.22, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), ledMat); ledDome.position.set(1.4, .63, -2.5);
-const ledLight = new THREE.PointLight(0xff3b2a, 0, 4); ledLight.position.set(1.4, .9, -2.5);
-g1.add(ledBody, ledDome, ledLight);
-// MOSFET(TO-220)
-const pkg = new THREE.Group(); pkg.position.set(4.0, 0, .3); g1.add(pkg);
-pkg.add(box(1.0, 1.3, .45, mat("#16191b", { roughness: .7 }), 0, 1.55, 0));
-const tab1 = box(1.0, .7, .13, mat("#b9c2c6", { metalness: .8, roughness: .3 }), 0, 2.55, -.16); pkg.add(tab1);
-[-.25, 0, .25].forEach((x) => pkg.add(box(.08, .8, .05, mat("#c8d0d3", { metalness: .8, roughness: .3 }), x, .55, 0)));
-// ゲート電源(つまみ付き)
-const gbox = box(1.2, .5, .8, mat("#2b3a43"), 2.0, .25, .65); g1.add(gbox, edges(gbox, "#4b6370"));
-const knob = new THREE.Mesh(new THREE.CylinderGeometry(.18, .18, .16, 24), mat("#d8a548", { metalness: .5, roughness: .4 })); knob.position.set(2.0, .58, .65); g1.add(knob);
-const knobMark = box(.03, .02, .14, mat("#111"), 0, .09, .07); knob.add(knobMark);
-g1.add(new THREE.Mesh(new THREE.TubeGeometry(polyline([V(2.6, .15, .5), V(3.75, .15, .5), V(3.75, .15, .3)]), 16, .035, 8, false), mat("#d8a548", { metalness: .4 })));
-g1.add(new THREE.Mesh(new THREE.TubeGeometry(polyline([V(2.0, .15, 1.05), V(2.0, .15, 1.9)]), 8, .035, 8, false), wireMat));
-g1.add(new THREE.Mesh(new THREE.SphereGeometry(.08, 12, 8), wireMat).translateX(2.0).translateY(.15).translateZ(1.9));
-// 電線を流れる電子
-const loopCurve = polyline(loopClosed);
-const N_DOTS = 90;
-const dots = new THREE.InstancedMesh(new THREE.SphereGeometry(.055, 10, 8), new THREE.MeshBasicMaterial({ color: C("#5fe1f5") }), N_DOTS);
-dots.frustumCulled = false; g1.add(dots);
-const dotPhase = Array.from({ length: N_DOTS }, (_, i) => i / N_DOTS);
-
-/* ===== 第 II 章: パッケージとチップ(単位 mm) ===== */
-const g2 = groups[2];
-const plastic = new THREE.Mesh(new THREE.BoxGeometry(10, 9, 4.5), glass("#1c2328", .28)); plastic.position.set(0, 0, 0); plastic.renderOrder = 2;
-g2.add(plastic, edges(plastic, "#5b7480", .7));
-const metal = mat("#b9c2c6", { metalness: .85, roughness: .28 });
-const leadFrame = box(10, 15, 1.3, metal, 0, 3, -1.6); g2.add(leadFrame);              // 放熱タブ兼ドレイン
-const hole = new THREE.Mesh(new THREE.CylinderGeometry(1.8, 1.8, 1.4, 32), mat("#0a1116")); hole.rotation.x = Math.PI / 2; hole.position.set(0, 7.5, -1.6); g2.add(hole);
-[-2.54, 0, 2.54].forEach((x) => g2.add(box(.8, 13, .5, metal, x, -11, -.6)));
-g2.add(box(.8, 2.6, .5, metal, 0, -5, -1.2));                                      // 中央の足(D)はタブとつながる
-const die = box(3.6, 3.6, .3, mat("#28324a", { metalness: .3, roughness: .35 }), 0, 0, -.8); g2.add(die);
-const gatePad = box(.6, .6, .02, mat("#d0d6d8", { metalness: .9, roughness: .3 }), -1.3, -1.3, -.64); g2.add(gatePad);
-const srcPad = box(2.2, 2.0, .02, mat("#9aa5aa", { metalness: .7, roughness: .4 }), .4, .3, -.64); g2.add(srcPad);
-const goldWire = mat("#e1c06a", { metalness: .9, roughness: .25 });
-function bond(a, b, h) {
-  const curve = new THREE.CubicBezierCurve3(a, V(a.x, a.y, a.z + h), V(b.x, b.y, b.z + h), b);
-  g2.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 32, .06, 8, false), goldWire));
-}
-bond(V(-1.3, -1.3, -.63), V(-2.54, -4.2, -.4), 1.2);
-bond(V(.6, -.2, -.63), V(2.54, -4.2, -.4), 1.4); bond(V(1.0, .4, -.63), V(2.54, -4.0, -.4), 1.6);
-// チップ表面のセル(数を減らした模式)
-const NC = 28, cellPitch = 1.9 / NC;
-const cells = new THREE.InstancedMesh(new THREE.BoxGeometry(cellPitch * .72, cellPitch * .72, .012), mat("#7fd3e6", { emissive: C("#1d6f80"), emissiveIntensity: .5, metalness: .2 }), NC * NC);
-let ci = 0;
-for (let i = 0; i < NC; i++) for (let j = 0; j < NC; j++) { dummy.position.set(-.55 + (i + .5) * cellPitch, -.65 + (j + .5) * cellPitch, -.625); dummy.updateMatrix(); cells.setMatrixAt(ci++, dummy.matrix); }
-g2.add(cells);
-
-/* ===== 第 III・IV 章: セルの断面(模式) ===== */
-const g3 = groups[3];
-const sub = new THREE.Mesh(new THREE.BoxGeometry(12, 4, 4), glass("#5b3a52", .16)); sub.position.set(0, -2, 0); sub.renderOrder = 3; g3.add(sub, edges(sub, "#8b6a80", .55));
-const nS = new THREE.Mesh(new THREE.BoxGeometry(3, 1.2, 4), glass("#2b7f95", .2)); nS.position.set(-4.5, -.6, 0); nS.renderOrder = 4;
-const nD = nS.clone(); nD.position.set(4.5, -.6, 0);
-g3.add(nS, nD, edges(nS, "#5fe1f5", .45), edges(nD, "#5fe1f5", .45));
-const oxide = new THREE.Mesh(new THREE.BoxGeometry(6.4, .22, 4), glass("#e9f1f3", .35)); oxide.position.set(0, .11, 0); oxide.renderOrder = 5; g3.add(oxide, edges(oxide, "#e9f1f3", .5));
-const gateMat = mat("#d8a548", { metalness: .7, roughness: .35, emissive: C("#d8a548"), emissiveIntensity: 0 });
-const gateM = box(6, .7, 4, gateMat, 0, .57, 0); g3.add(gateM);
-[-4.5, 4.5].forEach((x) => g3.add(box(.7, 1.2, 1.2, mat("#aeb8bc", { metalness: .8, roughness: .3 }), x, .6, 0)));
-g3.add(box(12, .14, 4, mat("#8f999d", { metalness: .8, roughness: .35 }), 0, -4.07, 0));
-g3.add(box(.7, .7, 1.2, mat("#aeb8bc", { metalness: .8, roughness: .3 }), 0, 1.27, 0));
-
-const rnd = (() => { let s = 7; return () => (s = (s * 16807) % 2147483647) / 2147483647; })();
-// 正孔(p 型の多数キャリア)
-const N_H = 520, holes = [];
-while (holes.length < N_H) {
-  const x = -5.85 + rnd() * 11.7, y = -3.85 + rnd() * 3.75, z = -1.85 + rnd() * 3.7;
-  if (Math.abs(x) > 2.95 && y > -1.25) continue;
-  holes.push({ x, y, z, cy: y, p: rnd() * 6.28 });
-}
-const holeMesh = new THREE.InstancedMesh(new THREE.SphereGeometry(.075, 10, 8), new THREE.MeshStandardMaterial({ color: C("#ff8a75"), emissive: C("#ff5a40"), emissiveIntensity: .35, roughness: .5 }), N_H);
-g3.add(holeMesh);
-// 固定された負イオン(アクセプタ)
-const ions = [];
-for (let x = -2.75; x <= 2.76; x += .5) for (let y = -.15; y >= -2.75; y -= .29) for (let z = -1.6; z <= 1.61; z += .8) ions.push({ x, y, z, s: 0 });
-const ionMesh = new THREE.InstancedMesh(new THREE.BoxGeometry(.17, .035, .035), new THREE.MeshBasicMaterial({ color: C("#a99bff") }), ions.length);
-g3.add(ionMesh);
-// n⁺ 領域の電子
-const N_NE = 300, nElec = [];
-for (let i = 0; i < N_NE; i++) {
-  const side = i % 2 ? 1 : -1;
-  nElec.push({ x: side * (3.05 + rnd() * 2.85), y: -1.15 + rnd() * 1.1, z: -1.85 + rnd() * 3.7, p: rnd() * 6.28 });
-}
-const elecMat = new THREE.MeshStandardMaterial({ color: C("#5fe1f5"), emissive: C("#2bc4e0"), emissiveIntensity: .7, roughness: .4 });
-const nMesh = new THREE.InstancedMesh(new THREE.SphereGeometry(.07, 10, 8), elecMat, N_NE); g3.add(nMesh);
-// チャネル(反転層)の電子
-const N_CE = 300, chE = [];
-for (let i = 0; i < N_CE; i++) chE.push({ u: rnd(), r: rnd(), z: -1.85 + rnd() * 3.7 });
-const chMesh = new THREE.InstancedMesh(new THREE.SphereGeometry(.07, 10, 8), elecMat, N_CE); g3.add(chMesh);
-[holeMesh, ionMesh, nMesh, chMesh, cells].forEach((m) => { m.frustumCulled = false; });
-const flowArrow = new THREE.ArrowHelper(V(1, 0, 0), V(-2.2, -2.6, 2.05), 4.4, 0x5fe1f5, .35, .22); g3.add(flowArrow);
-
-/* ---------- 3D 上のラベル ---------- */
-const labelsEl = $("labels");
-const labels = [];
-function addLabel(ch, text, pos, cls = "") {
-  const el = document.createElement("div"); el.className = "lbl " + cls; el.innerHTML = text; labelsEl.appendChild(el);
-  labels.push({ ch, el, pos });
-}
-addLabel([1], "電源 5 V", V(-4.4, 1.6, 0), "strong");
-addLabel([1], "抵抗 150 Ω", V(-1.6, .75, -2.5));
-addLabel([1], "LED", V(1.4, 1.05, -2.5));
-addLabel([1], "MOSFET", V(4.0, 3.25, .3), "strong");
-addLabel([1], "G D S", V(4.0, -.25, .55));
-addLabel([1], "ゲート電圧", V(2.0, .95, .65), "g");
-addLabel([2], "樹脂(透明にしています)", V(0, 5.2, 2.3));
-addLabel([2], "シリコンのチップ", V(-2.6, 2.3, -.5), "strong");
-addLabel([2], "金のワイヤー", V(-3.3, -3.0, .6), "g");
-addLabel([2], "G", V(-2.54, -18.2, -.6)); addLabel([2], "D", V(0, -18.2, -.6)); addLabel([2], "S", V(2.54, -18.2, -.6));
-addLabel([2], "タブ = ドレイン", V(3.9, 9.3, -1.6));
-addLabel([3, 4, 5], "ゲート G", V(0, 1.75, 0), "g");
-addLabel([3, 4, 5], "ソース S", V(-4.5, 1.6, 0), "strong");
-addLabel([3, 4, 5], "ドレイン D", V(4.5, 1.6, 0), "strong");
-addLabel([3, 4, 5], "酸化膜(絶縁体)", V(-3.9, .2, 2.4));
-addLabel([3, 4, 5], "n⁺", V(-4.5, -.6, 2.15), "e"); addLabel([3, 4, 5], "n⁺", V(4.5, -.6, 2.15), "e");
-addLabel([3, 4, 5], "p 型シリコン", V(0, -3.5, 2.15), "h");
-addLabel([3, 4], "基板 B(S とつないである)", V(0, -4.45, 2.15));
-addLabel([5], "基板 B", V(0, -4.45, 2.15), "strong"); const bodyLbl = labels[labels.length - 1];
-const flowLbl = { ch: [4], el: null, pos: V(0, -2.95, 2.1) };
-addLabel([4], "電子の流れ →  ·  電流 I<sub>D</sub> ←", flowLbl.pos, "e"); flowLbl.el = labels[labels.length - 1].el;
-
-/* ---------- カメラと操作 ---------- */
-const views = {
-  1: { pos: V(0, 7.2, 10.5), look: V(0, .4, -.2) },
-  3: { pos: V(0, 1.6, 14.5), look: V(0, -2.0, 0) },
-  4: { pos: V(0, 1.6, 14.5), look: V(0, -2.0, 0) },
-  5: { pos: V(0, 1.6, 14.5), look: V(0, -2.0, 0) },
-};
-const drag = { yaw: 0, pitch: 0, ty: 0, tp: 0, down: false, x: 0, y: 0 };
-canvas.addEventListener("pointerdown", (e) => { drag.down = true; drag.x = e.clientX; drag.y = e.clientY; canvas.setPointerCapture(e.pointerId); });
-canvas.addEventListener("pointermove", (e) => {
-  if (!drag.down) return;
-  drag.ty = Math.max(-.6, Math.min(.6, drag.ty + (e.clientX - drag.x) * .005));
-  drag.tp = Math.max(-.25, Math.min(.35, drag.tp + (e.clientY - drag.y) * .003));
-  drag.x = e.clientX; drag.y = e.clientY;
-});
-const up = () => { drag.down = false; };
-canvas.addEventListener("pointerup", up); canvas.addEventListener("pointercancel", up);
-
-function resize() {
-  const w = viewport.clientWidth, h = viewport.clientHeight;
-  renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
-}
-new ResizeObserver(resize).observe(viewport);
-
-/* ---------- UI ---------- */
-const app = $("app"), rail = $("rail");
-CH.forEach((c, i) => {
-  const b = document.createElement("button");
-  b.innerHTML = `<span class="dot"></span><span class="name">${c.n} · ${c.title}</span>`;
-  b.setAttribute("aria-label", `${c.n} ${c.title}`);
-  b.addEventListener("click", () => go(i + 1));
-  rail.appendChild(b);
-});
-function bind(id, keyName, fmt) {
-  const el = $(id), out = $(id + "o");
-  const f = () => { st[keyName] = parseFloat(el.value); out.textContent = fmt(st[keyName]); update(); };
-  el.addEventListener("input", f); f();
-}
-let fading = false;
-function go(n) {
-  if (n < 1 || n > CH.length || n === st.ch || fading) return;
-  const fade = $("fade");
-  if (reduced) { setCh(n); return; }
-  fading = true; fade.classList.add("on");
-  setTimeout(() => { setCh(n); fade.classList.remove("on"); fading = false; }, 280);
-}
-function setCh(n) {
-  st.ch = n; app.dataset.chActive = n;
-  document.querySelectorAll("[data-ch]").forEach((el) => { el.hidden = !el.dataset.ch.split(" ").includes(String(n)); }); drag.ty = drag.tp = 0; drag.yaw = drag.pitch = 0;
-  try { localStorage.setItem("mosfet-ch", n); } catch (e) {}
-  update();
-}
-$("prev").addEventListener("click", () => go(st.ch - 1));
-$("next").addEventListener("click", () => go(st.ch + 1));
-addEventListener("keydown", (e) => {
-  if (e.target.tagName === "INPUT") return;
-  if (e.key === "ArrowRight") go(st.ch + 1);
-  if (e.key === "ArrowLeft") go(st.ch - 1);
-});
-
-const subs = (t) => t.replace(/V_(GS|DS|SB|th)/g, "V<sub>$1</sub>");
-const pill = (t, color) => `<span class="pill" style="color:${color}">${t}</span>`;
-const fmtA = (a) => a >= 0.1 ? `${(a * 1000).toFixed(0)}` : a >= 0.001 ? `${(a * 1000).toFixed(1)}` : `${(a * 1000).toFixed(2)}`;
-
-function update() {
-  const c = CH[st.ch - 1];
-  $("numeral").textContent = c.n; $("chTitle").textContent = c.title;
-  $("prev").disabled = st.ch === 1; $("next").disabled = st.ch === CH.length;
-  [...rail.children].forEach((b, i) => {
-    if (i + 1 === st.ch) b.setAttribute("aria-current", "step"); else b.removeAttribute("aria-current");
-    b.classList.toggle("done", st.done[i]);
-  });
-  let mag = c.mag, met = false, goalText = "";
-  if (st.ch !== 5) $("mVgsc").textContent = "しきい値 2.0 V";
-
-  if (st.ch === 1) {
-    const r = circuit(st.vgs1), mA = r.id * 1000;
-    $("mVgs").innerHTML = `${st.vgs1.toFixed(2)}<small>V</small>`;
-    $("mId1").innerHTML = `${mA.toFixed(1)}<small>mA</small>`;
-    $("mLed").textContent = mA < .05 ? "消灯" : mA < 15 ? `点灯 ${Math.round(mA / 20 * 100)}%` : "全開(抵抗で 20 mA に制限)";
-    $("ex1").innerHTML = subs(st.vgs1 < VTH
-      ? "V_GS がしきい値(約 2 V)より低いので、MOSFET はオフ。LED には電流が流れません。"
-      : mA < 15
-        ? "しきい値を超えて電流が流れ始めました。V_GS を上げるほど、MOSFET を通れる電流が増えます。"
-        : "MOSFET は完全にオン。電流は抵抗と LED で決まる約 20 mA で頭打ち。ゲートには電流がほぼ流れていません。");
-    met = mA > 5; goalText = "LED を点ける";
-  }
-  if (st.ch === 2) {
-    const w = viewWidthMM();
-    $("mWidth").innerHTML = w >= 1 ? `${w.toFixed(w < 10 ? 1 : 0)}<small>mm</small>` : `${Math.round(w * 1000)}<small>µm</small>`;
-    mag = 200 / w;
-    $("mMag").textContent = st.zoom < .35 ? "TO-220 パッケージ" : st.zoom < .8 ? "シリコンのチップ" : "チップ表面のセル";
-    $("ex2").textContent = st.zoom < .35
-      ? "黒い樹脂を透明にしました。中央の足(D)は裏の金属タブとつながり、G と S は金のワイヤーでチップに結ばれています。"
-      : st.zoom < .8
-        ? "数 mm 角のシリコンのチップ。これが MOSFET の本体です。"
-        : "表面には同じ形の小さなセルがびっしり並び、すべて並列につながっています。ここでは数を減らして描いています(実物はセルの間隔が数 µm)。次の章で、セル 1 個を切った断面を見ます。";
-    met = st.zoom > .95; goalText = "表面まで寄る";
-  }
-  if (st.ch === 3) {
-    const v = st.vgs3, vov = v - VTH;
-    $("mVgs").innerHTML = `${v.toFixed(2)}<small>V</small>`;
-    const frac = vov > 0 ? Math.min(1, vov / 3) : 0;
-    $("mCh").innerHTML = vov > 0 ? pill("できた", css("--electron")) : v > .3 ? pill("空乏層だけ", css("--ion")) : pill("なし", css("--muted"));
-    $("mChc").textContent = `表面の電子 ${Math.round(frac * 100)}%`;
-    $("ex3").innerHTML = subs(v < .3
-      ? "ゲートに電圧なし。p 型シリコンの中は正孔(＋)でいっぱいで、ソースとドレインはつながっていません。"
-      : vov <= 0
-        ? "ゲートの＋が正孔を下へ押しやり、表面に正孔のいない層(空乏層)ができました。残っているのは動けない負のイオンだけ。まだ電子は集まっていません。"
-        : "しきい値を超え、酸化膜のすぐ下に電子が集まって、ソースとドレインをつなぐ通り道(反転層＝チャネル)ができました。電子はソースとドレインの n⁺ 領域から供給されます。");
-    met = vov > .5; goalText = "チャネルをつくる";
-  }
-  if (st.ch === 4) {
-    const id = idMos(st.vgs4, st.vds4), reg = region(st.vgs4, st.vds4);
-    $("mVgs").innerHTML = `${st.vgs4.toFixed(2)}<small>V</small>`;
-    $("mId4").innerHTML = `${fmtA(id)}<small>mA</small>`;
-    $("mReg").innerHTML = reg === "cut" ? pill("遮断", css("--muted")) : reg === "lin" ? pill("線形", css("--electron")) : pill("飽和", css("--gate"));
-    const vov = st.vgs4 - VTH;
-    $("ex4").innerHTML = subs(reg === "cut"
-      ? "V_GS がしきい値より低く、チャネルがありません。V_DS をかけても電流は流れません。"
-      : st.vds4 < .05
-        ? "チャネルはあるが、V_DS が 0 なので電子を押す力がありません。V_DS を上げてみよう。"
-        : reg === "lin"
-          ? `V_DS を上げるほど電流が増えます(線形領域)。ドレイン側ほどチャネルが細くなっていくのに注目。V_DS が ${vov.toFixed(2)} V(= V_GS − V_th)に届くと…`
-          : "ドレイン側でチャネルがつままれたように閉じました(ピンチオフ)。これ以上 V_DS を上げても電流はほぼ増えません(飽和領域)。電子はピンチオフ点から先を電界で一気に運ばれます。");
-    met = reg === "sat" && st.vds4 > .05; goalText = "飽和させる";
-    drawIV();
-  }
-  if (st.ch === 5) {
-    const vth = vthOf(st.vsb5), vov = st.vgs5 - vth, frac = vov > 0 ? Math.min(1, vov / 3) : 0;
-    $("mVgs").innerHTML = `${st.vgs5.toFixed(2)}<small>V</small>`;
-    $("mVgsc").textContent = `しきい値 ${vth.toFixed(2)} V`;
-    $("mVth").innerHTML = `${vth.toFixed(2)}<small>V</small>`;
-    $("mVthc").innerHTML = st.vsb5 < .025 ? "V<sub>SB</sub> = 0 のときと同じ" : `V<sub>SB</sub> = 0 より +${(vth - VTH).toFixed(2)} V`;
-    $("mCh").innerHTML = vov > 0 ? pill("できた", css("--electron")) : pill("なし", css("--muted"));
-    $("mChc").textContent = `表面の電子 ${Math.round(frac * 100)}%`;
-    bodyLbl.el.textContent = st.vsb5 < .025 ? "基板 B(S と同じ電圧)" : `基板 B(S より ${st.vsb5.toFixed(2)} V 低い)`;
-    $("ex5").innerHTML = subs(st.vsb5 < .025
-      ? (vov > 0 ? "いまは基板 B とソース S が同じ電圧で、これまでの章と同じ状態。チャネルができています。V_SB を上げて、基板をソースより低い電圧にしてみよう。"
-                 : "いまは基板 B とソース S が同じ電圧。まず V_GS をしきい値(2.0 V)より上げて、チャネルをつくっておこう。")
-      : vov > 0
-        ? "基板を下げると空乏層が深くなり、動けない負のイオンが増えます。その負の電荷がゲートの＋を打ち消すので、しきい値 V_th が上がり、同じ V_GS でも集まる電子が減ります。これが基板バイアス効果です。"
-        : st.vgs5 > VTH
-          ? "V_GS は同じなのに、しきい値が V_GS を超えてチャネルが消えました。基板の電圧だけで、トランジスタのオン・オフの境目が動いたことになります。"
-          : "V_GS がしきい値より低く、チャネルはありません。V_GS を少し上げてから V_SB を動かしてみよう。");
-    met = st.vgs5 > VTH && vov <= 0; goalText = "V_SB だけでチャネルを消す";
-    drawVT();
-  }
-  if (st.ch === 6) goalText = "";
-  if (met && !st.done[st.ch - 1]) { st.done[st.ch - 1] = true; [...rail.children][st.ch - 1].classList.add("done"); }
-  const g = $("goal");
-  g.innerHTML = subs(st.done[st.ch - 1] ? `✓ ${goalText}` : `目標: ${goalText}`);
-  g.classList.toggle("met", st.done[st.ch - 1]);
-  $("scaleChip").textContent = st.ch === 2 ? `約 ×${Math.round(mag)} · パッケージの中` : c.scale;
-  drawRuler(mag);
-}
-
-/* 倍率の目盛り(×1 = 机の上の約 20 cm 幅を基準) */
-function drawRuler(mag) {
-  const svg = $("ruler"), top = 14, bot = 286, h = bot - top;
-  const muted = css("--muted"), fg = css("--fg"), acc = css("--electron");
-  let s = `<line x1="40" y1="${top}" x2="40" y2="${bot}" stroke="${muted}" stroke-opacity=".5"/>`;
-  const sup = ["", "", "²", "³", "⁴", "⁵", "⁶"];
-  for (let e = 0; e <= 6; e++) {
-    const y = bot - h * e / 6;
-    s += `<line x1="34" y1="${y}" x2="46" y2="${y}" stroke="${muted}"/>`;
-    s += `<text x="30" y="${y + 4}" text-anchor="end" font-family="IBM Plex Mono, monospace" font-size="10" fill="${muted}">${e === 0 ? "×1" : e === 1 ? "×10" : "×10" + sup[e]}</text>`;
-    if (e < 6) for (let m = 2; m < 10; m++) { const yy = bot - h * (e + Math.log10(m)) / 6; s += `<line x1="38" y1="${yy}" x2="42" y2="${yy}" stroke="${muted}" stroke-opacity=".45"/>`; }
-  }
-  if (mag) {
-    const y = bot - h * Math.min(6, Math.log10(mag)) / 6;
-    s += `<path d="M48 ${y} l9 -5 v10 z" fill="${acc}"/><line x1="34" y1="${y}" x2="46" y2="${y}" stroke="${fg}" stroke-width="2"/>`;
-  }
-  svg.innerHTML = s;
-}
-
-/* I–V グラフ */
-function drawIV() {
-  const cv = $("iv"), ctx = cv.getContext("2d");
-  const r = cv.getBoundingClientRect(); const dpr = Math.min(devicePixelRatio, 2);
-  if (r.width && (cv.width !== Math.round(r.width * dpr) || cv.height !== Math.round(r.height * dpr))) { cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr); }
-  const W = cv.width / dpr, H = cv.height / dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
-  const L = 40, R = 10, T = 8, B = 26, pw = W - L - R, ph = H - T - B, IMAX = .5;
-  const X = (v) => L + v / 5 * pw, Y = (i) => T + ph - i / IMAX * ph;
-  const muted = css("--muted"), line = css("--line"), acc = css("--electron"), gate = css("--gate");
-  ctx.font = "10px 'IBM Plex Mono', monospace"; ctx.fillStyle = muted; ctx.strokeStyle = line; ctx.lineWidth = 1;
-  for (let v = 0; v <= 5; v++) { ctx.beginPath(); ctx.moveTo(X(v), T); ctx.lineTo(X(v), T + ph); ctx.stroke(); ctx.textAlign = "center"; ctx.fillText(v, X(v), H - 12); }
-  for (let i = 0; i <= .5001; i += .1) { ctx.beginPath(); ctx.moveTo(L, Y(i)); ctx.lineTo(L + pw, Y(i)); ctx.stroke(); ctx.textAlign = "right"; ctx.fillText(Math.round(i * 1000), L - 5, Y(i) + 3); }
-  ctx.textAlign = "right"; ctx.fillText("V_DS [V]", L + pw, H - 1); ctx.textAlign = "left"; ctx.fillText("mA", 2, T + 8);
-  // 飽和の境界(V_DS = V_GS − V_th)
-  ctx.setLineDash([3, 3]); ctx.strokeStyle = gate; ctx.globalAlpha = .7; ctx.beginPath();
-  for (let v = 0; v <= 3.0; v += .05) { const i = K / 2 * v * v; v === 0 ? ctx.moveTo(X(v), Y(i)) : ctx.lineTo(X(v), Y(i)); }
-  ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha = 1;
-  [3, 4, 5].forEach((vg) => {
-    ctx.strokeStyle = muted; ctx.globalAlpha = .45; ctx.beginPath();
-    for (let v = 0; v <= 5; v += .05) { const i = idMos(vg, v); v === 0 ? ctx.moveTo(X(v), Y(i)) : ctx.lineTo(X(v), Y(i)); }
-    ctx.stroke(); ctx.globalAlpha = 1; ctx.fillStyle = muted; ctx.textAlign = "right"; ctx.fillText(`${vg} V`, L + pw - 2, Y(idMos(vg, 5)) - 4);
-  });
-  ctx.strokeStyle = acc; ctx.lineWidth = 2; ctx.beginPath();
-  for (let v = 0; v <= 5; v += .025) { const i = idMos(st.vgs4, v); v === 0 ? ctx.moveTo(X(v), Y(i)) : ctx.lineTo(X(v), Y(i)); }
-  ctx.stroke();
-  const id = idMos(st.vgs4, st.vds4);
-  ctx.fillStyle = acc; ctx.beginPath(); ctx.arc(X(st.vds4), Y(id), 4.5, 0, 6.29); ctx.fill();
-  ctx.strokeStyle = css("--fg"); ctx.lineWidth = 1.5; ctx.stroke();
-}
-
-function drawVT() {
-  const cv = $("vt"), ctx = cv.getContext("2d");
-  const r = cv.getBoundingClientRect(); const dpr = Math.min(devicePixelRatio, 2);
-  if (r.width && (cv.width !== Math.round(r.width * dpr) || cv.height !== Math.round(r.height * dpr))) { cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr); }
-  const W = cv.width / dpr, H = cv.height / dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
-  const L = 40, R = 10, T = 8, B = 26, pw = W - L - R, ph = H - T - B, YMIN = 1.8, YMAX = 3.0;
-  const X = (v) => L + v / 3 * pw, Y = (u) => T + ph - (u - YMIN) / (YMAX - YMIN) * ph;
-  const muted = css("--muted"), line = css("--line"), acc = css("--electron"), gate = css("--gate");
-  ctx.font = "10px 'IBM Plex Mono', monospace"; ctx.lineWidth = 1;
-  for (let v = 0; v <= 3; v++) { ctx.strokeStyle = line; ctx.beginPath(); ctx.moveTo(X(v), T); ctx.lineTo(X(v), T + ph); ctx.stroke(); ctx.fillStyle = muted; ctx.textAlign = "center"; ctx.fillText(v, X(v), H - 12); }
-  for (let u = 2.0; u <= 2.801; u += .2) { ctx.strokeStyle = line; ctx.beginPath(); ctx.moveTo(L, Y(u)); ctx.lineTo(L + pw, Y(u)); ctx.stroke(); ctx.fillStyle = muted; ctx.textAlign = "right"; ctx.fillText(u.toFixed(1), L - 5, Y(u) + 3); }
-  ctx.textAlign = "right"; ctx.fillText("V_SB [V]", L + pw, H - 1); ctx.textAlign = "left"; ctx.fillText("V_th", 2, T + 8);
-  // いまの V_GS(これより V_th が上ならチャネルなし)
-  if (st.vgs5 >= YMIN && st.vgs5 <= YMAX) {
-    ctx.setLineDash([4, 3]); ctx.strokeStyle = gate; ctx.beginPath(); ctx.moveTo(L, Y(st.vgs5)); ctx.lineTo(L + pw, Y(st.vgs5)); ctx.stroke(); ctx.setLineDash([]);
-    ctx.fillStyle = gate; ctx.textAlign = "left"; ctx.fillText(`V_GS ${st.vgs5.toFixed(2)} V`, L + 4, Y(st.vgs5) - 4);
-  }
-  ctx.strokeStyle = acc; ctx.lineWidth = 2; ctx.beginPath();
-  for (let v = 0; v <= 3.001; v += .05) { const u = vthOf(v); v === 0 ? ctx.moveTo(X(v), Y(u)) : ctx.lineTo(X(v), Y(u)); }
-  ctx.stroke();
-  ctx.fillStyle = acc; ctx.beginPath(); ctx.arc(X(st.vsb5), Y(vthOf(st.vsb5)), 4.5, 0, 6.29); ctx.fill();
-  ctx.strokeStyle = css("--fg"); ctx.lineWidth = 1.5; ctx.stroke();
-}
-
-/* ---------- 確認問題 ---------- */
-const QUIZ = [
-  { q: "ゲートにほとんど電流が流れないのはなぜ？", a: ["ゲートの下が薄い酸化膜(絶縁体)で仕切られているから", "ゲートの金属がとても細いから", "電子はゲートに近づけないから"], ok: 0,
-    why: "ゲートと半導体の間は酸化膜で絶縁されています。ゲートは電流ではなく電界(電圧)で、下の電子や正孔を動かします。" },
-  { q: "n チャネル MOSFET で、ソースとドレインをつなぐ通り道をつくる粒子は？", a: ["正孔", "電子", "固定された負イオン"], ok: 1,
-    why: "ゲートの＋に引き寄せられた電子が、酸化膜のすぐ下に集まって反転層(チャネル)になります。" },
-  { q: "V_GS がしきい値(この模型では 2.0 V)より低いとき、どうなる？", a: ["電流は大きく流れる", "チャネルができず、電流はほぼ流れない", "ゲートに大きな電流が流れる"], ok: 1,
-    why: "しきい値に届くまでは、正孔が押しのけられた空乏層ができるだけで、電子の通り道はまだありません。" },
-  { q: "V_DS を上げ続けても電流がほぼ一定になる(飽和)のはなぜ？", a: ["電源の電池が弱るから", "ドレイン側でチャネルが閉じ(ピンチオフ)、増えた電圧はその先の短い区間にかかるだけだから", "酸化膜が壊れるから"], ok: 1,
-    why: "チャネルの電子の量は V_GS − V_th で決まります。ピンチオフ後は、それ以上 V_DS を上げても通り道側の条件がほぼ変わりません。" },
-  { q: "n チャネル MOSFET で、基板 B をソース S より低い電圧にする(V_SB > 0)と、しきい値 V_th はどうなる？", a: ["上がる", "下がる", "変わらない"], ok: 0,
-    why: "空乏層が深くなって負の固定電荷が増え、その分ゲートの＋が打ち消されます。チャネルをつくるのに、より高い V_GS が必要になります(基板バイアス効果)。" },
-];
-const quizEl = $("quiz"), answered = {};
-quizEl.innerHTML = `<p class="score" id="score"></p>` + QUIZ.map((x, i) => `
-  <div class="q card"><h3>Q${i + 1}. ${subs(x.q)}</h3><div class="opts">${x.a.map((t, j) => `<button data-q="${i}" data-a="${j}">${t}</button>`).join("")}</div><p class="fb" id="fb${i}"></p></div>`).join("")
-  + `<p class="note">二乗則の簡易モデルです。実物にはチャネル長変調や温度の影響などがあり、飽和領域でも電流はわずかに増えます。</p>`;
-quizEl.addEventListener("click", (e) => {
-  const b = e.target.closest("button[data-q]"); if (!b) return;
-  const i = +b.dataset.q, j = +b.dataset.a, x = QUIZ[i];
-  b.parentElement.querySelectorAll("button").forEach((o) => o.classList.remove("right", "wrong"));
-  b.classList.add(j === x.ok ? "right" : "wrong");
-  $("fb" + i).innerHTML = subs((j === x.ok ? "正解。" : "もう一度。") + (j === x.ok ? x.why : ""));
-  answered[i] = j === x.ok;
-  const n = Object.values(answered).filter(Boolean).length;
-  $("score").textContent = `${n} / ${QUIZ.length} 問正解`;
-  if (n === QUIZ.length) { st.done[5] = true; update(); }
-});
-$("score").textContent = `0 / ${QUIZ.length} 問正解`;
-
-/* ---------- 毎フレーム ---------- */
-function viewWidthMM() {
-  const d = camDist2();
-  return 2 * d * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * Math.max(camera.aspect, .5);
-}
-function camDist2() { return 45 * Math.pow(0.7 / 45, st.zoom); }
-
-const clock = new THREE.Clock();
-let t = 0, lastLabelCh = 0;
-const tmp = new THREE.Vector3();
-function frame() {
-  const dt = Math.min(clock.getDelta(), .05); t += reduced ? 0 : dt;
-  const ch = st.ch === 6 ? 3 : st.ch;
-  groups[1].visible = ch === 1; groups[2].visible = ch === 2; groups[3].visible = ch >= 3;
-  drag.yaw += (drag.ty - drag.yaw) * .12; drag.pitch += (drag.tp - drag.pitch) * .12;
-  const sway = reduced || drag.down ? 0 : Math.sin(t * .25) * .05;
-
-  if (ch === 2) {
-    const d = camDist2(), target = V(0, 0, -.6);
-    const yaw = drag.yaw + sway, pitch = drag.pitch * (1 - st.zoom * .7) + .05;
-    camera.position.set(target.x + Math.sin(yaw) * d, target.y + Math.sin(pitch) * d, target.z + Math.cos(yaw) * Math.cos(pitch) * d);
-    camera.near = Math.max(.01, d * .02); camera.updateProjectionMatrix();
-    camera.lookAt(target);
-  } else {
-    const v = views[ch]; const off = v.pos.clone().sub(v.look);
-    const r = off.length() * (camera.aspect < 1 ? 1.15 / Math.max(.55, camera.aspect) : 1), yaw = Math.atan2(off.x, off.z) + drag.yaw + sway, el = Math.asin(off.y / r) + drag.pitch;
-    camera.position.set(v.look.x + r * Math.cos(el) * Math.sin(yaw), v.look.y + r * Math.sin(el), v.look.z + r * Math.cos(el) * Math.cos(yaw));
-    if (camera.near !== .1) { camera.near = .1; camera.updateProjectionMatrix(); }
-    camera.lookAt(v.look);
-  }
-
-  if (ch === 1) {
-    const r = circuit(st.vgs1), on = Math.min(1, r.id / .02);
-    ledMat.emissiveIntensity = on * 2.2; ledLight.intensity = on * 2.5;
-    knob.rotation.y = -st.vgs1 / 5 * Math.PI * 1.5;
-    const speed = r.id / .02 * .05;
-    for (let i = 0; i < N_DOTS; i++) {
-      dotPhase[i] = (dotPhase[i] + speed * dt + 1) % 1;
-      tmp.copy(loopCurve.getPointAt(dotPhase[i]));
-      dummy.position.copy(tmp); dummy.scale.setScalar(r.id > 1e-5 ? 1 : .7); dummy.updateMatrix(); dots.setMatrixAt(i, dummy.matrix);
-    }
-    dots.instanceMatrix.needsUpdate = true;
-    dots.material.opacity = 1;
-  }
-
-  if (ch >= 3) {
-    const vgs = st.ch === 4 ? st.vgs4 : st.ch === 5 ? st.vgs5 : st.vgs3, vds = st.ch === 4 ? st.vds4 : 0;
-    const vsb = st.ch === 5 ? st.vsb5 : 0, vth = vthOf(vsb);
-    // 空乏層の深さ ∝ √(表面電位 + V_SB)。表面電位はしきい値で 2φF に達して止まる
-    const psi = PHI2 * Math.max(0, Math.min(1, vgs / vth));
-    const dep = 1.1 * Math.sqrt((psi + vsb) / PHI2);
-    gateMat.emissiveIntensity = Math.min(1, vgs / 5) * .35;
-    const mask = (x) => { const a = Math.abs(x); return a < 2.6 ? 1 : a > 3.4 ? 0 : 1 - (a - 2.6) / .8; };
-    for (let i = 0; i < N_H; i++) {
-      const h = holes[i], m = mask(h.x), d = dep * m;
-      const target = -4 + (h.y + 4) * (4 - d) / 4;
-      h.cy += (target - h.cy) * Math.min(1, dt * 4 + (reduced ? 1 : 0));
-      const j = reduced ? 0 : .03;
-      dummy.position.set(h.x + Math.sin(t * 2.1 + h.p) * j, h.cy + Math.cos(t * 1.7 + h.p) * j, h.z); dummy.scale.setScalar(1); dummy.updateMatrix(); holeMesh.setMatrixAt(i, dummy.matrix);
-    }
-    holeMesh.instanceMatrix.needsUpdate = true;
-    for (let i = 0; i < ions.length; i++) {
-      const o = ions[i], show = o.y > -dep * mask(o.x) ? 1 : 0;
-      o.s += (show - o.s) * Math.min(1, dt * 5 + (reduced ? 1 : 0));
-      dummy.position.set(o.x, o.y, o.z); dummy.scale.setScalar(Math.max(.001, o.s)); dummy.updateMatrix(); ionMesh.setMatrixAt(i, dummy.matrix);
-    }
-    ionMesh.instanceMatrix.needsUpdate = true;
-    for (let i = 0; i < N_NE; i++) {
-      const e = nElec[i], j = reduced ? 0 : .035;
-      dummy.position.set(e.x + Math.sin(t * 2.6 + e.p) * j, e.y + Math.cos(t * 2.2 + e.p) * j, e.z); dummy.scale.setScalar(1); dummy.updateMatrix(); nMesh.setMatrixAt(i, dummy.matrix);
-    }
-    nMesh.instanceMatrix.needsUpdate = true;
-    const vov = vgs - vth, frac = vov > 0 ? Math.min(1, vov / 3) : 0, id = st.ch === 5 ? 0 : idMos(vgs, vds);
-    const q0 = Math.max(vov, .01), cflow = id > 0 ? (.12 + .9 * id / .45) * q0 : 0;
-    for (let i = 0; i < N_CE; i++) {
-      const e = chE[i];
-      if (i >= N_CE * frac) { dummy.scale.setScalar(.001); dummy.position.set(0, -.05, 0); dummy.updateMatrix(); chMesh.setMatrixAt(i, dummy.matrix); continue; }
-      const q = channelQ(vgs, vds, e.u, vth);
-      if (cflow > 0 && !reduced) { e.u += Math.min(2.5, cflow / Math.max(q, .06)) * dt * .25; if (e.u > 1) { e.u -= 1; e.r = rnd(); } }
-      const th = .05 + .13 * q;
-      dummy.position.set(-3 + 6 * e.u, -.03 - e.r * th, e.z); dummy.scale.setScalar(1); dummy.updateMatrix(); chMesh.setMatrixAt(i, dummy.matrix);
-    }
-    chMesh.instanceMatrix.needsUpdate = true;
-    flowArrow.visible = st.ch === 4 && id > 0 && vds > .05;
-    if (flowLbl.el) flowLbl.el.style.visibility = flowArrow.visible ? "visible" : "hidden";
-  }
-
-  // ラベル
-  const w = viewport.clientWidth, h = viewport.clientHeight;
-  for (const l of labels) {
-    const on = l.ch.includes(st.ch);
-    if (!on) { if (l.el.style.display !== "none") l.el.style.display = "none"; continue; }
-    tmp.copy(l.pos).project(camera);
-    const hide = tmp.z > 1 || tmp.z < -1;
-    l.el.style.display = hide ? "none" : "";
-    l.el.style.left = ((tmp.x + 1) / 2 * w) + "px"; l.el.style.top = ((1 - tmp.y) / 2 * h) + "px";
-  }
-  if (st.ch === 2 && lastLabelCh !== Math.round(st.zoom * 100)) { lastLabelCh = Math.round(st.zoom * 100); update(); }
-  renderer.render(scene, camera);
-  requestAnimationFrame(frame);
-}
-
-bind("vgs1", "vgs1", (v) => `${v.toFixed(2)} V`);
-bind("zoom2", "zoom", (v) => `${Math.round(v * 100)}%`);
-bind("vgs3", "vgs3", (v) => `${v.toFixed(2)} V`);
-bind("vgs4", "vgs4", (v) => `${v.toFixed(2)} V`);
-bind("vds4", "vds4", (v) => `${v.toFixed(2)} V`);
-bind("vgs5", "vgs5", (v) => `${v.toFixed(2)} V`);
-bind("vsb5", "vsb5", (v) => `${v.toFixed(2)} V`);
-let saved = 1; try { saved = parseInt(localStorage.getItem("mosfet-ch") || "1", 10) || 1; } catch (e) {}
-resize(); setCh(Math.min(Math.max(saved, 1), CH.length));
-requestAnimationFrame(frame);
-})();
-</script>
+<script src="core/physics.js"></script>
+<script src="viz/kit.js"></script>
+<script src="chapters/a-intro.js"></script>
+<script src="chapters/b-material.js"></script>
+<script src="chapters/c-junction.js"></script>
+<script src="chapters/d-mos.js"></script>
+<script src="chapters/e-quiz.js"></script>
+<script src="app.js"></script>
