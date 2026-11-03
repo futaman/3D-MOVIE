@@ -4,6 +4,7 @@
 専門知識が要る仕組みを縦型ショートで正確に解説する動画を半自動で作る **Explain** モードも計画中。
 
 > MOSFET シミュレーター(旧 `apps/sims/mosfet`)は [futaman/mosfet_sim](https://github.com/futaman/mosfet_sim) に移しました(履歴も引き継いでいます)。
+
 自分の Windows PC(RTX 3060 12GB)上で WSL2 + Docker で動かす。
 
 | ドキュメント | 内容 |
