@@ -1,0 +1,55 @@
+{
+ "fps": 30,
+ "clips": {
+  "idle": {
+   "duration": 2.0,
+   "loop": true
+  },
+  "hold": {
+   "duration": 2.0,
+   "loop": true
+  },
+  "throw": {
+   "duration": 1.3333,
+   "loop": false
+  },
+  "shake_head": {
+   "duration": 1.2,
+   "loop": false
+  },
+  "look_up": {
+   "duration": 1.0,
+   "loop": false
+  },
+  "wave": {
+   "duration": 0.8,
+   "loop": true
+  },
+  "walk": {
+   "duration": 1.1,
+   "loop": true
+  }
+ },
+ "height": 1.7,
+ "throw_release_time": 1.0667,
+ "throw_release_hand_pos": [
+  -0.0091,
+  1.3964,
+  1.3498
+ ],
+ "throw_release_hand_speed": 13.97,
+ "throw_end_pelvis_pos": [
+  -0.0529,
+  0.969,
+  0.6721
+ ],
+ "motion_sources": {
+  "throw": "CMU mocap 124_01 (2.65-4.00 s) + blend-in from hold",
+  "wave": "CMU mocap 141_16 (0.40-1.20 s), upper body",
+  "walk": "CMU mocap 07_01 (0.517-1.617 s)",
+  "idle": "keyed",
+  "hold": "keyed (IK)",
+  "shake_head": "keyed",
+  "look_up": "keyed"
+ }
+}

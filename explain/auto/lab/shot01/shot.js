@@ -28,7 +28,7 @@
   });
   const ground = new T.Mesh(new T.PlaneGeometry(60000, 60000).rotateX(-Math.PI / 2), new T.MeshStandardMaterial({ color: 0x0b0c0e, roughness: 1, envMapIntensity: 0.4 })); ground.receiveShadow = true; scene.add(ground);
   // 塔: 塗装した鉄板のテクスチャ。頂上は足場つきのトラス
-  const md = await tex("metal_plate_diff_1k.jpg", true), mn = await tex("metal_plate_nor_gl_1k.jpg"), mr = await tex("metal_plate_rough_1k.jpg");
+  const mn = await tex("metal_plate_nor_gl_1k.jpg"), mr = await tex("metal_plate_rough_1k.jpg");
   const paint = (c, rx, ry) => { const m = new T.MeshStandardMaterial({ color: new T.Color(c).convertSRGBToLinear(), normalMap: mn.clone(), roughnessMap: mr.clone(), metalness: 0.35, roughness: 1 }); [m.normalMap, m.roughnessMap].forEach((t) => { t.repeat.set(rx, ry); t.needsUpdate = true; }); return m; };
   const RED = paint(0xff5a2a, 1, 1), WHT = paint(0xf2f0ea, 1, 1), GRY = paint(0xb0b6bd, 2, 2);
   const tower = new T.Group(); scene.add(tower);
@@ -41,10 +41,10 @@
       tube(new T.Vector3(sx * b, y1, sz * b), new T.Vector3(nx * b, y1, nz * b), r * 0.7, m);
       tube(new T.Vector3(sx * a, y0, sz * a), new T.Vector3(nx * b, y1, nz * b), r * 0.55, m); tube(new T.Vector3(nx * a, y0, nz * a), new T.Vector3(sx * b, y1, sz * b), r * 0.55, m); } }
   const deck = (y, s, h) => { const m = new T.Mesh(new T.BoxGeometry(s, h, s), GRY); m.position.y = y; m.castShadow = m.receiveShadow = true; tower.add(m); }; deck(150, 34, 9); deck(250, 12, 6);
-  const plat = new T.Mesh(new T.CylinderGeometry(1.5, 1.5, 0.12, 28), paint(0x8f969e, 2, 2)); plat.position.y = TOP - 0.06; plat.castShadow = plat.receiveShadow = true; tower.add(plat);
-  for (let i = 0; i < 12; i++) { const a = i / 12 * 6.283; if (Math.abs(a - Math.PI / 2 * 0) < 0.6 || a > 5.7) continue; tube(new T.Vector3(Math.cos(a) * 1.42, TOP, Math.sin(a) * 1.42), new T.Vector3(Math.cos(a) * 1.42, TOP + 1.05, Math.sin(a) * 1.42), 0.016, WHT); }
+  const plat = new T.Mesh(new T.CylinderGeometry(2.1, 2.1, 0.12, 36), paint(0x8f969e, 2, 2)); plat.position.y = TOP - 0.06; plat.castShadow = plat.receiveShadow = true; tower.add(plat);
+  for (let i = 0; i < 12; i++) { const a = i / 12 * 6.283; if (Math.sin(a) > -0.2 || Math.cos(a) > 0.6) continue; tube(new T.Vector3(Math.cos(a) * 2.0, TOP, Math.sin(a) * 2.0), new T.Vector3(Math.cos(a) * 2.0, TOP + 1.05, Math.sin(a) * 2.0), 0.016, WHT); }
   // 人物と紙飛行機
-  const ch = await AutoAssets.loadCharacter(CH), holder = new T.Group(); holder.add(ch.root); holder.position.set(0, TOP, 0); holder.rotation.y = Math.PI / 2; scene.add(holder);
+  const ch = await AutoAssets.loadCharacter(CH), holder = new T.Group(); holder.add(ch.root); holder.position.set(CH === "human01" ? -0.75 : 0, TOP, 0); holder.rotation.y = Math.PI / 2; scene.add(holder);
   const plane = await AutoAssets.loadModel("paper_plane"); plane.traverse((o) => { if (o.isMesh) { o.material.side = T.DoubleSide; o.castShadow = true; } }); const pg = new T.Group(); plane.scale.setScalar(0.45); pg.add(plane); scene.add(pg);
   const ease = (x) => { x = Math.min(1, Math.max(0, x)); return x * x * (3 - 2 * x); }, mix = (a, b, k) => a.map((v, i) => v + (b[i] - v) * k), hv = new T.Vector3();
   const T0 = 1.3, REL = ch.releaseTime || 0.73; ch.play("throw", REL); holder.updateMatrixWorld(true); ch.handR.getWorldPosition(hv); const rel = [hv.x, hv.y + 0.03, hv.z];
@@ -54,7 +54,7 @@
     holder.updateMatrixWorld(true); ch.handR.getWorldPosition(hv); let P;
     if (tt < REL) { P = [hv.x, hv.y + 0.03, hv.z]; pg.position.set(...P); pg.lookAt(P[0] + 1, P[1] + 0.12, P[2]); }
     else { const s = tt - REL, x = rel[0] + 7.5 * s; P = [x, rel[1] - (x - rel[0]) / 6 + 0.25 * (1 - Math.exp(-s * 3)), rel[2]]; pg.position.set(...P); pg.lookAt(P[0] + 6, P[1] - 1, P[2]); }
-    const k = ease((tt - REL - 0.1) / 1.6), c0 = [3.1 - 0.5 * ease(t / T0), TOP + 1.55, 3.4], l0 = [0.25, TOP + 1.12, 0];
+    const k = ease((tt - REL - 0.1) / 1.6), c0 = [2.4 - 0.4 * ease(t / T0), TOP + 1.5, 5.0], l0 = [0.05, TOP + 1.0, 0];
     const cp = mix(c0, [P[0] - 3.2, P[1] + 0.9, 3.6], k), lk = mix(l0, [P[0] + 0.3, P[1] - 0.15, 0], k);
     camera.position.set(...cp); camera.lookAt(...lk);
     sun.target.position.set(...lk); sun.position.set(lk[0] + SD.x * 60, lk[1] + SD.y * 60, lk[2] + SD.z * 60); const sc = sun.shadow.camera; sc.left = sc.bottom = -7; sc.right = sc.top = 7; sc.near = 20; sc.far = 100; sc.updateProjectionMatrix();

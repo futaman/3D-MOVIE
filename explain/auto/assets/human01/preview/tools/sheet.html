@@ -1,0 +1,31 @@
+<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;background:#ccd}#wrap{position:relative}canvas{display:block}.lb{position:absolute;font:12px sans-serif;color:#123;background:#fffb;padding:1px 4px}</style></head><body><div id="wrap"><canvas id="gl"></canvas></div>
+<script src="file:///home/user/3D-MOVIE/explain/auto/lib/vendor/three.min.js"></script><script src="file:///home/user/3D-MOVIE/explain/auto/lib/assets.js"></script>
+<script>
+window.drawSheet=async function(spec){ // spec:{name,base,cw,ch,cols,cells:[{clip,t,az,el,dist,ty,label,blend,hide:[..],plane}]}
+  const T=THREE,cw=spec.cw,chh=spec.ch,cols=spec.cols,rows=Math.ceil(spec.cells.length/cols);
+  const cv=document.getElementById('gl');const r=new T.WebGLRenderer({canvas:cv,antialias:true,preserveDrawingBuffer:true});
+  r.setPixelRatio(1);r.setSize(cw*cols,chh*rows);r.outputEncoding=T.sRGBEncoding;r.toneMapping=T.ACESFilmicToneMapping;r.toneMappingExposure=spec.exposure||1.0;
+  r.shadowMap.enabled=true;r.shadowMap.type=T.PCFSoftShadowMap;r.setScissorTest(true);
+  const sc=new T.Scene();sc.background=new T.Color(spec.bg||'#b9def3');
+  sc.add(new T.HemisphereLight(0xffffff,0x8899aa,0.55));const d=new T.DirectionalLight(0xfff4e6,1.0);d.position.set(2.5,5,4);d.castShadow=true;d.shadow.mapSize.set(2048,2048);d.shadow.bias=-0.0005;d.shadow.normalBias=0.02;
+  Object.assign(d.shadow.camera,{left:-2,right:2,top:3,bottom:-1,near:0.5,far:15});sc.add(d);
+  const g=new T.Mesh(new T.PlaneGeometry(20,20),new T.MeshStandardMaterial({color:0x9fc48a,roughness:1}));g.rotation.x=-Math.PI/2;g.receiveShadow=true;sc.add(g);
+  const o={baseUrl:spec.base,receiveShadow:true};
+  const ch=await AutoAssets.loadCharacter(spec.name,o);sc.add(ch.root);window.ch=ch;
+  let pl=null;if(spec.plane!==false){pl=await AutoAssets.loadModel('paper_plane');pl.scale.setScalar(0.3);sc.add(pl);}
+  const cam=new T.PerspectiveCamera(30,cw/chh,0.05,50);const wrap=document.getElementById('wrap');const out=[];
+  const has=n=>!!ch.clips[n];
+  spec.cells.forEach((c,i)=>{const cx=i%cols,cy=Math.floor(i/cols);
+    if(c.blend)ch.blend(...c.blend);else if(c.clip&&has(c.clip))ch.play(c.clip,c.t);else ch.reset();
+    ch.root.traverse(n=>{if(n.userData.__h){n.visible=true;n.userData.__h=0;}});
+    (c.hide||[]).forEach(n=>{const x=ch.bones[n];if(x){x.visible=false;x.userData.__h=1;}});
+    const hold=c.plane===undefined?((c.clip==='hold')||(c.clip==='throw'&&c.t<=ch.releaseTime)):c.plane;if(pl)pl.visible=!!hold;
+    if(pl&&pl.visible&&ch.handR){ch.handR.updateWorldMatrix(true,false);ch.handR.matrixWorld.decompose(pl.position,pl.quaternion,new T.Vector3());pl.translateZ(0.05);}
+    const az=(c.az||0)*Math.PI/180,el=(c.el===undefined?8:c.el)*Math.PI/180,dist=c.dist||4.6,ty=c.ty===undefined?0.88:c.ty,tz=c.tz||0,tx=c.tx||0;
+    cam.position.set(tx+Math.sin(az)*Math.cos(el)*dist,ty+Math.sin(el)*dist,tz+Math.cos(az)*Math.cos(el)*dist);cam.lookAt(tx,ty,tz);
+    const y=(rows-1-cy)*chh;r.setViewport(cx*cw,y,cw,chh);r.setScissor(cx*cw,y,cw,chh);r.render(sc,cam);
+    const l=document.createElement('div');l.className='lb';l.style.left=(cx*cw+3)+'px';l.style.top=(cy*chh+3)+'px';l.textContent=c.label||((c.clip||'rest')+' t='+(c.t||0)+(c.az?' az'+c.az:''));wrap.appendChild(l);
+    const p=new T.Vector3();if(ch.handR)ch.handR.getWorldPosition(p);out.push([c.clip,c.t,p.toArray().map(x=>+x.toFixed(3))]);});
+  return {out,clips:ch.clips,rel:ch.releaseTime,size:[cw*cols,chh*rows]};
+};
+</script></body></html>

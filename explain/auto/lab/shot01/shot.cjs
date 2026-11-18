@@ -7,7 +7,7 @@ const mime = { ".html": "text/html", ".js": "text/javascript", ".jpg": "image/jp
   const srv = http.createServer((q, r) => { const f = path.join(root, decodeURIComponent(q.url.split("?")[0])); if (!f.startsWith(root) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) { r.writeHead(404); return r.end(); } r.writeHead(200, { "content-type": mime[path.extname(f)] || "application/octet-stream" }); fs.createReadStream(f).pipe(r); });
   await new Promise((ok) => srv.listen(0, "127.0.0.1", ok));
   const b = await chromium.launch({ args: ["--enable-unsafe-swiftshader", "--ignore-gpu-blocklist", "--use-gl=angle", "--use-angle=swiftshader"] }), p = await b.newPage({ viewport: { width: 540, height: 960 }, deviceScaleFactor: 2 });
-  p.on("console", (m) => m.type() === "error" && console.log("console:", m.text())); p.on("pageerror", (e) => console.log("pageerror:", e.message));
+  p.on("console", (m) => m.type() === "error" && console.log("console:", m.text())); p.on("response", (r) => r.status() >= 400 && console.log("http", r.status(), r.url())); p.on("requestfailed", (r) => console.log("failed", r.url().slice(0, 120), r.failure().errorText)); p.on("pageerror", (e) => console.log("pageerror:", e.message));
   await p.goto(`http://127.0.0.1:${srv.address().port}/lab/shot01/index.html?ch=${who}`); await p.waitForFunction("window.__READY", null, { timeout: 120000 });
   const err = await p.evaluate("window.__ERR"); if (err) { console.log(err); process.exit(1); }
   const dur = await p.evaluate("window.DUR");

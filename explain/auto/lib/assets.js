@@ -18,7 +18,7 @@
   var T = window.THREE;
   var here = (document.currentScript && document.currentScript.src) || location.href;
   var LIB = here.replace(/[^\/]*$/, "");
-  var DIRS = { keisan: "../assets/character/", paper_plane: "../assets/character/" };
+  var DIRS = { keisan: "../assets/character/", paper_plane: "../assets/character/", human01: "../assets/human01/" };
 
   function addScript(url) {
     return new Promise(function (ok, ng) {
