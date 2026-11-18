@@ -9,6 +9,7 @@
   const qa = []; window.__QA = qa;
   const renderer = new T.WebGLRenderer({ canvas: document.getElementById("gl"), antialias: true, preserveDrawingBuffer: true, logarithmicDepthBuffer: true });
   renderer.setPixelRatio(S); renderer.setSize(W, H, false);
+  renderer.shadowMap.enabled = true; renderer.shadowMap.type = T.PCFSoftShadowMap;
   const ov = document.getElementById("ov"); ov.width = W * S; ov.height = H * S; const ctx = ov.getContext("2d");
   const scene = new T.Scene(), camera = new T.PerspectiveCamera(40, W / H, 0.01, 2e5);
   let labels = [];

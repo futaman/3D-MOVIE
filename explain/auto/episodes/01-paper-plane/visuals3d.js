@@ -14,7 +14,15 @@
   const beam = (parent, a, b, r, c) => { const m = new T.Mesh(new T.CylinderGeometry(1, 1, 1, 6), new T.MeshBasicMaterial({ color: new T.Color(c) })); setBeam(m, a, b, r); parent.add(m); return m; };
   const mix = (a, b, t) => a.map((v, i) => v + (b[i] - v) * t);
   const set = (name) => { const s = new T.Group(); s.visible = false; g.scene.add(s); sets[name] = s; return s; };
-  const show = (name, sky, near, far) => { for (const k in sets) sets[k].visible = k === name; g.scene.background = new T.Color(sky); g.scene.fog = far ? new T.Fog(new T.Color(sky), near, far) : null; };
+  const skies = {};
+  const skyTex = (top, bottom) => { const k = top + bottom; if (skies[k]) return skies[k]; const c = document.createElement("canvas"); c.width = 2; c.height = 256; const x = c.getContext("2d"), gr = x.createLinearGradient(0, 0, 0, 256); gr.addColorStop(0, top); gr.addColorStop(0.62, bottom); gr.addColorStop(1, bottom); x.fillStyle = gr; x.fillRect(0, 0, 2, 256); return (skies[k] = new T.CanvasTexture(c)); };
+  const show = (name, sky, near, far, top) => { for (const k in sets) sets[k].visible = k === name; g.scene.background = top ? skyTex(top, sky) : new T.Color(sky); g.scene.fog = far ? new T.Fog(new T.Color(sky), near, far) : null; };
+  // カメラを置き、注視点のまわりに影の範囲を合わせる
+  const cam = (pos, look, fov = 40, size) => { g.cam(pos, look, fov); const d = size || Math.hypot(pos[0] - look[0], pos[1] - look[1], pos[2] - look[2]) * 0.8, c = W.sun.shadow.camera;
+    W.sun.target.position.set(...look); W.sun.position.set(look[0] - d * 1.2, look[1] + d * 2.4, look[2] + d * 1.7); c.left = c.bottom = -d; c.right = c.top = d; c.near = d * 0.2; c.far = d * 7; c.updateProjectionMatrix(); W.sun.shadow.normalBias = d * 0.004; };
+  const waterTex = () => { const c = document.createElement("canvas"); c.width = c.height = 256; const x = c.getContext("2d"), r = rng(9); x.fillStyle = "#3a8ccc"; x.fillRect(0, 0, 256, 256);
+    for (let i = 0; i < 90; i++) { x.fillStyle = r() < 0.5 ? "rgba(255,255,255,.16)" : "rgba(20,70,130,.2)"; x.beginPath(); x.ellipse(r() * 256, r() * 256, 10 + r() * 26, 1.5 + r() * 2.5, 0, 0, 7); x.fill(); }
+    const t = new T.CanvasTexture(c); t.wrapS = t.wrapT = T.RepeatWrapping; return t; };
   const cloud = (parent, x, y, z, s, seed = 1) => { const r = rng(seed * 97 + 3), c = new T.Group(); for (let i = 0; i < 4; i++) { const m = add(c, new T.SphereGeometry(1, 8, 6), M("#ffffff", { emissive: new T.Color("#9fb4c8"), flatShading: false }), (i - 1.5) * 1.1 + r() * 0.4, r() * 0.4, r() * 0.8); m.scale.set(1 + r() * 0.5, 0.55 + r() * 0.25, 0.9 + r() * 0.4); } c.position.set(x, y, z); c.scale.setScalar(s); parent.add(c); return c; };
   const inPoly = (x, y, poly) => { let c = false; for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) { const [xi, yi] = poly[i], [xj, yj] = poly[j]; if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) c = !c; } return c; };
 
@@ -76,7 +84,7 @@
     for (let i = 0; i < 9; i++) cloud(s, -150 + i * 70 + (i % 3) * 20, 62 + (i % 4) * 9, -160 - (i % 3) * 60, 9 + (i % 3) * 3, i + 1);
     // 寸法線と 1:6 の三角形
     const dim = new T.Group(); s.add(dim); beam(dim, [-9.5, 0, 0], [-9.5, 33.3, 0], 0.16, "#ffd84a"); beam(dim, [-11, 0, 0], [-8, 0, 0], 0.16, "#ffd84a"); beam(dim, [-11, 33.3, 0], [-8, 33.3, 0], 0.16, "#ffd84a");
-    const tri = new T.Group(); s.add(tri); beam(tri, [3, 32.8, 0], [15, 32.8, 0], 0.09, "#ffd84a"); beam(tri, [15, 32.8, 0], [15, 30.8, 0], 0.09, "#ffd84a"); beam(tri, [3, 32.8, 0], [15, 30.8, 0], 0.09, "#ffffff");
+    const tri = new T.Group(); s.add(tri); beam(tri, [0.9, 34.6, 0], [5.7, 34.6, 0], 0.03, "#ffd84a"); beam(tri, [5.7, 34.6, 0], [5.7, 33.8, 0], 0.03, "#ffd84a"); beam(tri, [0.9, 34.6, 0], [5.7, 33.8, 0], 0.02, "#ffffff"); W.ghost = makePlane(); tri.add(W.ghost);
     W.dim = dim; W.tri = tri;
   }
   const TOP = [0, 33.38, 0], CS = 0.75;
@@ -128,7 +136,7 @@
   /* ---- E: 東京 → 浜名湖の地図(1 = 1 km、実寸。+x が進む向き(西)、+z が北) ---- */
   function buildMap() {
     const s = set("map"); add(s, new T.PlaneGeometry(4000, 4000).rotateX(-Math.PI / 2), M("#2f7fc4"));
-    const coast = [[-300, -25], [-5, -25], [10, -8], [30, -10], [40, 6], [72, 8], [82, -10], [92, -50], [104, -48], [110, -5], [118, 10], [150, 8], [165, -12], [185, -22], [215, -8], [240, -7], [600, -12], [600, 900], [-300, 900]];
+    const coast = [[-300, -25], [-5, -25], [10, -8], [30, -10], [40, 6], [72, 8], [82, -10], [92, -50], [104, -48], [110, -5], [118, 10], [150, 8], [165, -12], [185, -22], [215, -8], [240, -7], [3000, -12], [3000, 3000], [-300, 3000]];
     const sh = new T.Shape(); coast.forEach(([x, z], i) => (i ? sh.lineTo(x, z) : sh.moveTo(x, z)));
     const land = add(s, new T.ExtrudeGeometry(sh, { depth: 0.3, bevelEnabled: false }), M("#80b46f")); land.rotation.x = -Math.PI / 2; land.scale.y = -1; // (x, z) → (x, 0, z)
     land.material = M("#80b46f", { side: T.DoubleSide });
@@ -144,7 +152,7 @@
   /* ---- F: 浜名湖(1 = 100 m。+x が東、+z が南) ---- */
   const LAKE = [[-4, 50], [-30, 52], [-55, 40], [-62, 15], [-50, -10], [-58, -35], [-40, -55], [-20, -45], [-5, -62], [15, -50], [30, -60], [45, -40], [40, -15], [58, 5], [50, 30], [28, 48], [4, 50]];
   function buildLake() {
-    const s = set("lake"); add(s, new T.PlaneGeometry(6000, 6000).rotateX(-Math.PI / 2), M("#3c8fd0", { flatShading: false }));
+    const s = set("lake"); W.water = waterTex(); W.water.repeat.set(260, 260); add(s, new T.PlaneGeometry(6000, 6000).rotateX(-Math.PI / 2), new T.MeshStandardMaterial({ map: W.water, roughness: 0.35, metalness: 0.1 }));
     const pts = [[-900, 80], [-4, 80], ...LAKE, [4, 80], [900, 80], [900, -1200], [-900, -1200]];
     const sh = new T.Shape(); pts.forEach(([x, z], i) => (i ? sh.lineTo(x, z) : sh.moveTo(x, z)));
     const land = add(s, new T.ExtrudeGeometry(sh, { depth: 0.8, bevelEnabled: false }), M("#7fb56c", { side: T.DoubleSide })); land.rotation.x = Math.PI / 2; land.position.y = 0.8;
@@ -172,88 +180,89 @@
     em.instanceMatrix.needsUpdate = true;
   }
   const LAND = [5, 0.35, 5];
-  const floatPlane = (t) => fly([LAND[0], LAND[1] + Math.sin(t * 2) * 0.08, LAND[2]], [-1, 0, 0.15], 5);
+  const floatPlane = (t) => { W.water.offset.set(t * 0.012, t * 0.007); fly([LAND[0], LAND[1] + Math.sin(t * 2) * 0.08, LAND[2]], [-1, 0, 0.15], 5); };
 
   /* ---- 場面ごとの動き ---- */
   const S = {
     s1(p, t) {
-      show("city", "#a4d6f3", 180, 700); place(...TOP, CS); pose(p > 0.8 ? g.seg(p, 0.8, 1) * 0.35 : 0); inHand(0.55);
-      const k = g.ease(p); g.cam(mix([30, 26, 70], [3.4, 35.1, 5], k), mix([0, 21, 0], [0.3, 34.2, 0], k));
+      show("city", "#b9def3", 180, 700, "#4a98dc"); place(...TOP, CS); pose(p > 0.8 ? g.seg(p, 0.8, 1) * 0.35 : 0); inHand(0.55);
+      const k = g.ease(p); cam(mix([30, 26, 70], [3.4, 35.1, 5], k), mix([0, 21, 0], [0.3, 34.2, 0], k));
     },
     s2(p, t) {
-      show("city", "#a4d6f3", 180, 700); place(...TOP, CS); pose(0); inHand(0.55);
-      const k = g.ease(g.seg(p, 0.36, 0.5)); g.cam(mix([-3, 19, 100], [10, 32.6, 30], k), mix([-3, 14, 0], [8.5, 31.4, 0], k));
+      show("city", "#b9def3", 180, 700, "#4a98dc"); place(...TOP, CS); pose(0); inHand(0.55);
+      const k = g.ease(g.seg(p, 0.36, 0.5)); cam(mix([-3, 19, 100], [3, 34.5, 19], k), mix([-3, 14, 0], [3, 34.0, 0], k));
       W.dim.visible = p < 0.45; W.tri.visible = p > 0.46;
       if (p > 0.06 && p < 0.4) g.label("333 m", [-9.5, 18, 0], { size: 34, dx: -62, color: "#ffd84a" });
-      if (p > 0.55) { g.label("6 m 進む", [9, 32.8, 0], { size: 25, dy: -22, color: "#ffd84a" }); g.label("1 m 落ちる", [15, 31.8, 0], { size: 25, dx: 68, color: "#ffd84a" }); }
+      if (p > 0.55) { g.label("6 m 進む", [3.3, 34.6, 0], { size: 27, dy: -24, color: "#ffd84a" }); g.label("1 m 落ちる", [5.7, 34.2, 0], { size: 27, dx: -4, dy: 52, color: "#ffd84a" }); }
+      const gf = ((p - 0.5) * 2.6) % 1; W.ghost.position.set(0.9 + 4.8 * gf, 34.6 - 0.8 * gf + 0.12, 0); W.ghost.scale.setScalar(0.5); W.ghost.lookAt(100, 34.6 - 99.1 / 6, 0);
     },
     s3(p, t, dur) {
-      show("city", "#a4d6f3", 180, 700); place(...TOP, CS);
+      show("city", "#b9def3", 180, 700, "#4a98dc"); place(...TOP, CS);
       const rel = pose(g.seg(p, 0, 0.13)), f = g.seg(p, 0.104, 0.8); let P;
       if (!rel) { P = inHand(0.55); } else { if (!W.rel3) W.rel3 = handPos(); P = cityPath(f, W.rel3); const P2 = cityPath(Math.min(1, f + 0.01), W.rel3); const sc = g.lerp(0.55, 2.4, g.ease(g.seg(f, 0, 0.1)));
         if (f < 1) fly(P, [P2[0] - P[0], P2[1] - P[1], 0], sc); else fly(P, [1, 0, 0], sc); trailTo([W.rel3[0], W.rel3[1], 0], P, 0.07); }
       const k = g.ease(g.seg(p, 0.09, 0.26)), e = g.ease(g.seg(p, 0.8, 1));
-      g.cam(mix([3.4, 35.1, 5], [P[0] - 9 + e * 5, P[1] + 5 - e * 1.5, 25 - e * 5], k), mix([0.3, 34.2, 0], [P[0] + 4, P[1] - 1.5, 0], k));
+      cam(mix([3.4, 35.1, 5], [P[0] - 9 + e * 5, P[1] + 5 - e * 1.5, 25 - e * 5], k), mix([0.3, 34.2, 0], [P[0] + 4, P[1] - 1.5, 0], k));
       if (rel && f > 0.04) { if (f < 1) g.label(g.num(P[0] / 100, 2) + " km", P, { size: 30, dy: -52, color: "#ffd84a", loose: true }); else g.screen("約 2 km", 270, 300, { size: 54, color: "#ffd84a" }); }
       if (Math.abs(P[0] - 140) < 45) g.label("六本木ヒルズ", [148, 25, -16], { size: 24, dy: -20, loose: true });
     },
     s4(p, t) {
-      show("city", "#a4d6f3", 180, 700); place(...TOP, CS); pose(0); inHand(0.55);
+      show("city", "#b9def3", 180, 700, "#4a98dc"); place(...TOP, CS); pose(0); inHand(0.55);
       ch.head.rotation.y = Math.sin(g.seg(p, 0.08, 0.42) * Math.PI * 4) * 0.5; ch.head.rotation.x = -0.75 * g.ease(g.seg(p, 0.48, 0.7));
-      const k = g.ease(g.seg(p, 0.55, 1)); g.cam(mix([3.4, 35.1, 5], [4.2, 34.2, 6], k), mix([0.3, 34.2, 0], [-1.5, 42, -5], k));
+      const k = g.ease(g.seg(p, 0.55, 1)); cam(mix([3.4, 35.1, 5], [2.6, 33.7, 3.6], k), mix([0.3, 34.2, 0], [0.1, 34.9, 0], k));
     },
     s5(p, t) {
-      show("fuji", "#8ccaf2", 260, 1500); place(0, 37.6, 0, 2.2); const rel = pose(g.seg(p, 0.04, 0.26)), f = g.seg(p, 0.216, 0.95); let P;
+      show("fuji", "#b4dbf3", 260, 1500, "#4a98dc"); place(0, 37.6, 0, 2.2); const rel = pose(g.seg(p, 0.04, 0.26)), f = g.seg(p, 0.216, 0.95); let P;
       if (!rel) P = inHand(1.4); else { if (!W.rel5) W.rel5 = handPos(); const R = W.rel5, x = R[0] + (226.6 - R[0]) * f; P = [x, Math.max(0.6, 37.76 - x / 6 + (R[1] - 37.76 + R[0] / 6) * Math.exp(-(x - R[0]) / 20)), 0]; fly(P, [6, f < 1 ? -1 : 0, 0], g.lerp(1.4, 7, g.ease(g.seg(f, 0, 0.15)))); trailTo([R[0], R[1], 0], P, 0.22); }
-      const k = g.ease(g.seg(p, 0.2, 0.42)); g.cam(mix([9, 41.4, 13], [-62, 58, 40], k), mix([0.6, 40.2, 0], [120, 6, 0], k));
+      const k = g.ease(g.seg(p, 0.2, 0.42)); cam(mix([9, 41.4, 13], [-62, 58, 40], k), mix([0.6, 40.2, 0], [120, 6, 0], k));
       W.ring.visible = rel;
       if (p < 0.2) g.label("3,776 m", [0, 43.6, 0], { size: 32, dy: -30, color: "#ffd84a" });
       if (rel && f > 0.12) { if (f < 1) g.label(g.num(P[0] / 10, 1) + " km", P, { size: 28, dy: -40, color: "#ffd84a", loose: true }); else g.screen("約 23 km", 270, 240, { size: 54, color: "#ffd84a" }); }
     },
     s6(p, t, dur) {
-      show("jet", "#4d9eea", 300, 900); place(6, 2.2, 0, 1.7);
+      show("jet", "#7fbdf0", 300, 900, "#2f7bd6"); place(6, 2.2, 0, 1.7);
       const { im, d } = W.jetClouds, o = new T.Object3D(); d.forEach(([x, y, z, sc], i) => { o.position.set(((x - 70 * t) % 700 + 700) % 700 - 420, y, z); o.scale.set(sc * 1.6, sc * 0.45, sc); o.updateMatrix(); im.setMatrixAt(i, o.matrix); }); im.instanceMatrix.needsUpdate = true;
       const u = g.seg(p, 0.2, 0.46), rel = pose(u), tr = dur * (0.2 + 0.26 * 0.8), q = t - tr;
       if (!rel) inHand(1.1); else { if (!W.rel6) W.rel6 = handPos(); const R = W.rel6; fly([R[0] + 3 * Math.min(q, 0.25) - 42 * Math.max(0, q - 0.12) , R[1] - 5.5 * q, R[2] + 1.5 * q], [1, -0.16, 0], 2.2); ch.head.rotation.y = Math.PI * g.ease(g.seg(q, 0.15, 0.6)) * 0.9; }
-      g.cam([50 + 5 * p, 13, 44 - 4 * p], [-1, 1.5, 0]);
+      cam([50 + 5 * p, 13, 44 - 4 * p], [-1, 1.5, 0]);
       g.screen("高度 10,000 m", 270, 150, { size: 38, color: "#ffd84a" });
       if (p > 0.6) g.screen("飛距離 60 km", 270, 205, { size: 38, alpha: g.seg(p, 0.6, 0.68) });
     },
     s7(p, t) {
       show("strat", "#050a1c"); W.balloon.position.y = Math.sin(t * 0.8) * 0.15; place(0, W.balloon.position.y, 0, 1.15); ch.helmet.visible = true;
       const rel = pose(p > 0.72 ? g.seg(p, 0.72, 0.99) : 0); if (!rel) inHand(0.8); else { const q = g.seg(p, 0.936, 1); if (!W.rel7) W.rel7 = handPos(); fly([W.rel7[0] + q * 9, W.rel7[1] - q * 1.5, 0], [6, -1, 0], 0.8 + q); }
-      const k = g.ease(p); g.cam(mix([5, 16, 15], [9.5, 4.2, 12.5], k), mix([0, 6, 0], [0.5, 1.4, 0], k), 62);
+      const k = g.ease(p); cam(mix([5, 16, 15], [9.5, 4.2, 12.5], k), mix([0, 6, 0], [0.5, 1.4, 0], k), 62);
       if (p > 0.1) g.screen("高度 37 km", 270, 150, { size: 42, color: "#ffd84a", alpha: g.seg(p, 0.1, 0.2) });
     },
     s8(p, t) {
       const f = 0.02 + p * 0.9, P = [221 * f, 37 * (1 - f), 0], h = P[1] / 37;
       show("map", "#" + new T.Color("#9ccdf0").lerp(new T.Color("#0a1434"), g.clamp(h * 1.15 - 0.1)).getHexString()); ch.root.visible = false;
       fly(P, [6, -1, 0], 3.4); trailTo([0, 37, 0], P, 0.12);
-      g.cam([P[0] - 30, P[1] + 10, P[2] - 17], [P[0] + 16, P[1] - 6, P[2] + 7], 44);
+      cam([P[0] - 32, P[1] + 11, P[2] - 7], [P[0] + 20, P[1] - 7, P[2] + 4], 44, 60);
       g.label(g.num(P[0], 0) + " km", P, { size: 30, dy: -64, color: "#ffd84a" });
       if (f > 0.2 && f < 0.56) g.label("富士山", [97, 4.2, 12], { size: 26, dy: -18, loose: true });
       if (f < 0.2) g.label("東京", [0, 3, 0], { size: 24, dy: -14, loose: true });
     },
     s9(p, t, dur) {
-      show("lake", "#a9d9f2", 500, 1900); ch.root.visible = false; eels(t, false); W.train.visible = false;
+      show("lake", "#bfe2f4", 500, 1900, "#4a98dc"); ch.root.visible = false; eels(t, false); W.train.visible = false;
       const f = g.seg(p, 0, 0.55), tl = Math.max(0, t - dur * 0.55);
-      if (f < 1) { const P = mix([96, 15.5, 5], LAND, f); fly(P, [-6, -1, 0], 5); } else floatPlane(tl);
+      W.water.offset.set(t * 0.012, t * 0.007); if (f < 1) { const P = mix([96, 15.5, 5], LAND, f); fly(P, [-6, -1, 0], 5); } else floatPlane(tl);
       W.ripples.forEach((r, i) => { const a = (tl * 0.55 + i / 3) % 1; r.visible = f >= 1; r.scale.setScalar(2 + a * 16); r.material.opacity = (1 - a) * 0.8; });
-      const k = g.ease(p); g.cam(mix([40, 85, 215], [26, 30, 92], k), mix([0, 0, 12], [6, 0, 10], k));
+      const k = g.ease(p); cam(mix([40, 85, 215], [26, 30, 92], k), mix([0, 0, 12], [6, 0, 10], k));
       if (f < 1) g.label(g.num(204 + 18 * f, 0) + " km", plane.position, { size: 26, dy: -40, color: "#ffd84a", loose: true });
       if (p > 0.5) g.screen("浜名湖", 270, 190, { size: 46 + 26 * g.out(g.seg(p, 0.5, 0.62)), alpha: g.seg(p, 0.5, 0.58) });
     },
     s10(p, t) {
-      show("lake", "#a9d9f2", 500, 1900); ch.root.visible = false; W.train.visible = false; floatPlane(t + 9); W.ripples.forEach((r) => (r.visible = false));
+      show("lake", "#bfe2f4", 500, 1900, "#4a98dc"); ch.root.visible = false; W.train.visible = false; floatPlane(t + 9); W.ripples.forEach((r) => (r.visible = false));
       const b = p > 0.47; eels(t, b);
-      if (!b) { const k = g.ease(p / 0.47); g.cam(mix([30, 50, 160], [22, 62, 176], k), mix([0, 0, 52], [0, 0, 60], k)); if (p > 0.06) { g.label("海", [-55, 0, 108], { size: 40, loose: true }); g.label("浜名湖", [0, 0, 8], { size: 30, loose: true }); g.label("ここでつながる", [0, 3, 66], { size: 24, dy: -26, color: "#ffd84a", loose: true }); } }
-      else { const k = g.ease(g.seg(p, 0.47, 1)); g.cam(mix([40, 10, 46], [34, 7, 40], k), [6, 2.4, 6]); g.screen("うなぎ(大きさは誇張)", 270, 160, { size: 26, color: "#ffd84a" }); }
+      if (!b) { const k = g.ease(p / 0.47); cam(mix([30, 50, 160], [22, 62, 176], k), mix([0, 0, 52], [0, 0, 60], k)); if (p > 0.06) { g.label("海", [-55, 0, 108], { size: 40, loose: true }); g.label("浜名湖", [0, 0, 8], { size: 30, loose: true }); g.label("ここでつながる", [0, 3, 66], { size: 24, dy: -26, color: "#ffd84a", loose: true }); } }
+      else { const k = g.ease(g.seg(p, 0.47, 1)); cam(mix([40, 10, 46], [34, 7, 40], k), [6, 2.4, 6]); g.screen("うなぎ(大きさは誇張)", 270, 160, { size: 26, color: "#ffd84a" }); }
     },
     s11(p, t) {
-      show("lake", "#a9d9f2", 500, 1900); eels(t, false); floatPlane(t + 15); W.ripples.forEach((r) => (r.visible = false));
+      show("lake", "#bfe2f4", 500, 1900, "#4a98dc"); eels(t, false); floatPlane(t + 15); W.ripples.forEach((r) => (r.visible = false));
       place(-7.5, 0.8, 70, 2.6, -Math.PI / 2 + 0.2); ch.armR.rotation.set(0, 0, -2.5 + Math.sin(t * 7) * 0.3);
       W.train.visible = true; W.train.position.set(g.lerp(170, -200, g.seg(p, 0.05, 0.9)), 2.78, 42);
-      g.cam([-3 + p * 1.5, 5.2, 88], [-7, 4.2, 50]);
+      cam([-3 + p * 1.5, 5.2, 88], [-7, 4.2, 50]);
       if (p > 0.45) g.screen("東京 → 浜松 約1時間半", 270, 150, { size: 34, color: "#ffd84a", alpha: g.seg(p, 0.45, 0.53) });
     },
   };
@@ -261,11 +270,12 @@
   window.WORLD = {
     init(G) {
       g = G; T = g.T;
-      g.scene.add(new T.HemisphereLight(0xffffff, 0x8a9ab0, 0.62)); const dl = new T.DirectionalLight(0xffffff, 0.55); dl.position.set(-0.5, 1, 0.7); g.scene.add(dl);
+      g.scene.add(new T.HemisphereLight(0xdcecff, 0x8a9ab0, 0.55)); const dl = new T.DirectionalLight(0xfff4e0, 0.75); dl.castShadow = true; dl.shadow.mapSize.set(2048, 2048); dl.shadow.bias = -0.0004; g.scene.add(dl, dl.target); W.sun = dl;
       buildCity(); buildFuji(); buildJet(); buildStrat(); buildMap(); buildLake();
       ch = makeChar(); g.scene.add(ch.root); plane = makePlane(); g.scene.add(plane);
       trail = new T.Mesh(new T.CylinderGeometry(1, 1, 1, 6), new T.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.75 })); g.scene.add(trail);
+      g.scene.traverse((o) => { if (o.isMesh && o.material.isMeshStandardMaterial && !o.material.transparent) { o.castShadow = true; o.receiveShadow = true; } });
     },
-    update(id, p, t, dur) { trail.visible = false; plane.visible = false; ch.root.visible = true; (S[id] || (() => {}))(p, t, dur); },
+    update(id, p, t, dur) { trail.visible = false; W.dim.visible = W.tri.visible = false; plane.visible = false; ch.root.visible = true; (S[id] || (() => {}))(p, t, dur); },
   };
 })();
