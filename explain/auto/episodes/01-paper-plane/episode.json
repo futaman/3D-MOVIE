@@ -1,0 +1,48 @@
+{
+  "id": "01-paper-plane",
+  "title": "東京タワーから紙飛行機を投げたら、どこまで飛ぶ？",
+  "title_band": "紙飛行機はどこまで飛ぶ？",
+  "footer": "模式図・紙飛行機の滑空比は 6 と仮定(空気の薄さや風は無視)",
+  "landing": { "name": "浜名湖", "lat": 34.75, "lon": 137.58 },
+  "places": {
+    "tower": [35.6586, 139.7454],
+    "roppongi": [35.6605, 139.7292],
+    "fuji": [35.3606, 138.7274],
+    "hamanako": [34.75, 137.58]
+  },
+  "checks": [
+    { "id": "glide", "claim": "333 m × 6 ≒ 2 km", "expr": "333*6/1000", "expect": 2.0, "tol": 0.05 },
+    { "id": "roppongi", "claim": "六本木ヒルズまで約 1.5 km(2 km なら少し越える)", "expr": "dist(tower, roppongi)", "expect": 1.5, "tol": 0.1 },
+    { "id": "fuji", "claim": "3,776 m × 6 ≒ 23 km", "expr": "3776*6/1000", "expect": 23, "tol": 0.5 },
+    { "id": "jet", "claim": "10,000 m × 6 = 60 km", "expr": "10000*6/1000", "expect": 60, "tol": 0 },
+    { "id": "strat", "claim": "37 km × 6 = 222 km", "expr": "37*6", "expect": 222, "tol": 0 },
+    { "id": "reach", "claim": "東京タワーから浜名湖まで約 222 km", "expr": "dist(tower, hamanako)", "expect": 222, "tol": 5 },
+    { "id": "fuji_side", "claim": "経路は富士山の南 約 12 km を通る(真上は通らない)", "expr": "xtrack(tower, hamanako, fuji)", "expect": 12, "tol": 2 },
+    { "id": "fuji_along", "claim": "富士山の横を通るのは出発から約 100 km(絵の位置)", "expr": "along(tower, hamanako, fuji)", "expect": 100, "tol": 6 }
+  ],
+  "facts": [
+    { "claim": "東京タワーの高さは 333 m", "source": "東京タワー公式", "status": "confirmed" },
+    { "claim": "富士山の標高は 3,776 m", "source": "国土地理院", "status": "confirmed" },
+    { "claim": "旅客機の巡航高度は約 1 万 m", "source": "一般的な値(約 10〜12 km)", "status": "confirmed" },
+    { "claim": "紙飛行機の滑空比 6", "source": "仮定として明示(実際は機体と投げ方で大きく変わる)", "status": "assumption" },
+    { "claim": "浜名湖は海とつながった汽水湖で、うなぎの養殖で知られる", "source": "静岡県・浜松市の観光情報", "status": "confirmed" },
+    { "claim": "東京駅から浜松駅まで新幹線(ひかり)で約 1 時間半", "source": "JR 東海の時刻表で要確認", "status": "unverified" }
+  ],
+  "scenes": [
+    { "id": "s1", "narration": "東京タワーのてっぺんから紙飛行機を投げたら、どこまで飛ぶのか。真面目に計算します。", "caption": "東京タワーから紙飛行機\nどこまで飛ぶ？" },
+    { "id": "s2", "narration": "高さは333メートル。紙飛行機は、1メートル落ちる間に6メートル進むとします。", "caption": "高さ 333 m\n1 m 落ちて 6 m 進む" },
+    { "id": "s3", "narration": "飛距離は、333かける6で、およそ2キロ。六本木ヒルズを少し越えて、着地です。", "caption": "333 × 6 ≒ 2 km\n六本木ヒルズを少し越える" },
+    { "id": "s4", "narration": "物足りないので、投げる高さを上げていきます。", "caption": "もっと高くから投げよう" },
+    { "id": "s5", "narration": "富士山の頂上、3776メートルからなら、約23キロ。", "caption": "富士山頂 3,776 m\n→ 約 23 km" },
+    { "id": "s6", "narration": "旅客機が飛ぶ高度1万メートルからなら、60キロ。", "caption": "高度 10,000 m\n→ 60 km" },
+    { "id": "s7", "narration": "では、高度37キロ。成層圏から、同じように飛べたとしましょう。", "caption": "高度 37 km(成層圏)から\n同じように飛べたとすると…" },
+    { "id": "s8", "narration": "飛距離は222キロ。東京タワーから西へ、富士山のすぐ南を通って、", "caption": "37 km × 6 ＝ 222 km\n富士山のすぐ南を通過" },
+    { "id": "s9", "narration": "たどり着くのは、静岡県の浜名湖です。", "caption": "着地:浜名湖" },
+    { "id": "s10", "narration": "浜名湖は、海とつながった湖。うなぎの養殖で知られています。", "caption": "浜名湖(静岡県)\n海とつながった湖・うなぎの養殖" },
+    { "id": "s11", "narration": "高度37キロからではなく、東京駅から新幹線でどうぞ。浜松まで、およそ1時間半です。", "caption": "成層圏からではなく新幹線で\n東京 → 浜松 約 1 時間半" }
+  ],
+  "meta": {
+    "tags": ["紙飛行機", "東京タワー", "浜名湖", "物理", "計算してみた"],
+    "description_lead": "東京タワーのてっぺんから紙飛行機を投げたら、どこまで飛ぶのかを計算しました。"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "name": "auto-short",
+  "private": true,
+  "description": "ネタ落ち型の解説ショートを、台本 JSON から MP4 まで自動で作るパイプライン",
+  "scripts": {
+    "make": "node bin/run.mjs",
+    "auth": "node bin/yt-auth.mjs"
+  },
+  "dependencies": { "playwright": "^1.48.0" }
+}
