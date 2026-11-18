@@ -64,6 +64,6 @@
     return sc.id;
   };
   const s = document.createElement("script"); s.src = window.__VISUALS_URL;
-  s.onload = () => { window.__READY = true; }; s.onerror = () => { qa.push("visuals3d.js を読み込めない"); window.__READY = true; };
+  s.onload = async () => { try { if (window.WORLD.preload) await window.WORLD.preload(); } catch (e) { qa.push("アセットを読み込めない: " + e.message); } window.__READY = true; }; s.onerror = () => { qa.push("visuals3d.js を読み込めない"); window.__READY = true; };
   document.body.appendChild(s);
 })();

@@ -1,0 +1,40 @@
+{
+ "fps": 30,
+ "clips": {
+  "idle": {
+   "duration": 2.0,
+   "loop": true
+  },
+  "hold": {
+   "duration": 2.0,
+   "loop": true
+  },
+  "throw": {
+   "duration": 1.2,
+   "loop": false
+  },
+  "shake_head": {
+   "duration": 1.2,
+   "loop": false
+  },
+  "look_up": {
+   "duration": 1.0,
+   "loop": false
+  },
+  "wave": {
+   "duration": 1.6,
+   "loop": true
+  },
+  "walk": {
+   "duration": 1.0,
+   "loop": true
+  }
+ },
+ "height": 1.7,
+ "throw_release_time": 0.7333,
+ "throw_release_hand_pos": [
+  -0.0306,
+  1.1861,
+  0.8052
+ ]
+}

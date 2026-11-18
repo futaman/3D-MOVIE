@@ -26,40 +26,22 @@
   const cloud = (parent, x, y, z, s, seed = 1) => { const r = rng(seed * 97 + 3), c = new T.Group(); for (let i = 0; i < 4; i++) { const m = add(c, new T.SphereGeometry(1, 8, 6), M("#ffffff", { emissive: new T.Color("#9fb4c8"), flatShading: false }), (i - 1.5) * 1.1 + r() * 0.4, r() * 0.4, r() * 0.8); m.scale.set(1 + r() * 0.5, 0.55 + r() * 0.25, 0.9 + r() * 0.4); } c.position.set(x, y, z); c.scale.setScalar(s); parent.add(c); return c; };
   const inPoly = (x, y, poly) => { let c = false; for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) { const [xi, yi] = poly[i], [xj, yj] = poly[j]; if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) c = !c; } return c; };
 
-  /* ---- 固定キャラクター「計算係」(白衣・青緑の帽子・めがね)。正面は +x ---- */
+  /* ---- 固定キャラクター「計算係」(assets/character/keisan.glb)。外側の root は正面 +x ---- */
+  let A = {}, NOW = 0;
   function makeChar() {
-    const root = new T.Group(), b = new T.Group(); b.rotation.y = Math.PI / 2; root.add(b);
-    for (const sx of [-1, 1]) { box(b, 0.2, 0.7, 0.24, "#2c3550", sx * 0.14, 0.35, 0); box(b, 0.22, 0.1, 0.36, "#1b1f2b", sx * 0.14, 0.05, 0.05); }
-    box(b, 0.62, 0.95, 0.38, "#f7f7f2", 0, 1.1, 0); box(b, 0.14, 0.5, 0.02, "#17a89a", 0, 1.3, 0.2);
-    const head = new T.Group(); head.position.set(0, 1.9, 0); b.add(head);
-    add(head, new T.SphereGeometry(0.3, 14, 10), M("#f2c9a0", { flatShading: false }));
-    add(head, new T.SphereGeometry(0.315, 14, 8, 0, Math.PI * 2, 0, Math.PI / 2), M("#17a89a", { flatShading: false }), 0, 0.04, 0);
-    box(head, 0.38, 0.04, 0.24, "#12867b", 0, 0.08, 0.36);
-    for (const sx of [-1, 1]) add(head, new T.TorusGeometry(0.085, 0.022, 6, 14), M("#20242e"), sx * 0.115, -0.03, 0.275);
-    box(head, 0.08, 0.02, 0.02, "#20242e", 0, -0.03, 0.29);
-    const helmet = add(head, new T.SphereGeometry(0.46, 16, 12), new T.MeshStandardMaterial({ color: 0xcfe8ff, transparent: true, opacity: 0.3, roughness: 0.1, depthWrite: false })); helmet.visible = false;
-    const arm = (sx) => { const p = new T.Group(); p.position.set(sx * 0.39, 1.5, 0); b.add(p); box(p, 0.15, 0.62, 0.15, "#f7f7f2", 0, -0.31, 0); const h = add(p, new T.SphereGeometry(0.09, 8, 6), M("#f2c9a0"), 0, -0.68, 0); return { p, h }; };
-    const R = arm(-1), L = arm(1); L.p.rotation.z = 0.12;
-    return { root, head, helmet, armR: R.p, hand: R.h, armL: L.p };
+    const root = new T.Group(); A.ch.root.rotation.y = Math.PI / 2; A.ch.root.traverse((o) => { if (o.isMesh) (Array.isArray(o.material) ? o.material : [o.material]).forEach((m) => { if (!m.__lin) { m.color.convertLinearToSRGB(); m.__lin = 1; } }); }); // プレイヤーは sRGB 出力を使わないので色を合わせる
+    A.ch.root.scale.setScalar(1.3); root.add(A.ch.root);
+    const helmet = new T.Mesh(new T.SphereGeometry(0.36, 18, 14), new T.MeshStandardMaterial({ color: 0xcfe8ff, transparent: true, opacity: 0.28, roughness: 0.1, depthWrite: false })); helmet.position.set(0, 0.2, 0.02); A.ch.head.add(helmet); helmet.visible = false;
+    return { root, helmet, a: A.ch };
   }
-  function makePlane() {
-    const geo = new T.BufferGeometry(), v = [0, 0, 1, 0, 0, -0.6, -0.5, 0.06, -0.6, 0, 0, 1, 0.5, 0.06, -0.6, 0, 0, -0.6, 0, 0, 1, 0, -0.2, -0.6, 0, 0, -0.6];
-    geo.setAttribute("position", new T.Float32BufferAttribute(v, 3)); geo.computeVertexNormals();
-    const grp = new T.Group(); grp.add(new T.Mesh(geo, new T.MeshStandardMaterial({ color: 0xffffff, emissive: 0x8c8c8c, side: T.DoubleSide, flatShading: true, roughness: 1 })));
-    grp.add(new T.LineSegments(new T.EdgesGeometry(geo), new T.LineBasicMaterial({ color: 0x33415a })));
-    return grp;
-  }
+  function makePlane() { const grp = new T.Group(), m = A.plane.clone(true); m.scale.setScalar(1.6); m.position.z = 0.2; m.traverse((o) => { if (o.isMesh) { o.material = o.material.clone(); o.material.emissive = new T.Color(0x777777); o.material.side = T.DoubleSide; } }); grp.add(m); return grp; }
   // 投げる動き。u<0 構える / 0〜0.6 振りかぶる / 0.6〜1 振り下ろす。0.8 で手を離れる
-  function pose(u) {
-    const a = u <= 0 ? -1.15 : u < 0.6 ? g.lerp(-1.15, -3.7, g.ease(u / 0.6)) : g.lerp(-3.7, -0.8, g.out((u - 0.6) / 0.4));
-    ch.armR.rotation.set(a, 0, 0); ch.root.rotation.z = u <= 0 ? 0 : u < 0.6 ? 0.16 * g.ease(u / 0.6) : g.lerp(0.16, -0.18, g.out((u - 0.6) / 0.4));
-    return u >= 0.8;
-  }
-  const place = (x, y, z, s, ry = 0) => { ch.root.position.set(x, y, z); ch.root.scale.setScalar(s); ch.root.rotation.set(0, ry, 0); ch.head.rotation.set(0, 0, 0); ch.armL.rotation.set(0, 0, 0.12); ch.helmet.visible = false; ch.root.visible = true; };
+  function pose(u) { if (u <= 0) ch.a.play("hold", NOW); else ch.a.play("throw", u * (ch.a.releaseTime / 0.8)); return u >= 0.8; }
+  const place = (x, y, z, s, ry = 0) => { ch.root.position.set(x, y, z); ch.root.scale.setScalar(s); ch.root.rotation.set(0, ry, 0); ch.helmet.visible = false; ch.root.visible = true; };
   const hv = new (window.THREE.Vector3)();
-  const handPos = () => { ch.root.updateMatrixWorld(true); ch.hand.getWorldPosition(hv); return [hv.x, hv.y, hv.z]; };
+  const handPos = () => { ch.root.updateMatrixWorld(true); ch.a.handR.getWorldPosition(hv); return [hv.x, hv.y, hv.z]; };
   const fly = (pos, dir, s) => { plane.visible = true; plane.position.set(...pos); plane.scale.setScalar(s); plane.lookAt(pos[0] + dir[0], pos[1] + dir[1], pos[2] + dir[2]); };
-  const inHand = (s, dir = [1, 0.1, 0]) => { const h = handPos(); fly([h[0], h[1] + 0.25 * s, h[2]], dir, s); return h; };
+  const inHand = (s, dir = [1, 0.1, 0]) => { const h = handPos(); fly([h[0], h[1] + 0.1 * s, h[2]], dir, s); return h; };
   const trailTo = (a, b, r) => { trail.visible = true; setBeam(trail, a, b, r); };
 
   /* ---- A: 東京タワーと街(1 = 10 m) ---- */
@@ -185,7 +167,7 @@
   /* ---- 場面ごとの動き ---- */
   const S = {
     s1(p, t) {
-      show("city", "#b9def3", 180, 700, "#4a98dc"); place(...TOP, CS); pose(p > 0.8 ? g.seg(p, 0.8, 1) * 0.35 : 0); inHand(0.55);
+      show("city", "#b9def3", 180, 700, "#4a98dc"); place(...TOP, CS); pose(0); inHand(0.55);
       const k = g.ease(p); cam(mix([30, 26, 70], [3.4, 35.1, 5], k), mix([0, 21, 0], [0.3, 34.2, 0], k));
     },
     s2(p, t) {
@@ -207,8 +189,7 @@
       if (Math.abs(P[0] - 140) < 45) g.label("六本木ヒルズ", [148, 25, -16], { size: 24, dy: -20, loose: true });
     },
     s4(p, t) {
-      show("city", "#b9def3", 180, 700, "#4a98dc"); place(...TOP, CS); pose(0); inHand(0.55);
-      ch.head.rotation.y = Math.sin(g.seg(p, 0.08, 0.42) * Math.PI * 4) * 0.5; ch.head.rotation.x = -0.75 * g.ease(g.seg(p, 0.48, 0.7));
+      show("city", "#b9def3", 180, 700, "#4a98dc"); place(...TOP, CS); ch.a.blend("shake_head", g.seg(p, 0.04, 0.42) * 1.2, "look_up", g.seg(p, 0.5, 0.78), g.ease(g.seg(p, 0.44, 0.56)));
       const k = g.ease(g.seg(p, 0.55, 1)); cam(mix([3.4, 35.1, 5], [2.6, 33.7, 3.6], k), mix([0.3, 34.2, 0], [0.1, 34.9, 0], k));
     },
     s5(p, t) {
@@ -223,7 +204,7 @@
       show("jet", "#7fbdf0", 300, 900, "#2f7bd6"); place(6, 2.2, 0, 1.7);
       const { im, d } = W.jetClouds, o = new T.Object3D(); d.forEach(([x, y, z, sc], i) => { o.position.set(((x - 70 * t) % 700 + 700) % 700 - 420, y, z); o.scale.set(sc * 1.6, sc * 0.45, sc); o.updateMatrix(); im.setMatrixAt(i, o.matrix); }); im.instanceMatrix.needsUpdate = true;
       const u = g.seg(p, 0.2, 0.46), rel = pose(u), tr = dur * (0.2 + 0.26 * 0.8), q = t - tr;
-      if (!rel) inHand(1.1); else { if (!W.rel6) W.rel6 = handPos(); const R = W.rel6; fly([R[0] + 3 * Math.min(q, 0.25) - 42 * Math.max(0, q - 0.12) , R[1] - 5.5 * q, R[2] + 1.5 * q], [1, -0.16, 0], 2.2); ch.head.rotation.y = Math.PI * g.ease(g.seg(q, 0.15, 0.6)) * 0.9; }
+      if (!rel) inHand(1.1); else { if (!W.rel6) W.rel6 = handPos(); const R = W.rel6; fly([R[0] + 3 * Math.min(q, 0.25) - 42 * Math.max(0, q - 0.12) , R[1] - 5.5 * q, R[2] + 1.5 * q], [1, -0.16, 0], 2.2); }
       cam([50 + 5 * p, 13, 44 - 4 * p], [-1, 1.5, 0]);
       g.screen("高度 10,000 m", 270, 150, { size: 38, color: "#ffd84a" });
       if (p > 0.6) g.screen("飛距離 60 km", 270, 205, { size: 38, alpha: g.seg(p, 0.6, 0.68) });
@@ -260,7 +241,7 @@
     },
     s11(p, t) {
       show("lake", "#bfe2f4", 500, 1900, "#4a98dc"); eels(t, false); floatPlane(t + 15); W.ripples.forEach((r) => (r.visible = false));
-      place(-7.5, 0.8, 70, 2.6, -Math.PI / 2 + 0.2); ch.armR.rotation.set(0, 0, -2.5 + Math.sin(t * 7) * 0.3);
+      place(-7.5, 0.8, 70, 2.6, -Math.PI / 2 + 0.2); ch.a.play("wave", t);
       W.train.visible = true; W.train.position.set(g.lerp(170, -200, g.seg(p, 0.05, 0.9)), 2.78, 42);
       cam([-3 + p * 1.5, 5.2, 88], [-7, 4.2, 50]);
       if (p > 0.45) g.screen("東京 → 浜松 約1時間半", 270, 150, { size: 34, color: "#ffd84a", alpha: g.seg(p, 0.45, 0.53) });
@@ -276,6 +257,7 @@
       trail = new T.Mesh(new T.CylinderGeometry(1, 1, 1, 6), new T.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.75 })); g.scene.add(trail);
       g.scene.traverse((o) => { if (o.isMesh && o.material.isMeshStandardMaterial && !o.material.transparent) { o.castShadow = true; o.receiveShadow = true; } });
     },
-    update(id, p, t, dur) { trail.visible = false; W.dim.visible = W.tri.visible = false; plane.visible = false; ch.root.visible = true; (S[id] || (() => {}))(p, t, dur); },
+    preload: async () => { A.ch = await AutoAssets.loadCharacter(); A.plane = await AutoAssets.loadModel("paper_plane"); },
+    update(id, p, t, dur) { NOW = t; trail.visible = false; W.dim.visible = W.tri.visible = false; plane.visible = false; ch.root.visible = true; (S[id] || (() => {}))(p, t, dur); },
   };
 })();
