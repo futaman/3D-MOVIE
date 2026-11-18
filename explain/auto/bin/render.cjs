@@ -7,10 +7,11 @@ const dir = path.resolve(process.argv[2]), out = path.join(dir, "out"), arg = (k
 const fps = +arg("--fps", 30), qaOnly = process.argv.includes("--qa-only");
 (async () => {
   const ep = JSON.parse(fs.readFileSync(path.join(dir, "episode.json"), "utf8")), tm = JSON.parse(fs.readFileSync(path.join(out, "timing.json"), "utf8"));
-  const b = await chromium.launch(), p = await (await b.newContext({ viewport: { width: 540, height: 960 }, deviceScaleFactor: 2 })).newPage();
+  const is3d = ep.mode === "3d";
+  const b = await chromium.launch({ args: ["--enable-unsafe-swiftshader", "--ignore-gpu-blocklist", ...(process.env.AUTO_SHORT_SOFT_GL ? ["--use-gl=angle", "--use-angle=swiftshader"] : [])] }), p = await (await b.newContext({ viewport: { width: 540, height: 960 }, deviceScaleFactor: 2 })).newPage();
   const errs = []; p.on("pageerror", (e) => errs.push(String(e)));
-  await p.addInitScript(([ep, tm, v]) => { window.__EP = ep; window.__TIMING = tm; window.__VISUALS_URL = v; }, [ep, tm, pathToFileURL(path.join(dir, "visuals.js")).href]);
-  await p.goto(pathToFileURL(path.join(__dirname, "..", "lib", "player.html")).href);
+  await p.addInitScript(([ep, tm, v]) => { window.__EP = ep; window.__TIMING = tm; window.__VISUALS_URL = v; }, [ep, tm, pathToFileURL(path.join(dir, is3d ? "visuals3d.js" : "visuals.js")).href]);
+  await p.goto(pathToFileURL(path.join(__dirname, "..", "lib", is3d ? "player3d.html" : "player.html")).href);
   await p.waitForFunction(() => window.__READY); await p.evaluate(() => document.fonts.ready);
   const clip = { x: 0, y: 0, width: 540, height: 960 };
   // QA: 各場面の 15%・60%・95% の静止画

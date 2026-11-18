@@ -4,7 +4,7 @@
 
 ```
 テーマ ─▶ episode.json(台本・計算・出典) ─▶ verify(計算をやり直して照合)
-       ─▶ visuals.js(場面ごとの絵) ─▶ 静止画 QA ─▶ tts(VOICEVOX、尺を決める)
+       ─▶ visuals3d.js(場面ごとの 3D) ─▶ 静止画 QA ─▶ tts(VOICEVOX、尺を決める)
        ─▶ sfx(BGM・効果音をコードで合成) ─▶ render(1 コマずつ描画) ─▶ compose ─▶ meta ─▶ upload(非公開)
 ```
 
@@ -53,3 +53,7 @@ claude -p "/auto-short 新しいテーマで 1 本作り、非公開でアップ
 ## まだ確かめていないこと
 
 - VOICEVOX での音声合成と YouTube へのアップロードは、開発した環境に VOICEVOX も認証情報もなかったため実行していない(コードは書いてある)。最初の実行で不具合があれば直す。
+
+## 3D 方式
+
+`episode.json` に `"mode": "3d"` があると、`lib/player3d.js`(Three.js r128 を同梱)と `visuals3d.js` で描く。GPU のない環境では `AUTO_SHORT_SOFT_GL=1` を付けるとソフトウェア描画になる(遅い)。

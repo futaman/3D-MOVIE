@@ -5,7 +5,7 @@ description: ネタ落ち型の解説ショート動画(真面目な計算 → �
 
 # auto-short: ネタ落ち型の解説ショートを 1 本作る
 
-作業場所は `explain/auto/`。1 本 = `episodes/<連番>-<英語の短い名前>/` に `episode.json`(台本)と `visuals.js`(絵)を書き、`node bin/run.mjs` で MP4 にする。見本は `episodes/01-paper-plane/`。**まず見本の 2 ファイルを読むこと。**
+作業場所は `explain/auto/`。1 本 = `episodes/<連番>-<英語の短い名前>/` に `episode.json`(台本、`"mode": "3d"`)と `visuals3d.js`(3D の場面)を書き、`node bin/run.mjs` で MP4 にする。見本は `episodes/01-paper-plane/`。**まず見本の 2 ファイルを読むこと。**(`visuals.js` と `lib/player.js` は旧 2D 方式。スライドに見えるので新しい回では使わない。)
 
 ## 手順
 
@@ -13,7 +13,7 @@ description: ネタ落ち型の解説ショート動画(真面目な計算 → �
 2. **台本 `episode.json` を書く**(下の「型」と「決まり」に従う)。
 3. **計算を検証**: `node bin/verify.mjs episodes/<id>`。× が出たら、台本の数字のほうを計算値に合わせて直す(計算値を台本に合わせない)。
 4. **外部の事実を確かめる**: `facts` の各項目を Web 検索で確かめ、出典を `source` に、確かめられたら `status: "confirmed"`。確かめられないものは台本から落とすか `unverified` のままにする(その場合アップロードは止まる)。仮定は `assumption` とし、字幕かフッターで仮定だと分かるようにする。
-5. **絵 `visuals.js` を書く**: 場面 id ごとに `VISUALS.<id> = (g, p, t, dur, scene) => {...}`。`lib/player.js` の `g`(text / line / arrow / rect / circle / ease / seg / num / C / AREA)を使う。
+5. **場面 `visuals3d.js` を書く**: `window.WORLD = { init(g), update(sceneId, p, t, dur) }`。Three.js(r128、`g.T`)でローポリのセットを組み、固定キャラ「計算係」(見本の `makeChar` を流用)に実際に動作をさせ、カメラを動かす。`lib/player3d.js` の `g`(cam / label / screen / ease / out / seg / num / lerp)を使う。動きは (場面, p, t) だけで決める(`Math.random` と時計は使わない)。
 6. **静止画で確認**: `node bin/tts.mjs episodes/<id> --silent && node bin/render.cjs episodes/<id> --qa-only` → `out/qa/*.png` を**全部 Read で見る**。下の QA の項目に 1 つでも当たれば直して再実行。`out/qa/report.json` の指摘も 0 件にする。
 7. **本番**: `node bin/run.mjs episodes/<id>`(VOICEVOX が動いていれば音声つき、なければ自動で音声なしの下書き)。
 8. **アップロード**(頼まれたとき、または定期実行のとき): `node bin/run.mjs episodes/<id> --upload`。非公開で上がる。公開は人が YouTube Studio で行う。未確認の事実があると止まるので、勝手に `--allow-unverified` を付けない。
@@ -34,17 +34,17 @@ description: ネタ落ち型の解説ショート動画(真面目な計算 → �
 ## 決まり
 
 - 語り口は最後まで真面目・淡々(ふざけた言い回しを入れない。おかしいのは仮定だけ)。
-- `caption` は 1 行 14 字前後まで、最大 2 行。数字と単位を入れる。
+- 字幕はナレーションを句読点で自動分割して白 1 行で出る。読点なしで 15 字を超える部分を作らない(`caption` は 3D では使わない)。
 - 台本に出る数値はすべて `checks`(コードで再計算できるもの)か `facts`(出典つき)のどちらかに入れる。地理の距離は `places` の緯度経度から `dist()` / `xtrack()` / `along()` で計算する。
 - 浜名湖の観光情報(日程・料金・営業など変わりうるもの)は、検索で確かめた当日の出典がない限り書かない。
 - 絵は 2D の図解。実在の企業ロゴ・キャラクター・人物を描かない。縮尺を変えた図には「模式図」「高さは横より大きく描いています」などと書く。
-- 絵は `g.AREA`(x 30〜510、y 150〜710)の中に描く。上はタイトル帯、下は字幕。
+- 画面の文字は最小限: タイトル帯・注記・箇条書きは出さない。数字は場面の中のラベル(`g.label` は物に付く、`g.screen` は画面固定)で 1 場面 1〜2 個まで。字幕は y=668 付近なのでラベルは y 630〜705 を避ける。
 
 ## QA(静止画で 1 つでも当たれば直す)
 
 - 文字が切れている・重なっている・読めないほど小さい(14px 未満)
-- 絵が字幕やタイトル帯にかぶっている、`AREA` からはみ出している
-- 字幕と絵の数字が食い違っている、単位がない
+- 「動くスライド」に見える(キャラも物も動かない、カメラが止まったまま、主役が小さい・画面の外)
+- ラベルの数字がナレーションと食い違っている、単位がない、色が白飛びしている
 - 何の絵か 1 秒で分からない場面がある、動きのない場面が 3 秒以上続く
 - 仮定なのに事実のように見える表現がある
 
