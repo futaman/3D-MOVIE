@@ -18,7 +18,7 @@
     const s = new T.Group(); g.scene.add(s); W.set = s;
     W.el = A.el; s.add(W.el);
     W.car = W.el.getObjectByName("car"); W.cwt = W.el.getObjectByName("cwt"); W.sheave = W.el.getObjectByName("sheave"); W.gov = W.el.getObjectByName("gov_sheave");
-    W.wl = W.el.getObjectByName("wedge_l"); W.wr = W.el.getObjectByName("wedge_r"); W.w0 = W.wl.position.y; [W.wl, W.wr].forEach((w) => w.children.forEach((c) => (c.userData.sx = Math.sign(c.position.x))));
+    W.wl = W.el.getObjectByName("wedge_l"); W.wr = W.el.getObjectByName("wedge_r"); W.w0 = W.wl.position.y; [W.wl, W.wr].forEach((w) => { w.children.forEach((c) => (c.userData.sx = Math.sign(c.position.x))); w.scale.set(1, 1.3, 2.2); });
     W.dark = []; W.car.traverse((o) => { if (o.isMesh && o.material && o.material.name === "dark") { o.material = o.material.clone(); o.material.transparent = true; W.dark.push(o); } });
     // 主索: かご側の縦、釣合おもり側の縦、綱車の上の弧
     const rm = new T.MeshStandardMaterial({ color: 0xc8ccd2, metalness: 1, roughness: 0.35 });
@@ -62,7 +62,7 @@
       r.arc.visible = true;
       if (!cut) { setBeam(r.carSide, [r.z * 0.6, hitch, r.z], [0, S.y_m, r.z]); setBeam(r.cwSide, [S.x_m * 2, S.y_m, r.z], [M.cwt.x_m, cwTop, r.z]); W.stub[i].forEach((b) => (b.visible = false)); }
       else { r.carSide.visible = false; setBeam(r.cwSide, [S.x_m * 2, S.y_m, r.z], [M.cwt.x_m, cwTop, r.z]);
-        const dang = 1.6 + 0.3 * i; setBeam(W.stub[i][0], [0, S.y_m, r.z], [0.05 * i, S.y_m - dang, r.z]); setBeam(W.stub[i][1], [r.z * 0.6, hitch, r.z], [r.z * 0.6 + 0.04, hitch + 0.5 + 0.1 * i, r.z]); }
+        const dang = 1.6 + 0.3 * i, sw = (o.whip || 0) * Math.sin(i * 1.7 + (o.t || 0) * 9); setBeam(W.stub[i][0], [0, S.y_m, r.z], [0.05 * i + 0.4 * sw, S.y_m - dang, r.z]); setBeam(W.stub[i][1], [r.z * 0.6, hitch, r.z], [r.z * 0.6 + 0.3 * sw, hitch + 1.2 + 0.25 * i, r.z + 0.2 * sw]); }
     });
     // 調速機ロープ: 上り側 x = gx - r、下り側 x = gx + r(かごのレバーにつながる)
     const G = M.governor, xl = G.x_m - G.r_m, xr = G.x_m + G.r_m, lever = yc - 0.12;
@@ -97,12 +97,12 @@
       const isOld = id === "s7" || id === "s8"; W.set.visible = !isOld; W.old.visible = isOld; g.scene.environment = envSky;
       const sh = (y) => { sun.target.position.set(0.5, y, 0); sun.position.set(6, y + 20, 18); };
       if (id === "s1") { // 上っている途中で全部切れる → 少し落ちて止まる
-        const tc = seg(p, 0.0, 0.5), cutAt = 0.5, yUp = 4 + 3 * ease(tc);
+        const tc = seg(p, 0.0, 0.35), cutAt = 0.35, yUp = 4 + 3 * ease(tc);
         let yc = yUp, wedge = 0; const cut = p > cutAt;
-        if (cut) { const f = (p - cutAt) * dur; const drop = Math.min(0.35, 2.2 * f * f); yc = yUp + 0 - drop; wedge = g.clamp((f - 0.25) / 0.2); }
-        state({ yc, cut, wedge }); ch.play(cut ? "look_up" : "idle", cut ? (p - cutAt) * dur : t);
-        const k = ease(seg(p, 0, 1)); g.cam(mix([5.5, 12, 26], [3.2, yc + 1.6, 9], k), mix([0.6, 10, 0], [0.3, yc + 1.2, 0], k), 40); sh(yc);
-        if (cut && p < 0.62) screen("全部切れた", 270, 160, { size: 44, color: "#ff6a5a" });
+        if (cut) { const f = (p - cutAt) * dur; const drop = Math.min(0.9, 3.0 * f * f); yc = yUp - drop; wedge = g.clamp((f - 0.45) / 0.15); }
+        state({ yc, cut, wedge, whip: cut ? Math.max(0, 1 - (p - cutAt) * 2.5) : 0, t }); ch.play(cut ? "look_up" : "idle", cut ? (p - cutAt) * dur : t);
+        const k = ease(seg(p, 0, 0.35)), shake = cut ? 0.06 * Math.sin(t * 60) * Math.max(0, 1 - (p - cutAt) * 4) : 0; g.cam(mix([4.5, 9, 18], [2.6, yUp + 2.4, 7.5], k).map((v, i) => v + (i === 0 ? shake : 0)), mix([0.4, 8, 0], [0.3, yUp + 2.2, 0], k), 40); sh(yc);
+        if (cut && p < 0.8) screen("全部切れた", 270, 160, { size: 44, color: "#ff6a5a" }); if (p > 0.75) screen("止まった", 270, 220, { size: 40, alpha: out(seg(p, 0.75, 0.85)) });
       } else if (id === "s2") { // 主索は 3 本以上(ここでは 4 本)
         state({ yc: 3.5 + 1.0 * ease(p) });
         const k = ease(p); g.cam(mix([0.9, 21.2, 5.2], [1.1, 20.6, 6.4], k), [0.9, 21.9, 0], 40); sh(21);
@@ -112,21 +112,21 @@
         g.cam([4.6, yw - 0.6, 10], [1.2, yw - 1.4, 0], 40); sh(yw);
         label("釣り合いおもり", [M.cwt.x_m, yw + 1.6, 0.2], { size: 28, dy: -24 }); if (p > 0.4) label("かご", [0, yc + 2.6, 0.5], { size: 28, dy: -10, alpha: out(seg(p, 0.4, 0.5)) });
       } else if (id === "s4") { // 全部切れて、落ち始める。調速機が回り出す
-        const f = p * dur, y0 = 11, yc = y0 - 0.9 * f * f; state({ yc, cut: true });
+        const f = p * dur, y0 = 14, yc = Math.max(5, y0 - 0.9 * f * f); state({ yc, cut: true });
         ch.play("look_up", f);
-        g.cam([2.6, 15.5, 24], [0.4, 15.2, 0], 42); sh(15);
+        g.cam([2.6, 14.5, 28], [0.4, 14.2, 0], 42); sh(15);
         label("調速機", [M.governor.x_m, M.governor.y_m + 0.35, 0.2], { size: 30, dy: -26 }); label("かご", [0, yc + 2.6, 0.5], { size: 26, dy: -12 });
       } else if (id === "s5") { // 調速機が速さを見張る(1.3 倍の前に動力を切る)
         const yc = 6 - 3 * p; state({ yc, cut: true });
-        g.cam([0.6, M.governor.y_m - 0.4, 3.6], [M.governor.x_m, M.governor.y_m - 0.9, 0], 40); sh(M.governor.y_m);
+        g.cam([0.6, M.governor.y_m + 0.2, 3.6], [M.governor.x_m, M.governor.y_m - 0.2, 0], 40); sh(M.governor.y_m);
         label("調速機", [M.governor.x_m, M.governor.y_m + 0.3, 0.1], { size: 30, dx: 80 });
         const v = Math.min(1.3, 1.0 + 0.4 * ease(seg(p, 0.1, 0.7))); screen(`速さ ${v.toFixed(1)}倍`, 270, 160, { size: 46, color: v >= 1.29 ? "#ffb04a" : "#ffffff" });
         if (p > 0.72) screen("モーター停止", 270, 220, { size: 36, alpha: out(seg(p, 0.72, 0.8)) });
       } else if (id === "s6") { // 非常止めがレールを挟む
-        const f = seg(p, 0.15, 0.55), stop = 3.0, yc = stop + 1.0 * (1 - ease(f)); state({ yc, cut: true, wedge: ease(seg(p, 0.3, 0.55)), ghost: true });
+        const f = seg(p, 0.15, 0.55), stop = 3.0, yc = stop + 1.0 * (1 - ease(f)); state({ yc, cut: true, wedge: ease(seg(p, 0.2, 0.6)), ghost: true });
         ch.play("shake_head", seg(p, 0.5, 1) * 1.2);
         const rx = -(M.rail_x_m - 0.035); g.cam([rx + 0.08, yc - 0.24, 1.05], [rx + 0.02, yc - 0.26, 0], 40); sh(yc);
-        if (p > 0.3) label("くさび", [rx - 0.05, yc - 0.3, 0.05], { size: 30, dx: -90, alpha: out(seg(p, 0.3, 0.4)) });
+        if (p > 0.3) label("くさび", [rx - 0.03, yc - 0.3 + 0.12 * ease(seg(p, 0.2, 0.6)), 0.08], { size: 30, dx: -90, alpha: out(seg(p, 0.3, 0.4)) });
         if (p > 0.45) label("レール", [rx, yc + 0.05, 0], { size: 28, dx: -80, alpha: out(seg(p, 0.45, 0.55)) });
         if (p > 0.6) screen("1.4倍の前に 停止", 270, 160, { size: 40, alpha: out(seg(p, 0.6, 0.7)) });
       } else if (isOld) { // 1850 年代の実演
@@ -136,7 +136,7 @@
         else { cut = p > 0.8; if (cut) py = y - 0.02; }
         W.plat.position.set(0, py, 0); setBeam(W.oldRope, [0, py + 2.2, 0], [0, cut ? py + 3.0 : 9.0, 0]);
         ch.play(id === "s8" ? "wave" : "idle", t);
-        g.cam(id === "s7" ? mix([7, 3, 14], [4, 6, 9], ease(p)) : [3.2, py + 0.6, 4.2], [0.9, py + 0.3, 0], 40);
+        g.cam(id === "s7" ? mix([7, 3, 14], [4, 6, 9], ease(p)) : [3.8, py + 1.4, 6.5], [0.6, py + 0.8, 0], 40);
         sun.target.position.set(0, 5, 0); sun.position.set(6, 25, 18);
         if (id === "s7") screen("1850年代 ニューヨーク(模式)", 270, 160, { size: 34 });
         if (id === "s8" && p > 0.35) screen("落ちたのは 数センチ", 270, 160, { size: 40, alpha: out(seg(p, 0.35, 0.45)) });
@@ -144,13 +144,15 @@
         W.car.add(holder); holder.position.set(-0.25, 0, 0.1); holder.rotation.y = 0.3;
         const yc = 0.4 - 0.72 * ease(seg(p, 0.1, 0.6)); state({ yc, cut: true });
         ch.play("idle", t); g.cam([1.9, -0.9, 3.6], [0, -0.6, 0], 44); sun.target.position.set(0, -1, 0); sun.position.set(6, 19, 18);
-        if (p > 0.3) label("緩衝器", [0.45, -1.1, 0.2], { size: 30, dx: 60, alpha: out(seg(p, 0.3, 0.4)) });
-      } else if (id === "s10") { // 全体。5 つの仕組みを順に
-        W.car.add(holder); holder.position.set(-0.25, 0, 0.1); holder.rotation.y = 0.3;
-        state({ yc: 7 + 3 * ease(p) }); ch.play("wave", t);
-        g.cam(mix([2.6, 9.5, 17], [3.2, 10.5, 22], ease(p)), [0.6, 10.2, 0], 42); sun.target.position.set(0.5, 10, 0); sun.position.set(6, 30, 18);
-        const items = [["ロープ", [0.3, 17, 0]], ["おもり", [M.cwt.x_m, W.cwt.position.y, 0]], ["調速機", [M.governor.x_m, M.governor.y_m, 0]], ["非常止め", [-M.rail_x_m, W.car.position.y - 0.2, 0]], ["緩衝器", [0, -1.0, 0]]];
-        items.forEach(([n, pos], i) => { const a = seg(p, 0.08 + i * 0.15, 0.18 + i * 0.15); if (a > 0) label(n, pos, { size: 26, alpha: out(a) }); });
+        if (p > 0.3) label("緩衝器", [0.45, -0.75, 0.2], { size: 30, dx: 70, dy: -40, alpha: out(seg(p, 0.3, 0.4)) });
+      } else if (id === "s10") { // 吊るす係はロープ。止める係は 3 つ(順にアップ)
+        W.car.add(holder); holder.position.set(-0.25, 0, 0.1); holder.rotation.y = 0.3; ch.play("wave", t);
+        const part = p < 0.28 ? 0 : p < 0.52 ? 1 : p < 0.76 ? 2 : 3;
+        if (part === 0) { state({ yc: 8 }); g.cam([1.0, 20.8, 4.8], [0.6, 21.6, 0], 40); sun.target.position.set(0.5, 21, 0); sun.position.set(6, 40, 18); label("ロープ", [0, 20.2, 0.15], { size: 30, dx: 60 }); }
+        else if (part === 1) { state({ yc: 8, cut: true }); g.cam([0.5, M.governor.y_m - 0.2, 3.2], [M.governor.x_m, M.governor.y_m - 0.3, 0], 40); label("① 調速機", [M.governor.x_m, M.governor.y_m + 0.35, 0.1], { size: 32, dy: -30 }); }
+        else if (part === 2) { state({ yc: 3, cut: true, wedge: 1, ghost: true }); const rx = -(M.rail_x_m - 0.035); g.cam([rx + 0.08, 2.76, 1.05], [rx + 0.02, 2.74, 0], 40); sun.target.position.set(0, 3, 0); sun.position.set(6, 22, 18); label("② 非常止め", [rx, 2.95, 0.08], { size: 32, dx: -90 }); }
+        else { state({ yc: -0.35, cut: true }); g.cam([1.9, -0.9, 3.6], [0, -0.6, 0], 44); sun.target.position.set(0, -1, 0); sun.position.set(6, 19, 18); label("③ 緩衝器", [0.45, -0.75, 0.2], { size: 32, dx: 70, dy: -40 }); }
+        screen(part === 0 ? "吊るす係" : "止める係", 270, 160, { size: 44 });
       }
     },
   };
