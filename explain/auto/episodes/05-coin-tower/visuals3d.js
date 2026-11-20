@@ -117,7 +117,7 @@
         const h = id === "s4" ? 229 * ease(seg(p, 0.15, 0.9)) : 229; tower(h, 0);
         const side = W.axis.clone(), up = W.up, eye = W.base.clone().add(side.clone().multiplyScalar(id === "s6" ? 1.3 : 1.0)).add(up.clone().multiplyScalar(0.35)), look = W.base.clone().add(up.clone().multiplyScalar(0.18));
         globeCam(eye, look, up);
-        if (id === "s4") label(`${Math.round(h)}km`, W.base.clone().add(up.clone().multiplyScalar(h * KM)).toArray(), { size: 30, dx: 46 });
+        if (id === "s4" && h > 70) label(`${Math.round(h)}km`, W.base.clone().add(up.clone().multiplyScalar(h * KM)).toArray(), { size: 30, dx: 46 });
         if (id === "s5") screen("約1億5千万枚", 270, 150, { size: 44 });
         if (id === "s6") label("高さ100km", W.base.clone().add(up.clone().multiplyScalar(100 * KM)).toArray(), { size: 26, dx: -70 });
       } else if (id === "s7") { // 西へ倒れる
