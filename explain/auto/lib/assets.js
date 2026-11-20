@@ -20,7 +20,8 @@
   var LIB = here.replace(/[^\/]*$/, "");
   var DIRS = { keisan: "../assets/character/", paper_plane: "../assets/character/", human01: "../assets/human01/",
     torii: "../assets/hamanako_props/", ferris_wheel: "../assets/hamanako_props/", coaster: "../assets/hamanako_props/",
-    shield_machine: "../assets/subway/", segment_ring: "../assets/subway/", escalator: "../assets/subway/" };
+    shield_machine: "../assets/subway/", segment_ring: "../assets/subway/", escalator: "../assets/subway/",
+    elevator: "../assets/elevator/" };
 
   function addScript(url) {
     return new Promise(function (ok, ng) {

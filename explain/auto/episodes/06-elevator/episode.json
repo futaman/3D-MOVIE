@@ -1,0 +1,104 @@
+{
+  "id": "06-elevator",
+  "mode": "3d",
+  "format": "mechanism",
+  "title": "エレベーターのロープが全部切れたら、どうなるのか",
+  "title_band": "エレベーターが落ちない仕組み",
+  "footer": "構造は模式図です",
+  "landing": null,
+  "places": {},
+  "checks": [],
+  "facts": [
+    {
+      "claim": "主索(メインロープ)はふつう 3 本以上で、太さと本数を合わせて、最大積載のときに安全率 10 以上になるよう選ぶ",
+      "source": "日本エレベーター協会「ロープの耐久性・寿命と交換の必要性について」 https://www.n-elekyo.or.jp/docs/wadai01_rope.pdf 、三菱電機ビルソリューションズ「ロープが切れても大丈夫なの？」 https://www.mebs.co.jp/useful/safety/ev_rope.html",
+      "status": "confirmed"
+    },
+    {
+      "claim": "釣合おもりの重さは、かごの重さに最大積載の 40〜50% ほどを足した値にするのが一般的",
+      "source": "特許 JP2023074764A(従来は かご + 最大積載の 50%)、電験の問題例(40%)",
+      "status": "confirmed"
+    },
+    {
+      "claim": "調速機は、定格速度の 1.3 倍を超えないうちに動力を切り、1.4 倍を超えないうちに非常止め装置を作動させる",
+      "source": "国土交通省「エレベーターの制御器及び安全装置について」 https://www.mlit.go.jp/common/001065765.pdf 、建築基準法施行令 第 129 条の 10",
+      "status": "confirmed"
+    },
+    {
+      "claim": "非常止め装置は、調速機のロープに引かれて作動し、くさびでガイドレールを挟んでかごを止める",
+      "source": "東芝エレベータ「調速機/非常止め装置」 http://www2.toshiba-elevator.co.jp/elv/safety/elevator/mechanism/rope/cyousoku.html",
+      "status": "confirmed"
+    },
+    {
+      "claim": "オーチスはニューヨークのクリスタル・パレスで、自分が乗った台のロープを切らせ、台は数インチ落ちただけで止まった(1853 年または 1854 年)",
+      "source": "Guinness World Records「First safety elevator」 https://www.guinnessworldrecords.com/world-records/72451-first-safety-elevator-lift 、Britannica「Elisha Otis」 https://www.britannica.com/topic/Elisha-Otis",
+      "status": "confirmed"
+    },
+    {
+      "claim": "昇降路の底には、ばね式や油入式の緩衝器がある",
+      "source": "国土交通省「建築基準法上の制御器と安全装置について」 https://www.mlit.go.jp/common/000134122.pdf",
+      "status": "confirmed"
+    },
+    {
+      "claim": "オーチスの安全装置は世界の標準になった",
+      "source": "Guinness World Records(同上)",
+      "status": "confirmed"
+    }
+  ],
+  "scenes": [
+    {
+      "id": "s1",
+      "narration": "エレベーターのロープが、全部切れたら。かごは、下まで落ちません。"
+    },
+    {
+      "id": "s2",
+      "narration": "ロープは、ふつう3本以上。全部合わせて、満員の重さの、10倍以上に耐えます。"
+    },
+    {
+      "id": "s3",
+      "narration": "反対側には、釣り合いおもり。かごに、満員の半分ほどを足した重さです。"
+    },
+    {
+      "id": "s4",
+      "narration": "では、全部切れたら。かごが落ち始めて、速くなると、最上部の調速機が気づきます。"
+    },
+    {
+      "id": "s5",
+      "narration": "調速機は、細いロープで、かごの速さを見張る装置。ふつうの1.3倍になる前に、モーターを止めます。"
+    },
+    {
+      "id": "s6",
+      "narration": "そして1.4倍になる前に、非常止めが作動。くさびがレールを挟んで、かごを止めます。"
+    },
+    {
+      "id": "s7",
+      "narration": "非常止めの原型は、1850年代のニューヨーク。オーチスは、自分が乗った台のロープを、観客の前で切らせました。"
+    },
+    {
+      "id": "s8",
+      "narration": "台は、数センチで止まりました。ここから、安全な昇降機が、世界に広まります。"
+    },
+    {
+      "id": "s9",
+      "narration": "それでも下まで来たら、底の緩衝器が、ばねや油で、衝撃を受け止めます。"
+    },
+    {
+      "id": "s10",
+      "narration": "ロープ、おもり、調速機、非常止め、緩衝器。ロープが全部切れても、まだ4つ残っています。"
+    }
+  ],
+  "meta": {
+    "tags": [
+      "エレベーター",
+      "仕組み",
+      "安全装置",
+      "解説",
+      "雑学"
+    ],
+    "description_lead": "エレベーターのロープが全部切れたらどうなるのか。調速機と非常止め装置の仕組みを、断面図で解説します。",
+    "credits": [
+      "空・質感: Poly Haven、ambientCG(CC0)",
+      "人物: MakeHuman(CC0)、動き: CMU Graphics Lab Motion Capture Database"
+    ]
+  }
+}
