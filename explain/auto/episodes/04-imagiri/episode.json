@@ -1,0 +1,124 @@
+{
+  "id": "04-imagiri",
+  "mode": "3d",
+  "format": "stages",
+  "title": "浜名湖は、なぜ海とつながっているのか",
+  "title_band": "浜名湖が海とつながるまで",
+  "footer": "地形は現在の衛星データ。昔の砂の堤や波は模式図です",
+  "landing": {
+    "name": "浜名湖",
+    "lat": 34.75,
+    "lon": 137.58
+  },
+  "places": {},
+  "checks": [
+    {
+      "id": "years",
+      "claim": "明応地震(1498 年)から現在(2026 年)まで約 500 年",
+      "expr": "2026 - 1498",
+      "expect": 528,
+      "tol": 0
+    },
+    {
+      "id": "widen",
+      "claim": "口の幅は 360 m から 1,260 m へ、3.5 倍",
+      "expr": "1260 / 360",
+      "expect": 3.5,
+      "tol": 0.01
+    }
+  ],
+  "facts": [
+    {
+      "claim": "浜名湖はかつて砂州で海と隔てられた淡水湖で、明応地震(1498 年)の津波で砂州が切れて海とつながり、汽水湖になった(1499 年とする古文書もある)",
+      "source": "静岡県の資料 https://www.pref.shizuoka.jp/_res/projects/default_project/_page_/001/029/378/09-1.pdf 、tabi-mag https://tabi-mag.jp/sz547/ 、東北大学 災害科学国際研究所の資料",
+      "status": "confirmed"
+    },
+    {
+      "claim": "「今切」は「今切れた」の意味",
+      "source": "tabi-mag https://tabi-mag.jp/sz547/",
+      "status": "confirmed"
+    },
+    {
+      "claim": "都に近い湖(琵琶湖)を近淡海、遠い湖(浜名湖)を遠淡海と呼び、近江・遠江の国名になったとされる(磐田の潟湖とする異説もある)",
+      "source": "しずおか文化財ナビ「浜名湖」 https://www.pref.shizuoka.jp/kankosports/bunkageijutsu/bunkazai/1002825/1041003/1041889/1004986/1021516.html 、ジャパンナレッジ「日本歴史地名大系」",
+      "status": "confirmed"
+    },
+    {
+      "claim": "湖口ができたため、東海道の往来は「今切の渡し」の舟が必要になった",
+      "source": "tabi-mag https://tabi-mag.jp/sz547/",
+      "status": "confirmed"
+    },
+    {
+      "claim": "安政東海地震(1854 年)の津波で今切口の幅が 360 m から 1,260 m に広がった",
+      "source": "しずおか河川ナビゲーション「都田川水系の治水事業」 http://www.shizuoka-kasen-navi.jp/html/miyakoda/project_01.html 、浜名湖水辺整備基本計画(静岡県、2025) https://www.pref.shizuoka.jp/_res/projects/default_project/_page_/001/071/881/04keikakuann4.pdf",
+      "status": "confirmed"
+    },
+    {
+      "claim": "今切口は両岸に導流堤があり、1956 年(昭和 31 年)に幅 200 m で固定された",
+      "source": "しずおか河川ナビゲーション(同上)、ANA https://www.ana.co.jp/travelandlife/article/000903/",
+      "status": "confirmed"
+    },
+    {
+      "claim": "浜名湖ではシラスウナギ(うなぎの稚魚)が獲れ、浜松市はうなぎ養殖発祥の地",
+      "source": "浜松市 https://www.city.hamamatsu.shizuoka.jp/foodpark/hamamatsu-foods/unagi.html",
+      "status": "confirmed"
+    }
+  ],
+  "scenes": [
+    {
+      "id": "s1",
+      "narration": "浜名湖は、なぜ海とつながっているのか。地図を、500年さかのぼります。"
+    },
+    {
+      "id": "s2",
+      "narration": "昔の浜名湖は、砂の堤で、海と仕切られた淡水の湖。都から遠い淡水の海、遠つ淡海でした。"
+    },
+    {
+      "id": "s3",
+      "narration": "都に近い琵琶湖が近江、遠い浜名湖が遠江。国の名前に、湖の住所が書いてあります。"
+    },
+    {
+      "id": "s4",
+      "narration": "1498年、明応地震。津波が、海との間の、砂の堤を切りました。"
+    },
+    {
+      "id": "s5",
+      "narration": "だから名前は、今切。今、切れた。命名に、ひねりはありません。"
+    },
+    {
+      "id": "s6",
+      "narration": "東海道の旅人は、ここから舟に乗る羽目に。地震一つで、交通網が書き換わります。"
+    },
+    {
+      "id": "s7",
+      "narration": "1854年の地震では、口の幅が360メートルから、1260メートルに。拡張工事も、地震が担当です。"
+    },
+    {
+      "id": "s8",
+      "narration": "1956年に、両岸を堤で固めて、幅200メートル。500年かけて、人間がようやく、主導権を取りました。"
+    },
+    {
+      "id": "s9",
+      "narration": "海とつながったおかげで、うなぎの稚魚が、湖に入ってきます。浜松は、うなぎ養殖の発祥の地です。"
+    },
+    {
+      "id": "s10",
+      "narration": "地震が切って、地震が広げて、人が固めた湖。うなぎを食べるときは、明応地震に、少し感謝を。"
+    }
+  ],
+  "meta": {
+    "tags": [
+      "浜名湖",
+      "今切口",
+      "明応地震",
+      "遠江",
+      "歴史",
+      "地形"
+    ],
+    "description_lead": "浜名湖が淡水の湖から、海とつながった汽水湖になるまでを、実際の地形の上で段階を追って見ました。",
+    "credits": [
+      "浜名湖の地形: Contains modified Copernicus Sentinel data 2024-2025; Copernicus DEM © DLR e.V. 2010-2014 and © Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS by the European Union and ESA; © ESA WorldCover project 2021(CC BY 4.0)",
+      "空: Poly Haven(CC0)"
+    ]
+  }
+}
