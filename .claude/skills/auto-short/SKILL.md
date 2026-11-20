@@ -19,6 +19,16 @@ description: ネタ落ち型の解説ショート動画(真面目な計算 → �
 8. **アップロード**(頼まれたとき、または定期実行のとき): `node bin/run.mjs episodes/<id> --upload`。非公開で上がる。公開は人が YouTube Studio で行う。未確認の事実があると止まるので、勝手に `--allow-unverified` を付けない。
 9. 結果を報告: 題名、尺、検証の結果、未確認の事実、`final.mp4` の場所(とアップロード先の URL)。
 
+## アセットの方針(重要)
+
+人物・物・背景の形や動きを**コードで一から造形しない**。箱や球を組んでも、AI に造形スクリプトを書かせても「人形」止まりで、視聴に耐えない(第 1 回で検証済み。比較は `explain/auto/lab/shot01/compare.png`)。プロが作った既製の素材を選んで配置する。
+
+- 人物: `assets/human01/`(MakeHuman の CC0 素材 + CMU のモーションキャプチャ)。`AutoAssets.loadCharacter("human01")`。作り方は同フォルダの README。
+- 空・質感: `assets/env/`(Poly Haven、ambientCG。CC0)。足りないものは同じ配布元から取り、README の表に出典とライセンスを足す。
+- 使ってよいのは CC0 か、商用可で再配布可のものだけ。CC-BY は出典を記録。NC、再配布不可、ログインが必要な配布元(Mixamo、Sketchfab など)の素材はリポジトリに入れない。実在のロゴ・キャラクターは使わない。
+- 描画は sRGB 出力 + ACES トーンマップ + 全天写真の環境光 + 影。見本は `lab/shot01/shot.js`。
+- `episodes/01-paper-plane/visuals3d.js` と `assets/character/`(自作の人形)は旧方式。新しい回の見本にしない。
+
 ## 台本の型(ネタ落ち型)
 
 場面は 9〜12 個、1 場面 1 文(長くて 2 文)、全体で 300〜380 字(45〜60 秒)。
