@@ -26,6 +26,7 @@ description: ネタ落ち型の解説ショート動画(真面目な計算 → �
 - 人物: `assets/human01/`(MakeHuman の CC0 素材 + CMU のモーションキャプチャ)。`AutoAssets.loadCharacter("human01")`。作り方は同フォルダの README。
 - 空・質感: `assets/env/`(Poly Haven、ambientCG。CC0)。足りないものは同じ配布元から取り、README の表に出典とライセンスを足す。
 - 実在の場所の地形: `assets/hamanako/`(Sentinel-2 の色 + Copernicus DEM + ESA WorldCover。`AutoAssets.loadTerrain("hamanako")`)。ほかの場所も同じ `build_hamanako.py` の範囲を変えて作れる。出典は `episode.json` の `meta.credits` に入れる。
+- 浜名湖まわりの構造物: `assets/hamanako_props/`(弁天島の赤鳥居、観覧車、ジェットコースター。`AutoAssets.loadModel("torii")` など)。柱と梁の構造物だけはスクリプトで実寸どおりに組んでよい。人物・生き物・彫刻・建物の外観は作らない。
 - 地球: `assets/earth/`(NASA Blue Marble、パブリックドメイン)。地球の場面の見本は `episodes/02-gravity-tunnel/visuals3d.js`(断面図、`ll()` で緯度経度 → 球面)。
 - クラウド環境では polyhaven.com などに直接つながらないことがある。その場合は npm レジストリ経由で、ライセンスが明記された素材だけを取る(例: `three-globe` の example に同梱の NASA 画像)。
 - 画像テクスチャを読む回は `bin/render.cjs` が `--allow-file-access-from-files` 付きで Chromium を起動する(file:// の画像を WebGL に渡すため)。

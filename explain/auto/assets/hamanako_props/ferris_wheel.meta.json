@@ -1,0 +1,10 @@
+{
+ "name": "観覧車(一般的なもの)",
+ "hub_height_m": 27.0,
+ "pivot_radius_m": 22.25,
+ "gondolas": 32,
+ "diameter_m": 44.0,
+ "height_m": 49.4,
+ "nodes": "frame(固定)、wheel(原点がハブ。glTF の z 軸まわりに回す)、gondola_00..31(原点が吊り点。位置は JS で置く)",
+ "rotation": "1 周 15 分程度が普通。gondola_i の吊り点 = (r cos(a_i + θ), hub + r sin(a_i + θ), 0)、a_i = 2πi/32"
+}

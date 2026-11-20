@@ -1,0 +1,25 @@
+<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;background:#000}canvas{display:block}</style></head><body><canvas id="gl"></canvas>
+<script src="../../../lib/vendor/three.min.js"></script><script src="../../../lib/assets.js"></script>
+<script>
+// 確認シート: 空の写真 + 環境光 + 影の中に構造物を置き、いくつかの角度から撮る。window.drawSheet(cells)
+window.drawSheet = async function (cells, cw = 540, chh = 960, cols = 3) {
+  const T = THREE, rows = Math.ceil(cells.length / cols), r = new T.WebGLRenderer({ canvas: document.getElementById("gl"), antialias: true, preserveDrawingBuffer: true, logarithmicDepthBuffer: true });
+  r.setPixelRatio(1); r.setSize(cw * cols, chh * rows); r.outputEncoding = T.sRGBEncoding; r.toneMapping = T.ACESFilmicToneMapping; r.toneMappingExposure = 0.8; r.shadowMap.enabled = true; r.shadowMap.type = T.PCFSoftShadowMap; r.setScissorTest(true);
+  const sky = await new Promise((ok) => new T.TextureLoader().load("../../env/sky_puresky_4k.jpg", ok)); sky.encoding = T.sRGBEncoding; sky.mapping = T.EquirectangularReflectionMapping;
+  const sc = new T.Scene(); sc.background = sky; sc.environment = new T.PMREMGenerator(r).fromEquirectangular(sky).texture; sc.fog = new T.FogExp2(0xbccbdc, 0.0009);
+  const sun = new T.DirectionalLight(0xfff1dc, 1.5); sun.castShadow = true; sun.shadow.mapSize.set(4096, 4096); sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.05; sc.add(sun, sun.target);
+  const ground = new T.Mesh(new T.PlaneGeometry(4000, 4000).rotateX(-Math.PI / 2), new T.MeshStandardMaterial({ color: new T.Color(0x6f7a5a).convertSRGBToLinear(), roughness: 1, envMapIntensity: 0.5 })); ground.receiveShadow = true; sc.add(ground);
+  const water = new T.Mesh(new T.PlaneGeometry(4000, 4000).rotateX(-Math.PI / 2), new T.MeshStandardMaterial({ color: new T.Color(0x123543).convertSRGBToLinear(), roughness: 0.1, transparent: true, opacity: 0.85 })); water.position.y = 0.3; sc.add(water);
+  const models = {};
+  for (const n of ["torii", "ferris_wheel", "coaster"]) { const m = await AutoAssets.loadModel(n, { receiveShadow: true }); m.traverse((o) => { if (o.isMesh) o.receiveShadow = true; }); m.visible = false; sc.add(m); models[n] = m; }
+  models.torii.position.y = -0.4;   // 浅瀬に立つ
+  const cam = new T.PerspectiveCamera(40, cw / chh, 0.1, 20000);
+  cells.forEach((c, i) => {
+    for (const k in models) models[k].visible = k === c.model; water.visible = c.model === "torii"; ground.visible = c.model !== "torii";
+    const [x, y, z] = c.pos, [lx, ly, lz] = c.look; cam.fov = c.fov || 40; cam.updateProjectionMatrix(); cam.position.set(x, y, z); cam.lookAt(lx, ly, lz);
+    const S = c.shadow || 40; sun.target.position.set(lx, 0, lz); sun.position.set(lx + 0.3 * S * 3, 0.93 * S * 3, lz + 0.22 * S * 3); Object.assign(sun.shadow.camera, { left: -S, right: S, top: S, bottom: -S, near: 1, far: S * 8 }); sun.shadow.camera.updateProjectionMatrix();
+    const cx = i % cols, cy = Math.floor(i / cols), yy = (rows - 1 - cy) * chh; r.setViewport(cx * cw, yy, cw, chh); r.setScissor(cx * cw, yy, cw, chh); r.render(sc, cam);
+  });
+  return [cw * cols, chh * rows];
+};
+</script></body></html>

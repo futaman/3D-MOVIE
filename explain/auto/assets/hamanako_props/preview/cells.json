@@ -1,0 +1,9 @@
+[{"model":"torii","pos":[14,4,30],"look":[0,9,0],"shadow":20},
+ {"model":"torii","pos":[-6,1.6,12],"look":[0,10,0],"fov":55,"shadow":20},
+ {"model":"torii","pos":[30,30,-25],"look":[0,6,0],"shadow":25},
+ {"model":"ferris_wheel","pos":[40,12,70],"look":[0,24,0],"shadow":40},
+ {"model":"ferris_wheel","pos":[12,3,22],"look":[0,22,0],"fov":55,"shadow":40},
+ {"model":"ferris_wheel","pos":[3,30,9],"look":[0,40,0],"fov":40,"shadow":30},
+ {"model":"coaster","pos":[30,45,90],"look":[5,8,-2],"shadow":70},
+ {"model":"coaster","pos":[70,20,40],"look":[45,22,15],"shadow":50},
+ {"model":"coaster","pos":[-14,6,30],"look":[-10,3,19],"fov":50,"shadow":30}]
