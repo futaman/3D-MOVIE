@@ -1,0 +1,8 @@
+{
+ "name": "RC セグメント 1 リング(一般的な寸法)",
+ "outer_diameter_m": 6.8,
+ "inner_diameter_m": 6.2,
+ "width_m": 1.2,
+ "pieces": "seg_0..4 = A(66°)、seg_5 = K(30°、最後に入れるくさび)",
+ "axis": "x"
+}

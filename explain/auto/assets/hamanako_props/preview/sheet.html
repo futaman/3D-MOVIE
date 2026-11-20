@@ -11,8 +11,8 @@ window.drawSheet = async function (cells, cw = 540, chh = 960, cols = 3) {
   const ground = new T.Mesh(new T.PlaneGeometry(4000, 4000).rotateX(-Math.PI / 2), new T.MeshStandardMaterial({ color: new T.Color(0x6f7a5a).convertSRGBToLinear(), roughness: 1, envMapIntensity: 0.5 })); ground.receiveShadow = true; sc.add(ground);
   const water = new T.Mesh(new T.PlaneGeometry(4000, 4000).rotateX(-Math.PI / 2), new T.MeshStandardMaterial({ color: new T.Color(0x123543).convertSRGBToLinear(), roughness: 0.1, transparent: true, opacity: 0.85 })); water.position.y = 0.3; sc.add(water);
   const models = {};
-  for (const n of ["torii", "ferris_wheel", "coaster"]) { const m = await AutoAssets.loadModel(n, { receiveShadow: true }); m.traverse((o) => { if (o.isMesh) o.receiveShadow = true; }); m.visible = false; sc.add(m); models[n] = m; }
-  models.torii.position.y = -0.4;   // 浅瀬に立つ
+  for (const n of [...new Set(cells.map((c) => c.model))]) { const m = await AutoAssets.loadModel(n, { receiveShadow: true }); m.traverse((o) => { if (o.isMesh) o.receiveShadow = true; }); m.visible = false; sc.add(m); models[n] = m; }
+  if (models.torii) models.torii.position.y = -0.4;   // 浅瀬に立つ
   const cam = new T.PerspectiveCamera(40, cw / chh, 0.1, 20000);
   cells.forEach((c, i) => {
     for (const k in models) models[k].visible = k === c.model; water.visible = c.model === "torii"; ground.visible = c.model !== "torii";

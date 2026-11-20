@@ -1,0 +1,8 @@
+{
+ "name": "泥土圧式シールドマシン(一般的な形)",
+ "outer_diameter_m": 7.0,
+ "length_m": 9.0,
+ "axis": "掘る向き = +X(glTF)。原点はカッターの面の中心",
+ "nodes": "cutter(x 軸で回す)、body、jacks(後ろ向きのジャッキ)",
+ "tail_x_m": -9.0
+}

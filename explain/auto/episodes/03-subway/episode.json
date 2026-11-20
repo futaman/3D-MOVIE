@@ -1,0 +1,125 @@
+{
+  "id": "03-subway",
+  "mode": "3d",
+  "format": "stages",
+  "title": "地下鉄のトンネルは、どうやって地下に作ったのか",
+  "title_band": "地下鉄ができるまで",
+  "footer": "断面図は模式図です",
+  "landing": {
+    "name": "浜名湖",
+    "lat": 34.75,
+    "lon": 137.58
+  },
+  "places": {},
+  "checks": [
+    {
+      "id": "thames",
+      "claim": "テムズトンネルは 1825 年着工、完成まで 18 年",
+      "expr": "1843 - 1825",
+      "expect": 18,
+      "tol": 0
+    },
+    {
+      "id": "floors",
+      "claim": "地下 42.3 m はビル 14 階ぶん(1 階 3 m とする)",
+      "expr": "42.3 / 3",
+      "expect": 14,
+      "tol": 0.2
+    }
+  ],
+  "facts": [
+    {
+      "claim": "1927 年 12 月 30 日、上野〜浅草の約 2.2 km に地下鉄が開業(現・東京メトロ銀座線)。東京メトロは「東洋初の地下鉄」としている",
+      "source": "現代ビジネス https://gendai.media/articles/-/59033 、All About https://news.allabout.co.jp/articles/o/54798/",
+      "status": "confirmed"
+    },
+    {
+      "claim": "上野〜浅草は、道路を掘って箱型のトンネルを作り埋め戻す開削工法で作られた",
+      "source": "乗りものニュース https://trafficnews.jp/post/79850 、All About(同上)",
+      "status": "confirmed"
+    },
+    {
+      "claim": "シールド工法は、円筒の機械で掘りながら、後ろでセグメントを輪に組んで壁にする",
+      "source": "土木学会(英 ICE)の解説 https://www.ice.org.uk/what-is-civil-engineering/what-do-civil-engineers-do/tunnel-boring-machines",
+      "status": "confirmed"
+    },
+    {
+      "claim": "ブルネルのシールドはロンドンのテムズトンネルで 1825 年から使われ、トンネルは 1843 年に完成",
+      "source": "Guinness World Records「First tunnelling shield」 https://guinnessworldrecords.com/world-records/115871-first-tunnelling-shield 、IET https://engx.theiet.org/b/articles/posts/e-t-expert-engineering---building-the-thames-tunnel",
+      "status": "confirmed"
+    },
+    {
+      "claim": "都営大江戸線 六本木駅のホームは地下 42.3 m で、日本の地下鉄の駅で最も深い",
+      "source": "東京都交通局 https://www.kotsu.metro.tokyo.jp/project-toei/column/architecture/180409_085946.html 、乗りものニュース https://trafficnews.jp/post/131168",
+      "status": "confirmed"
+    },
+    {
+      "claim": "地下鉄がある都市は札幌・仙台・東京・横浜・名古屋・京都・大阪・神戸・福岡の 9 都市で、静岡県にはない",
+      "source": "日本地下鉄協会「地下鉄事業の現況」の事業者一覧、乗りものニュース https://trafficnews.jp/post/80901",
+      "status": "confirmed"
+    },
+    {
+      "claim": "新しい路線ほど古い路線や埋設物の下を通るので深くなる",
+      "source": "乗りものニュース https://trafficnews.jp/post/131168",
+      "status": "confirmed"
+    }
+  ],
+  "scenes": [
+    {
+      "id": "s1",
+      "narration": "地下鉄のトンネルは、どうやって地下に作ったのか。地面を切って、順に見ていきます。"
+    },
+    {
+      "id": "s2",
+      "narration": "1927年、上野から浅草まで、2.2キロ。東洋初の地下鉄です。比べる相手が、いなかっただけですが。"
+    },
+    {
+      "id": "s3",
+      "narration": "作り方は、開削工法。道路を掘って、箱を作って、埋め戻す。工事中の道路は、もちろん使えません。"
+    },
+    {
+      "id": "s4",
+      "narration": "街の下には、水道、ガス、下水、電線。掘るたびに、先人の配管と、ご対面です。"
+    },
+    {
+      "id": "s5",
+      "narration": "そこで、シールド工法。円筒の機械が、土を削りながら進みます。地上の道路は、無傷です。"
+    },
+    {
+      "id": "s6",
+      "narration": "削ったすぐ後ろで、壁の部材を、輪にして組む。掘る、組む、また掘る。人類は、意外と根気強い。"
+    },
+    {
+      "id": "s7",
+      "narration": "原型は、1825年のロンドン。テムズ川の下で、完成まで18年。工期が延びるのは、伝統です。"
+    },
+    {
+      "id": "s8",
+      "narration": "新しい路線ほど、古い路線の下を、くぐるので深くなる。後から来た者ほど、深く潜る。"
+    },
+    {
+      "id": "s9",
+      "narration": "大江戸線の六本木駅は、地下42.3メートル。ビルなら14階ぶん。ホームまでは、ほぼ登山です。"
+    },
+    {
+      "id": "s10",
+      "narration": "ちなみに、浜名湖のある静岡県に、地下鉄はありません。掘らずに済むなら、それが最も安い工法です。"
+    }
+  ],
+  "meta": {
+    "tags": [
+      "地下鉄",
+      "トンネル",
+      "シールド工法",
+      "開削工法",
+      "土木",
+      "浜名湖"
+    ],
+    "description_lead": "地下鉄のトンネルの作り方を、開削工法からシールド工法まで、断面図で段階を追って見ました。",
+    "credits": [
+      "浜名湖の地形: Contains modified Copernicus Sentinel data 2024-2025; Copernicus DEM © DLR e.V. 2010-2014 and © Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS by the European Union and ESA; © ESA WorldCover project 2021(CC BY 4.0)",
+      "空・質感: Poly Haven、ambientCG(CC0)",
+      "人物: MakeHuman(CC0)、動き: CMU Graphics Lab Motion Capture Database"
+    ]
+  }
+}
