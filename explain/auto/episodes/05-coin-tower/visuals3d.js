@@ -111,7 +111,7 @@
         if (p > 0.4) screen("634m まで 42万2667枚", 270, 150, { size: 36, alpha: out(seg(p, 0.4, 0.5)) });
       } else if (id === "s3") { // 1157 年
         show("plaza"); stack(NMAX); placePerson("idle", t);
-        cam([3.4, 1.6, 5.5], [0, 1.4, 0], 40, 3); screen(`${Math.round(1157 * ease(seg(p, 0.05, 0.85)))}年後`, 270, 150, { size: 50 });
+        cam([3.4, 1.6, 5.5], [0, 1.4, 0], 40, 3); const yy = Math.round(1157 * ease(seg(p, 0.05, 0.85))); screen(`${yy}年後`, 270, 150, { size: 50 }); if (p > 0.6) screen(`西暦${2026 + yy}年`, 270, 210, { size: 36, alpha: out(seg(p, 0.6, 0.7)) });
       } else if (id === "s4" || id === "s5" || id === "s6") { // 地球から生える塔
         show("globe"); W.karman.visible = id === "s6"; W.mk[1].visible = false;
         const h = id === "s4" ? 229 * ease(seg(p, 0.15, 0.9)) : 229; tower(h, 0);

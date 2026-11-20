@@ -200,7 +200,7 @@
         pose("wave", t * 1.3); put("tube", 0, -0.9, 0, 0.35 * Math.sin(t * 0.8));
         W.lamp.position.set(0.6, 2.5, 1.0);
         const a = 0.25 + 0.3 * p; cam([Math.sin(a) * 1.9, -2.6 + 0.6 * p, Math.cos(a) * 1.9], [0, 0.0, 0], 62, 4);
-        screen(p < 0.48 ? "秒速 7.9km" : "時速 2万8千km", 270, 160, { size: 46 });
+        screen("秒速 7.9km", 270, 160, { size: 46 }); if (p > 0.45) screen("人工衛星と同じ速さ", 270, 218, { size: 34, alpha: g.out(g.seg(p, 0.45, 0.55)) });
       } else if (id === "s4") { // 東京の真裏は大西洋
         show("globe"); globeMode(false); W.mAnti.visible = true; W.mAnti.scale.setScalar(1.2 + 0.25 * Math.sin(t * 5));
         const k = ease(seg(p, 0, 0.8)), A0 = ll(...ANTI), eye = ll(ANTI[0] - 6, ANTI[1] - 10 + 4 * k, R + 22 - 9 * k);

@@ -157,6 +157,7 @@
       if (id === "s1") { // 街から地面の切り口へ
         cutState({ dig: 0, build: 0, fill: 0 }); ch.play("walk", t); put(sets.cut, 10.5 - 0, 0.35, -3 - t * 1.3, Math.PI);
         const k = ease(seg(p, 0.05, 0.9)); cam(mix([18, 26, 52], [4, -9, 44], k), mix([0, 2, -30], [0, -16, 0], k), 40, 40);
+        screen("六本木駅 地下42m", 270, 150, { size: 42 });
       } else if (id === "s2") { // 1927 年の箱型トンネル(完成形)
         cutState({}); const k = ease(p); cam(mix([10, -2, 30], [5, -5, 24], k), [0, -7, 0], 40, 20);
         screen("1927年", 270, 150, { size: 48 }); if (p > 0.3) label("上野〜浅草 2.2km", [0, -3.2, 0], { size: 26, dy: -26, alpha: out(seg(p, 0.3, 0.4)) });

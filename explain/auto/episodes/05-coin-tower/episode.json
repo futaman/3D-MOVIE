@@ -4,40 +4,164 @@
   "title": "1円玉を毎日1枚積んだら、いつスカイツリーを超えるのか",
   "title_band": "1円玉の塔",
   "footer": "1円玉の厚さは1.5mmと仮定",
-  "landing": { "name": "浜名湖", "lat": 34.75, "lon": 137.58 },
-  "places": { "skytree": [35.7101, 139.8107], "hamanako": [34.75, 137.58] },
+  "landing": {
+    "name": "浜名湖",
+    "lat": 34.75,
+    "lon": 137.58
+  },
+  "places": {
+    "skytree": [
+      35.7101,
+      139.8107
+    ],
+    "hamanako": [
+      34.75,
+      137.58
+    ]
+  },
   "checks": [
-    { "id": "n634", "claim": "634 m には 1 円玉 42 万 2667 枚", "expr": "Math.round(634 / 0.0015)", "expect": 422667, "tol": 0 },
-    { "id": "years", "claim": "1 日 1 枚なら約 1157 年", "expr": "634 / 0.0015 / 365.25", "expect": 1157, "tol": 1 },
-    { "id": "d", "claim": "スカイツリーから浜名湖まで 229 km", "expr": "dist(skytree, hamanako)", "expect": 229, "tol": 1 },
-    { "id": "n229", "claim": "高さ 229 km には約 1 億 5 千万枚(約 1 億 5 千万円)", "expr": "dist(skytree, hamanako) * 1000 / 0.0015 / 1e8", "expect": 1.5, "tol": 0.05 },
-    { "id": "crush", "claim": "柔らかい純アルミの耐力 30 MPa で見積もると、高さ 1.4 km ほどで一番下が潰れる", "expr": "30e6 * Math.PI * 0.01 ** 2 * 0.0015 / (0.001 * 9.81) / 1000", "expect": 1.4, "tol": 0.06 }
+    {
+      "id": "n634",
+      "claim": "634 m には 1 円玉 42 万 2667 枚",
+      "expr": "Math.round(634 / 0.0015)",
+      "expect": 422667,
+      "tol": 0
+    },
+    {
+      "id": "years",
+      "claim": "1 日 1 枚なら約 1157 年",
+      "expr": "634 / 0.0015 / 365.25",
+      "expect": 1157,
+      "tol": 1
+    },
+    {
+      "id": "d",
+      "claim": "スカイツリーから浜名湖まで 229 km",
+      "expr": "dist(skytree, hamanako)",
+      "expect": 229,
+      "tol": 1
+    },
+    {
+      "id": "n229",
+      "claim": "高さ 229 km には約 1 億 5 千万枚(約 1 億 5 千万円)",
+      "expr": "dist(skytree, hamanako) * 1000 / 0.0015 / 1e8",
+      "expect": 1.5,
+      "tol": 0.05
+    },
+    {
+      "id": "crush",
+      "claim": "柔らかい純アルミの耐力 30 MPa で見積もると、高さ 1.4 km ほどで一番下が潰れる",
+      "expr": "30e6 * Math.PI * 0.01 ** 2 * 0.0015 / (0.001 * 9.81) / 1000",
+      "expect": 1.4,
+      "tol": 0.06
+    },
+    {
+      "id": "year",
+      "claim": "2026 年から 1157 年後は西暦 3183 年",
+      "expr": "2026 + Math.round(634 / 0.0015 / 365.25)",
+      "expect": 3183,
+      "tol": 0
+    }
   ],
   "facts": [
-    { "claim": "1 円硬貨はアルミニウム製で、直径 20.0 mm、量目 1.00 g", "source": "財務省「通常貨幣一覧」 https://www.mof.go.jp/policy/currency/coin/general_coin/list.htm", "status": "confirmed" },
-    { "claim": "1 円硬貨の厚さを 1.5 mm とする(公式の公表値はなく、一般に約 1.5 mm とされる)", "source": "この動画の仮定", "status": "assumption" },
-    { "claim": "東京スカイツリーの高さは 634 m", "source": "東京スカイツリー公式サイト https://www.tokyo-skytree.jp/", "status": "confirmed" },
-    { "claim": "国際航空連盟(FAI)は高度 100 km を航空と宇宙の境界(カーマンライン)としている", "source": "FAI「100km Altitude Boundary for Astronautics」 https://www-2025.fai.org/node/23280", "status": "confirmed" },
-    { "claim": "純アルミ(A1050 焼なまし材)の耐力は約 30 MPa を見積もりに使う", "source": "A1050 のデータシート(参考値) https://namekawa.co.jp/wp-content/uploads/2022/05/namekawa_products_01_A1050_1b.pdf", "status": "assumption" },
-    { "claim": "倒れた塔のてっぺんは、根元から塔の高さぶん先に届く(平らな地面とした近似)", "source": "この動画の仮定", "status": "assumption" },
-    { "claim": "浜名湖は今切口で海(遠州灘)とつながった汽水湖", "source": "静岡県の資料 https://www.pref.shizuoka.jp/_res/projects/default_project/_page_/001/029/378/09-1.pdf", "status": "confirmed" },
-    { "claim": "浜名湖はうなぎの養殖で知られる", "source": "浜松市 https://www.city.hamamatsu.shizuoka.jp/nousei/shinko/fishry/fishery_youshoku.html", "status": "confirmed" }
+    {
+      "claim": "1 円硬貨はアルミニウム製で、直径 20.0 mm、量目 1.00 g",
+      "source": "財務省「通常貨幣一覧」 https://www.mof.go.jp/policy/currency/coin/general_coin/list.htm",
+      "status": "confirmed"
+    },
+    {
+      "claim": "1 円硬貨の厚さを 1.5 mm とする(公式の公表値はなく、一般に約 1.5 mm とされる)",
+      "source": "この動画の仮定",
+      "status": "assumption"
+    },
+    {
+      "claim": "東京スカイツリーの高さは 634 m",
+      "source": "東京スカイツリー公式サイト https://www.tokyo-skytree.jp/",
+      "status": "confirmed"
+    },
+    {
+      "claim": "国際航空連盟(FAI)は高度 100 km を航空と宇宙の境界(カーマンライン)としている",
+      "source": "FAI「100km Altitude Boundary for Astronautics」 https://www-2025.fai.org/node/23280",
+      "status": "confirmed"
+    },
+    {
+      "claim": "純アルミ(A1050 焼なまし材)の耐力は約 30 MPa を見積もりに使う",
+      "source": "A1050 のデータシート(参考値) https://namekawa.co.jp/wp-content/uploads/2022/05/namekawa_products_01_A1050_1b.pdf",
+      "status": "assumption"
+    },
+    {
+      "claim": "倒れた塔のてっぺんは、根元から塔の高さぶん先に届く(平らな地面とした近似)",
+      "source": "この動画の仮定",
+      "status": "assumption"
+    },
+    {
+      "claim": "浜名湖は今切口で海(遠州灘)とつながった汽水湖",
+      "source": "静岡県の資料 https://www.pref.shizuoka.jp/_res/projects/default_project/_page_/001/029/378/09-1.pdf",
+      "status": "confirmed"
+    },
+    {
+      "claim": "浜名湖はうなぎの養殖で知られる",
+      "source": "浜松市 https://www.city.hamamatsu.shizuoka.jp/nousei/shinko/fishry/fishery_youshoku.html",
+      "status": "confirmed"
+    }
   ],
   "scenes": [
-    { "id": "s1", "narration": "1円玉を、毎日1枚ずつ積んだら、いつスカイツリーを超えるのか。大人げなく計算します。" },
-    { "id": "s2", "narration": "厚さを1.5ミリとすると、634メートルまで、42万2667枚。" },
-    { "id": "s3", "narration": "1日1枚なら、約1157年。完成を見届けるのは、だいぶ先の子孫です。" },
-    { "id": "s4", "narration": "待てないので、一気に積みます。高さは、229キロ。" },
-    { "id": "s5", "narration": "必要な1円玉は、約1億5千万枚。両替の手数料は、考えないことにします。" },
-    { "id": "s6", "narration": "宇宙との境目、高さ100キロを、あっさり突き抜けます。" },
-    { "id": "s7", "narration": "ただし、細すぎて、立っていられません。西に倒れると、てっぺんが届くのは、229キロ先。" },
-    { "id": "s8", "narration": "スカイツリーから、西へ229キロ。1円玉が降り注ぐのは、静岡県の浜名湖です。" },
-    { "id": "s9", "narration": "浜名湖は、海とつながった湖。うなぎの養殖で、知られています。" },
-    { "id": "s10", "narration": "ちなみに、実際は高さ1.4キロほどで、一番下の1円玉が潰れます。積むなら、貯金箱でどうぞ。" }
+    {
+      "id": "s1",
+      "narration": "1円玉を、毎日1枚ずつ積み上げる。スカイツリーの高さに届くのは、いつか。"
+    },
+    {
+      "id": "s2",
+      "narration": "厚さを1.5ミリとすると、634メートルまで、42万2667枚。"
+    },
+    {
+      "id": "s3",
+      "narration": "1日1枚なら、約1157年。今日から始めると、完成は、西暦3183年です。"
+    },
+    {
+      "id": "s4",
+      "narration": "待っていられないので、一度に積むことにします。高さは、229キロ。"
+    },
+    {
+      "id": "s5",
+      "narration": "必要な1円玉は、約1億5千万枚。1億5千万円が、全部1円玉です。"
+    },
+    {
+      "id": "s6",
+      "narration": "高さ100キロ。宇宙との境目を、あっさり越えます。"
+    },
+    {
+      "id": "s7",
+      "narration": "もちろん、こんなに細い塔は、立っていられません。西へ倒れると、先端は229キロ先に届きます。"
+    },
+    {
+      "id": "s8",
+      "narration": "スカイツリーから、西へ229キロ。1円玉が降り注ぐのは、静岡県の浜名湖です。"
+    },
+    {
+      "id": "s9",
+      "narration": "浜名湖は、海とつながった湖。うなぎの養殖で、知られています。"
+    },
+    {
+      "id": "s10",
+      "narration": "もっとも、実際は高さ1.4キロほどで、一番下の1円玉が潰れます。スカイツリーは越えますが、宇宙には行けません。"
+    }
   ],
   "meta": {
-    "tags": ["1円玉", "スカイツリー", "宇宙", "浜名湖", "計算してみた", "物理"],
+    "tags": [
+      "1円玉",
+      "スカイツリー",
+      "宇宙",
+      "浜名湖",
+      "計算してみた",
+      "物理"
+    ],
     "description_lead": "1円玉を毎日1枚積んだら、いつスカイツリーの高さを超えるのか。積み上げた塔が倒れたらどこに届くのかを計算しました。",
-    "credits": ["浜名湖の地形: Contains modified Copernicus Sentinel data 2024-2025; Copernicus DEM © DLR e.V. 2010-2014 and © Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS by the European Union and ESA; © ESA WorldCover project 2021(CC BY 4.0)", "地球: NASA Visible Earth「Blue Marble」", "空・質感: Poly Haven、ambientCG(CC0)", "人物: MakeHuman(CC0)、動き: CMU Graphics Lab Motion Capture Database"]
+    "credits": [
+      "浜名湖の地形: Contains modified Copernicus Sentinel data 2024-2025; Copernicus DEM © DLR e.V. 2010-2014 and © Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS by the European Union and ESA; © ESA WorldCover project 2021(CC BY 4.0)",
+      "地球: NASA Visible Earth「Blue Marble」",
+      "空・質感: Poly Haven、ambientCG(CC0)",
+      "人物: MakeHuman(CC0)、動き: CMU Graphics Lab Motion Capture Database"
+    ]
   }
 }
