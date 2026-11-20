@@ -56,6 +56,9 @@
       let x, y;
       if (l.xy) [x, y] = l.xy; else { tmp.set(...l.pos).project(camera); if (tmp.z > 1 || tmp.z < -1) continue; x = (tmp.x + 1) / 2 * W + (l.o.dx || 0); y = (1 - tmp.y) / 2 * H + (l.o.dy || 0); }
       if (x < -50 || x > W + 50 || y < 0 || y > H) continue;
+      // 画面の端と字幕の帯(y 634〜702)にかかるラベルは、内側・上下へずらす(動く物に付いたラベルが一瞬かかるのを防ぐ)
+      ctx.font = `${l.o.weight || 900} ${l.o.size || 24}px ${FONT}`; const mw = ctx.measureText(l.text).width, hs = (l.o.size || 24) / 2 + 4;
+      if (!l.o.loose) { x = Math.min(Math.max(x, mw / 2 + 6), W - mw / 2 - 6); const gap = Math.max(34, 18 + hs); if (Math.abs(y - 668) < gap) y = y < 668 ? 668 - gap : 668 + gap; }
       const w = drawText(l.text, x, y, l.o);
       if (!l.o.loose && (x - w / 2 < 2 || x + w / 2 > W - 2)) qa.push(`${sc.id}: ラベル「${l.text}」が画面からはみ出す`);
       if (!l.o.loose && Math.abs(y - 668) < 34) qa.push(`${sc.id}: ラベル「${l.text}」が字幕に重なる`);
