@@ -135,20 +135,11 @@
   }
   function tubeScroll(off) { W.rings.forEach((r, i) => { r.position.z = ((((i * RING + off) % TL) + TL) % TL) - TL / 2; }); W.tubeMat.normalMap.offset.y = W.tubeMat.roughnessMap.offset.y = -off / TL * 80; }
 
-  /* ---- D: 浜名湖(1 = 1 m、湖の形は模式図) ---- */
+  /* ---- D: 浜名湖(1 = 1 m、原点は湖の中の 34.75N 137.58E、x = 東、z = 南) ---- */
   function buildLake() {
     const s = set("lake");
-    const water = new T.Mesh(new T.PlaneGeometry(120000, 120000).rotateX(-Math.PI / 2), new T.MeshStandardMaterial({ color: 0x1b4252, roughness: 0.14, metalness: 0.05, envMapIntensity: 1.0 })); water.receiveShadow = true; s.add(water);
-    // 陸: 長方形から湖(南の口で遠州灘につながる)を切り抜いた形。座標は (x 東, z 南) の m
-    const lake = [[600, 4200], [800, 3500], [2000, 3000], [3500, 1500], [4000, -1000], [3500, -4000], [2500, -6500], [1500, -8000], [0, -7000], [-1000, -8500], [-2500, -7500], [-3500, -5000], [-4000, -3000], [-4500, -1000], [-3500, 2000], [-1500, 3000], [200, 3600]];
-    const outline = [[200, 5200], [-30000, 5200], [-30000, -40000], [30000, -40000], [30000, 5200], [600, 5200], ...lake].map(([x, z]) => new T.Vector2(x, -z));
-    const land = new T.Mesh(new T.ShapeGeometry(new T.Shape(outline)).rotateX(-Math.PI / 2), new T.MeshStandardMaterial({ color: new T.Color(0x587340).convertSRGBToLinear(), roughness: 1, envMapIntensity: 0.6 }));
-    land.position.y = 1.5; land.receiveShadow = true; s.add(land);
-    const r = rng(77), hillM = new T.MeshStandardMaterial({ color: new T.Color(0x3f5a34).convertSRGBToLinear(), roughness: 1 });
-    for (let i = 0; i < 14; i++) { const h = new T.Mesh(new T.SphereGeometry(1, 24, 12), hillM); h.scale.set(4000 + r() * 4000, 120 + r() * 220, 3000 + r() * 3000); h.position.set(-26000 + i * 4000 + r() * 1500, 0, -20000 - r() * 12000); s.add(h); }
-    // 町: 外壁テクスチャの低いビルを岸の外側に
-    const dummy = new T.Object3D(), mats = [A.f1, A.f6].map((ft) => { const t = ft.clone(); t.needsUpdate = true; return new T.MeshStandardMaterial({ map: t, roughness: 0.5, metalness: 0.1 }); });
-    mats.forEach((m, mi) => { const im = new T.InstancedMesh(new T.BoxGeometry(1, 1, 1), m, 700); let k = 0; while (k < 700) { const x = 4500 + r() * 12000 - (mi ? 21000 : 0), z = -6000 + r() * 11000; const hh = 8 + r() * r() * 40; dummy.position.set(x, hh / 2 + 1.5, z); dummy.scale.set(15 + r() * 25, hh, 15 + r() * 25); dummy.updateMatrix(); im.setMatrixAt(k++, dummy.matrix); } im.frustumCulled = false; s.add(im); });
+    // 実際の浜名湖の地形(assets/hamanako: Sentinel-2 の色 + Copernicus DEM の高さ + WorldCover の水域)
+    s.add(A.hama.root);
     // 穴の出口: 湖面から出た鉄の筒と足場
     const pipe = new T.Mesh(new T.CylinderGeometry(HOLE + 0.15, HOLE + 0.15, 6, 40, 1, true), paint(0x8f969e, 6, 2)); pipe.position.y = -2.4; pipe.castShadow = pipe.receiveShadow = true; s.add(pipe);
     const inner = new T.Mesh(new T.CylinderGeometry(HOLE, HOLE, 30, 40, 1, true), paint(0x6d737a, 6, 10, T.BackSide)); inner.position.y = -14.4; s.add(inner);
@@ -169,6 +160,7 @@
       A.sky.mapping = T.EquirectangularReflectionMapping; A.sky.wrapS = A.sky.wrapT = T.ClampToEdgeWrapping;
       A.earth.wrapS = T.RepeatWrapping; A.earth.wrapT = T.ClampToEdgeWrapping; A.earth.repeat.set(1, 1); A.earth.anisotropy = 16;
       ch = await AutoAssets.loadCharacter("human01");
+      A.hama = await AutoAssets.loadTerrain("hamanako", { coastZ: 9000 });
     },
     init(G) {
       g = G; T = g.T;
@@ -245,13 +237,12 @@
         const c = ease(p); cam([5.5 - 1.5 * c, 1.2 + 0.4 * c, 8 - 2 * c], [0, 1.1, 0], 40, 8);
         screen("42分後", 270, 150, { size: 42 });
         if (p > 0.45) screen("浜名湖", 270, 212, { size: 50, alpha: out(seg(p, 0.45, 0.55)) });
-      } else if (id === "s9") { // 浜名湖を空から(湖の形は模式図)
-        show("lake"); g.scene.fog.density = 0.000014;
+      } else if (id === "s9") { // 浜名湖を空から(実際の地形)
+        show("lake"); g.scene.fog.density = 0.000042;
         pose("idle", t); put("lake", 2.2, DECK, 0.4, Math.PI * 0.7);
-        const a = -0.35 + 0.35 * ease(p); cam([Math.sin(a) * 9000, 7600 - 800 * p, 2500 + Math.cos(a) * 9000], [0, 0, -1500], 40, 30);
-        label("浜名湖", [0, 0, -2600], { size: 34 });
-        label("海(遠州灘)", [300, 0, 7600], { size: 28 });
-        screen("模式図", 270, 912, { size: 17, weight: 700 });
+        const a = -0.25 + 0.3 * ease(p); cam([Math.sin(a) * 13000, 12500 - 1500 * p, 1500 + Math.cos(a) * 13000], [0, 0, -2500], 40, 30);
+        label("浜名湖", [-1500, 0, -800], { size: 34 });
+        label("遠州灘", [1500, 0, 11500], { size: 28 });
       } else if (id === "s10") { // 足場の上で手を振る。穴と新幹線の比較
         show("lake"); g.scene.fog.density = 0.000045;
         pose("wave", t); put("lake", 2.1, DECK, 0.2, Math.PI * 0.6);

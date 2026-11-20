@@ -124,5 +124,45 @@
     });
   }
 
-  window.AutoAssets = { loadCharacter: loadCharacter, loadModel: loadModel, loadGLTF: loadGLTF };
+  /* ---- 地形 (assets/<name>/ の色・高さ・水域の画像から)。1 = 1 m、x = 東、z = 南、原点は meta の center ----
+   *   const tr = await AutoAssets.loadTerrain("hamanako");   scene.add(tr.root);   tr.heightAt(x, z)
+   * file:// で画像を WebGL / canvas に使うので、Chromium は --allow-file-access-from-files で起動する。 */
+  var TERRAIN_DIRS = { hamanako: "../assets/hamanako/" };
+  function loadImage(url) { return new Promise(function (ok, ng) { var i = new Image(); i.onload = function () { ok(i); }; i.onerror = function () { ng(new Error("image load failed: " + url)); }; i.src = url; }); }
+  function pixels(im) { var c = document.createElement("canvas"); c.width = im.width; c.height = im.height; var x = c.getContext("2d"); x.drawImage(im, 0, 0); return x.getImageData(0, 0, c.width, c.height).data; }
+  function loadTerrain(name, opts) {
+    opts = opts || {}; var dir = (opts.baseUrl) || LIB + (TERRAIN_DIRS[name] || "../assets/" + name + "/");
+    return addScript(dir + name + ".meta.js").then(function () {
+      return Promise.all([loadImage(dir + name + "_color.jpg"), loadImage(dir + name + "_height.png"), loadImage(dir + name + "_water.png")]);
+    }).then(function (ims) {
+      var meta = data()[name + ".meta"], S = meta.size_m, seg = opts.segments || 511, ex = opts.exaggerate || 1, fade = opts.edgeFade || 4000, coast = opts.coastZ;
+      var hp = pixels(ims[1]), hw = ims[1].width, wp = pixels(ims[2]), ww = ims[2].width;
+      function bil(a, w, u, v, f) { var x = u * (w - 1), y = v * (w - 1), x0 = Math.floor(x), y0 = Math.floor(y), x1 = Math.min(x0 + 1, w - 1), y1 = Math.min(y0 + 1, w - 1), fx = x - x0, fy = y - y0;
+        return (f(a, (y0 * w + x0) * 4) * (1 - fx) + f(a, (y0 * w + x1) * 4) * fx) * (1 - fy) + (f(a, (y1 * w + x0) * 4) * (1 - fx) + f(a, (y1 * w + x1) * 4) * fx) * fy; }
+      var dem = function (a, i) { return (a[i] * 256 + a[i + 1]) / 50 - 100; }, wet = function (a, i) { return a[i] / 255; };
+      var sstep = function (a, b, x) { x = Math.min(1, Math.max(0, (x - a) / (b - a))); return x * x * (3 - 2 * x); };
+      function heightAt(x, z) {
+        var u = x / S + 0.5, v = z / S + 0.5; if (u < 0 || u > 1 || v < 0 || v > 1) return 0.5;
+        var land = Math.max(bil(hp, hw, u, v, dem), 0) * ex + 0.8, w = sstep(0.3, 0.7, bil(wp, ww, u, v, wet)), h = land * (1 - w) - 5 * w;
+        var k = sstep(0, 1, Math.min(x + S / 2, S / 2 - x, z + S / 2, S / 2 - z) / fade);   // 端は低くして外の平地につなぐ
+        return h * k + (w > 0.5 ? -5 : 0.5) * (1 - k);
+      }
+      var root = new T.Group(); root.name = name;
+      var geo = new T.PlaneGeometry(S, S, seg, seg).rotateX(-Math.PI / 2), pos = geo.attributes.position;
+      for (var i = 0; i < pos.count; i++) pos.setY(i, heightAt(pos.getX(i), pos.getZ(i)));
+      geo.computeVertexNormals();
+      var map = new T.Texture(ims[0]); map.encoding = T.sRGBEncoding; map.anisotropy = 16; map.needsUpdate = true;
+      var ground = new T.Mesh(geo, new T.MeshStandardMaterial({ map: map, roughness: 0.95, metalness: 0, envMapIntensity: 0.55 })); ground.receiveShadow = true; root.add(ground);
+      // 範囲の外: 北・東・西は平地、南(coastZ より南)は海
+      var outer = 150000, far = new T.MeshStandardMaterial({ color: new T.Color(opts.farColor || 0x3a5233).convertSRGBToLinear(), roughness: 1, envMapIntensity: 0.4 }), cz = coast === undefined ? S / 2 : coast;
+      [[-outer, -S / 2, -outer, cz], [S / 2, outer, -outer, cz], [-S / 2, S / 2, -outer, -S / 2]].forEach(function (r) {
+        var m = new T.Mesh(new T.PlaneGeometry(r[1] - r[0], r[3] - r[2]).rotateX(-Math.PI / 2), far); m.position.set((r[0] + r[1]) / 2, 0.5, (r[2] + r[3]) / 2); root.add(m); });
+      var bed = new T.Mesh(new T.PlaneGeometry(outer * 2, outer * 2).rotateX(-Math.PI / 2), new T.MeshBasicMaterial({ color: 0x0a1c22 })); bed.position.y = -8; root.add(bed);
+      var water = new T.Mesh(new T.PlaneGeometry(outer * 2, outer * 2).rotateX(-Math.PI / 2), new T.MeshStandardMaterial({ color: new T.Color(opts.waterColor || 0x123543).convertSRGBToLinear(), roughness: 0.1, metalness: 0, transparent: true, opacity: 0.8, envMapIntensity: 1.1, depthWrite: false }));
+      water.renderOrder = 1; root.add(water);   // 影は受けない(広い板だと影の縞が出る)。細かい波の法線マップはソフトウェア描画で縞になるので付けない
+      return { root: root, ground: ground, water: water, heightAt: heightAt, meta: meta };
+    });
+  }
+
+  window.AutoAssets = { loadCharacter: loadCharacter, loadModel: loadModel, loadGLTF: loadGLTF, loadTerrain: loadTerrain };
 })();

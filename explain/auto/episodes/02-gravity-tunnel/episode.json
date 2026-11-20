@@ -170,6 +170,12 @@
       "物理",
       "計算してみた"
     ],
-    "description_lead": "東京の地面にまっすぐ穴を掘って飛び込んだら、どこに、何分で出るのかを計算しました。"
+    "description_lead": "東京の地面にまっすぐ穴を掘って飛び込んだら、どこに、何分で出るのかを計算しました。",
+    "credits": [
+      "浜名湖の地形: Contains modified Copernicus Sentinel data 2024-2025; Copernicus DEM © DLR e.V. 2010-2014 and © Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS by the European Union and ESA; © ESA WorldCover project 2021 / Contains modified Copernicus Sentinel data (2021) processed by ESA WorldCover consortium(CC BY 4.0)",
+      "地球: NASA Visible Earth「Blue Marble」",
+      "空・質感: Poly Haven、ambientCG(CC0)",
+      "人物: MakeHuman(CC0)、動き: CMU Graphics Lab Motion Capture Database"
+    ]
   }
 }
