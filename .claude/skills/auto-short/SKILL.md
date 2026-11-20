@@ -25,6 +25,9 @@ description: ネタ落ち型の解説ショート動画(真面目な計算 → �
 
 - 人物: `assets/human01/`(MakeHuman の CC0 素材 + CMU のモーションキャプチャ)。`AutoAssets.loadCharacter("human01")`。作り方は同フォルダの README。
 - 空・質感: `assets/env/`(Poly Haven、ambientCG。CC0)。足りないものは同じ配布元から取り、README の表に出典とライセンスを足す。
+- 地球: `assets/earth/`(NASA Blue Marble、パブリックドメイン)。地球の場面の見本は `episodes/02-gravity-tunnel/visuals3d.js`(断面図、`ll()` で緯度経度 → 球面)。
+- クラウド環境では polyhaven.com などに直接つながらないことがある。その場合は npm レジストリ経由で、ライセンスが明記された素材だけを取る(例: `three-globe` の example に同梱の NASA 画像)。
+- 画像テクスチャを読む回は `bin/render.cjs` が `--allow-file-access-from-files` 付きで Chromium を起動する(file:// の画像を WebGL に渡すため)。
 - 使ってよいのは CC0 か、商用可で再配布可のものだけ。CC-BY は出典を記録。NC、再配布不可、ログインが必要な配布元(Mixamo、Sketchfab など)の素材はリポジトリに入れない。実在のロゴ・キャラクターは使わない。
 - 描画は sRGB 出力 + ACES トーンマップ + 全天写真の環境光 + 影。見本は `lab/shot01/shot.js`。
 - `episodes/01-paper-plane/visuals3d.js` と `assets/character/`(自作の人形)は旧方式。新しい回の見本にしない。

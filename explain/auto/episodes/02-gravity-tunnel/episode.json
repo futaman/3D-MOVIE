@@ -4,36 +4,172 @@
   "title": "東京の地面にまっすぐ穴を掘って飛び込んだら、どこに出る？",
   "title_band": "穴に落ちたらどこに出る？",
   "footer": "地球の密度は一様、空気と摩擦はないと仮定",
-  "landing": { "name": "浜名湖", "lat": 34.75, "lon": 137.58 },
-  "places": { "tokyo": [35.6812, 139.7671], "hamanako": [34.75, 137.58], "antipode": [-35.6812, -40.2329], "uruguay": [-34.97, -54.95] },
+  "landing": {
+    "name": "浜名湖",
+    "lat": 34.75,
+    "lon": 137.58
+  },
+  "places": {
+    "tokyo": [
+      35.6812,
+      139.7671
+    ],
+    "hamanako": [
+      34.75,
+      137.58
+    ],
+    "antipode": [
+      -35.6812,
+      -40.2329
+    ],
+    "uruguay": [
+      -34.97,
+      -54.95
+    ]
+  },
   "checks": [
-    { "id": "t42", "claim": "地球を貫く穴は片道およそ 42 分", "expr": "Math.PI*Math.sqrt(6371000/9.81)/60", "expect": 42, "tol": 0.5 },
-    { "id": "vmax_kms", "claim": "中心での速さは秒速 7.9 km", "expr": "Math.sqrt(9.81*6371000)/1000", "expect": 7.9, "tol": 0.05 },
-    { "id": "vmax_kmh", "claim": "時速にすると約 2 万 8 千 km", "expr": "Math.sqrt(9.81*6371000)*3.6", "expect": 28000, "tol": 600 },
-    { "id": "antipode", "claim": "東京の真裏は南米の沖(ウルグアイの海岸から 1,000 km 以上東の大西洋)", "expr": "dist(antipode, uruguay)", "expect": 1340, "tol": 200 },
-    { "id": "d", "claim": "東京駅から浜名湖まで西へ 224 km", "expr": "dist(tokyo, hamanako)", "expect": 224, "tol": 2 },
-    { "id": "depth", "claim": "いちばん深い所でも地下およそ 1 km", "expr": "6371*(1-Math.cos(dist(tokyo, hamanako)/2/6371))", "expect": 1.0, "tol": 0.05 },
-    { "id": "slope", "claim": "入口の傾きは 1 度", "expr": "dist(tokyo, hamanako)/2/6371*180/Math.PI", "expect": 1.0, "tol": 0.05 },
-    { "id": "v500", "claim": "最高時速はおよそ 500 km", "expr": "6371000*Math.sin(dist(tokyo, hamanako)/2/6371)*Math.sqrt(9.81/6371000)*3.6", "expect": 500, "tol": 10 }
+    {
+      "id": "t42",
+      "claim": "地球を貫く穴は片道およそ 42 分",
+      "expr": "Math.PI*Math.sqrt(6371000/9.81)/60",
+      "expect": 42,
+      "tol": 0.5
+    },
+    {
+      "id": "vmax_kms",
+      "claim": "中心での速さは秒速 7.9 km",
+      "expr": "Math.sqrt(9.81*6371000)/1000",
+      "expect": 7.9,
+      "tol": 0.05
+    },
+    {
+      "id": "vmax_kmh",
+      "claim": "時速にすると約 2 万 8 千 km",
+      "expr": "Math.sqrt(9.81*6371000)*3.6",
+      "expect": 28000,
+      "tol": 600
+    },
+    {
+      "id": "antipode",
+      "claim": "東京の真裏は南米の沖(ウルグアイの海岸から 1,000 km 以上東の大西洋)",
+      "expr": "dist(antipode, uruguay)",
+      "expect": 1340,
+      "tol": 200
+    },
+    {
+      "id": "d",
+      "claim": "東京駅から浜名湖まで西へ 224 km",
+      "expr": "dist(tokyo, hamanako)",
+      "expect": 224,
+      "tol": 2
+    },
+    {
+      "id": "depth",
+      "claim": "いちばん深い所でも地下およそ 1 km",
+      "expr": "6371*(1-Math.cos(dist(tokyo, hamanako)/2/6371))",
+      "expect": 1.0,
+      "tol": 0.05
+    },
+    {
+      "id": "slope",
+      "claim": "入口の傾きは 1 度",
+      "expr": "dist(tokyo, hamanako)/2/6371*180/Math.PI",
+      "expect": 1.0,
+      "tol": 0.05
+    },
+    {
+      "id": "v500",
+      "claim": "最高時速はおよそ 500 km",
+      "expr": "6371000*Math.sin(dist(tokyo, hamanako)/2/6371)*Math.sqrt(9.81/6371000)*3.6",
+      "expect": 500,
+      "tol": 10
+    },
+    {
+      "id": "cmp",
+      "claim": "穴(42 分)のほうが新幹線(74 分)より速い",
+      "expr": "74 - Math.PI*Math.sqrt(6371000/9.81)/60",
+      "expect": 32,
+      "tol": 1
+    }
   ],
   "facts": [
-    { "claim": "一様な密度の球を貫くまっすぐな穴は、どこへ掘っても片道の時間が同じ(単振動、π√(R/g))", "source": "力学の標準的な結果(重力列車)", "status": "confirmed" },
-    { "claim": "地球の密度は一様、空気と摩擦はない", "source": "この動画の仮定(実際の地球は中心ほど密度が高い)", "status": "assumption" },
-    { "claim": "浜名湖は海(遠州灘)とつながった汽水湖", "source": "静岡県", "status": "confirmed" },
-    { "claim": "浜名湖はうなぎの養殖で知られる", "source": "浜松市", "status": "confirmed" },
-    { "claim": "東京駅から浜松駅まで新幹線(ひかり)で約 1 時間半", "source": "未確認(時刻表で確かめる)", "status": "unverified" }
+    {
+      "claim": "一様な密度の球を貫くまっすぐな穴は、どこへ掘っても片道の時間が同じ(単振動、π√(R/g))",
+      "source": "力学の標準的な結果(重力列車。一様な球の内部では重力が中心からの距離に比例するので単振動になる)",
+      "status": "confirmed"
+    },
+    {
+      "claim": "地球の密度は一様、空気と摩擦はない",
+      "source": "この動画の仮定(実際の地球は中心ほど密度が高い)",
+      "status": "assumption"
+    },
+    {
+      "claim": "浜名湖は今切口で海(遠州灘)とつながった汽水湖",
+      "source": "静岡県の資料 https://www.pref.shizuoka.jp/_res/projects/default_project/_page_/001/029/378/09-1.pdf",
+      "status": "confirmed"
+    },
+    {
+      "claim": "浜名湖はうなぎの養殖で知られる",
+      "source": "浜松市 https://www.city.hamamatsu.shizuoka.jp/nousei/shinko/fishry/fishery_youshoku.html",
+      "status": "confirmed"
+    },
+    {
+      "claim": "東京駅から浜松駅まで新幹線(ひかり)で最短 1 時間 14 分",
+      "source": "えきたん https://ekitan.com/transit/article/shinkansen/section/sf-4520_st-2590 (2026-11-20 確認。JR 東日本の時刻表でも ひかり 630 号 浜松 6:58 → 東京 8:15)",
+      "status": "confirmed"
+    }
   ],
   "scenes": [
-    { "id": "s1", "narration": "東京の地面に、まっすぐ穴を掘って、飛び込んだら、どこに出るのか。真面目に計算します。" },
-    { "id": "s2", "narration": "空気も摩擦もないとすると、地球の中心を通って、反対側に着くまで、およそ42分。" },
-    { "id": "s3", "narration": "中心での速さは、秒速7.9キロ。時速にすると、2万8千キロです。" },
-    { "id": "s4", "narration": "ただし、東京の真裏は、南米の沖の大西洋。出口は、海の中です。" },
-    { "id": "s5", "narration": "そこで、穴を斜めに掘ります。実は、まっすぐな穴なら、どこへ掘っても、かかる時間は同じ42分。" },
-    { "id": "s6", "narration": "では、東京駅から、西へ224キロの穴。いちばん深い所でも、地下およそ1キロです。" },
-    { "id": "s7", "narration": "入口の傾きは、たったの1度。それでも落ち続けて、最高時速は、およそ500キロ。" },
-    { "id": "s8", "narration": "42分後、飛び出すのは、静岡県の浜名湖です。" },
-    { "id": "s9", "narration": "浜名湖は、海とつながった湖。うなぎの養殖で知られています。" },
-    { "id": "s10", "narration": "新幹線なら、およそ1時間半。穴なら42分ですが、まだ掘っていないので、新幹線でどうぞ。" }
+    {
+      "id": "s1",
+      "narration": "東京の地面に、まっすぐ穴を掘って、飛び込んだら、どこに出るのか。真面目に計算します。"
+    },
+    {
+      "id": "s2",
+      "narration": "空気も摩擦もないとすると、地球の中心を通って、反対側に着くまで、およそ42分。"
+    },
+    {
+      "id": "s3",
+      "narration": "中心での速さは、秒速7.9キロ。時速にすると、2万8千キロです。"
+    },
+    {
+      "id": "s4",
+      "narration": "ただし、東京の真裏は、南米の沖の大西洋。出口は、海の中です。"
+    },
+    {
+      "id": "s5",
+      "narration": "そこで、穴を斜めに掘ります。実は、まっすぐな穴なら、どこへ掘っても、かかる時間は同じ42分。"
+    },
+    {
+      "id": "s6",
+      "narration": "では、東京駅から、西へ224キロの穴。いちばん深い所でも、地下およそ1キロです。"
+    },
+    {
+      "id": "s7",
+      "narration": "入口の傾きは、たったの1度。それでも落ち続けて、最高時速は、およそ500キロ。"
+    },
+    {
+      "id": "s8",
+      "narration": "42分後、飛び出すのは、静岡県の浜名湖です。"
+    },
+    {
+      "id": "s9",
+      "narration": "浜名湖は、海とつながった湖。うなぎの養殖で知られています。"
+    },
+    {
+      "id": "s10",
+      "narration": "新幹線なら、最速で1時間14分。穴なら42分ですが、まだ掘っていないので、新幹線でどうぞ。"
+    }
   ],
-  "meta": { "tags": ["地球", "穴", "重力", "浜名湖", "物理", "計算してみた"], "description_lead": "東京の地面にまっすぐ穴を掘って飛び込んだら、どこに、何分で出るのかを計算しました。" }
+  "meta": {
+    "tags": [
+      "地球",
+      "穴",
+      "重力",
+      "浜名湖",
+      "物理",
+      "計算してみた"
+    ],
+    "description_lead": "東京の地面にまっすぐ穴を掘って飛び込んだら、どこに、何分で出るのかを計算しました。"
+  }
 }
